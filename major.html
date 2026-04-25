@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Major Chord - Piano Chords</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
+</head>
+<body>
+  <header>
+    <a class="back-link" href="index.html#major-chords">Back to all chords</a>
+    <h1 data-major-title>Major Chord</h1>
+    <p class="subtitle" data-major-subtitle>Root + Major 3rd + Perfect 5th</p>
+    <div class="notation-toggle" role="group" aria-label="Choose note naming">
+      <button type="button" data-notation="sharp" aria-pressed="true">Sharp</button>
+      <button type="button" data-notation="flat" aria-pressed="false">Flat</button>
+    </div>
+  </header>
+
+  <main>
+    <section aria-labelledby="dynamic-major-title">
+      <article class="card dynamic-card" data-dynamic-major-card>
+        <div class="card-title">
+          <button class="play-button" type="button" aria-label="Play major chord"><span class="play-icon" aria-hidden="true"></span></button>
+          <h2 id="dynamic-major-title" data-dynamic-major-heading>Major Chord</h2>
+        </div>
+        <div class="keyboard" role="img" aria-label="Piano keys for major chord"></div>
+        <p>Notes: </p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made for beginner piano practice.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

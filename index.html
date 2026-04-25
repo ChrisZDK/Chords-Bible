@@ -104,13 +104,31 @@
   <header>
     <h1>Piano Chords</h1>
     <p class="subtitle">A quick reference for triads</p>
+    <div class="notation-toggle" role="group" aria-label="Choose note naming">
+      <button type="button" data-notation="sharp" aria-pressed="true">Sharp</button>
+      <button type="button" data-notation="flat" aria-pressed="false">Flat</button>
+    </div>
   </header>
 
   <main>
     <section aria-labelledby="major-chords">
       <h2 id="major-chords">Major Chords</h2>
+      <nav class="root-menu" aria-label="Major chord roots">
+        <a href="major.html?root=C" data-root-link="0">C</a>
+        <a href="major.html?root=C%23" data-root-link="1">C#</a>
+        <a href="major.html?root=D" data-root-link="2">D</a>
+        <a href="major.html?root=D%23" data-root-link="3">D#</a>
+        <a href="major.html?root=E" data-root-link="4">E</a>
+        <a href="major.html?root=F" data-root-link="5">F</a>
+        <a href="major.html?root=F%23" data-root-link="6">F#</a>
+        <a href="major.html?root=G" data-root-link="7">G</a>
+        <a href="major.html?root=G%23" data-root-link="8">G#</a>
+        <a href="major.html?root=A" data-root-link="9">A</a>
+        <a href="major.html?root=A%23" data-root-link="10">A#</a>
+        <a href="major.html?root=B" data-root-link="11">B</a>
+      </nav>
       <div class="grid">
-        <article class="card" data-notes="C,E,G">
+        <article class="card" data-notes="C,E,G" data-root="C" data-quality="Major">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play C Major chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>C Major</h3>
@@ -118,7 +136,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
           <p>Notes: C - E - G</p>
         </article>
-        <article class="card" data-notes="G,B,D">
+        <article class="card" data-notes="G,B,D" data-root="G" data-quality="Major">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play G Major chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>G Major</h3>
@@ -126,7 +144,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for G Major chord"></div>
           <p>Notes: G - B - D</p>
         </article>
-        <article class="card" data-notes="D,F#,A">
+        <article class="card" data-notes="D,F#,A" data-root="D" data-quality="Major">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play D Major chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>D Major</h3>
@@ -134,7 +152,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for D Major chord"></div>
           <p>Notes: D - F# - A</p>
         </article>
-        <article class="card" data-notes="A,C#,E">
+        <article class="card" data-notes="A,C#,E" data-root="A" data-quality="Major">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play A Major chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>A Major</h3>
@@ -142,7 +160,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for A Major chord"></div>
           <p>Notes: A - C# - E</p>
         </article>
-        <article class="card" data-notes="F,A,C">
+        <article class="card" data-notes="F,A,C" data-root="F" data-quality="Major">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play F Major chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>F Major</h3>
@@ -150,7 +168,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for F Major chord"></div>
           <p>Notes: F - A - C</p>
         </article>
-        <article class="card" data-notes="Bb,D,F">
+        <article class="card" data-notes="Bb,D,F" data-root="Bb" data-quality="Major">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play Bb Major chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>Bb Major</h3>
@@ -241,7 +259,7 @@
     <section aria-labelledby="minor-chords">
       <h2 id="minor-chords">Minor Chords</h2>
       <div class="grid">
-        <article class="card" data-notes="A,C,E">
+        <article class="card" data-notes="A,C,E" data-root="A" data-quality="Minor">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play A Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>A Minor</h3>
@@ -249,7 +267,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for A Minor chord"></div>
           <p>Notes: A - C - E</p>
         </article>
-        <article class="card" data-notes="E,G,B">
+        <article class="card" data-notes="E,G,B" data-root="E" data-quality="Minor">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play E Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>E Minor</h3>
@@ -257,7 +275,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for E Minor chord"></div>
           <p>Notes: E - G - B</p>
         </article>
-        <article class="card" data-notes="D,F,A">
+        <article class="card" data-notes="D,F,A" data-root="D" data-quality="Minor">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play D Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>D Minor</h3>
@@ -265,7 +283,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for D Minor chord"></div>
           <p>Notes: D - F - A</p>
         </article>
-        <article class="card" data-notes="G,Bb,D">
+        <article class="card" data-notes="G,Bb,D" data-root="G" data-quality="Minor">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play G Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>G Minor</h3>
@@ -273,7 +291,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for G Minor chord"></div>
           <p>Notes: G - Bb - D</p>
         </article>
-        <article class="card" data-notes="C,Eb,G">
+        <article class="card" data-notes="C,Eb,G" data-root="C" data-quality="Minor">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play C Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>C Minor</h3>
@@ -281,7 +299,7 @@
           <div class="keyboard" role="img" aria-label="Piano keys for C Minor chord"></div>
           <p>Notes: C - Eb - G</p>
         </article>
-        <article class="card" data-notes="B,D,F#">
+        <article class="card" data-notes="B,D,F#" data-root="B" data-quality="Minor">
           <div class="card-title">
             <button class="play-button" type="button" aria-label="Play B Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
             <h3>B Minor</h3>

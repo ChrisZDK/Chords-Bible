@@ -19,20 +19,23 @@ const noteValues = {
 };
 
 const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 const whiteKeys = ["C", "D", "E", "F", "G", "A", "B"];
 const blackKeys = [
-  { note: "C#", label: "C#/Db", x: 28 },
-  { note: "D#", label: "D#/Eb", x: 70 },
-  { note: "F#", label: "F#/Gb", x: 154 },
-  { note: "G#", label: "G#/Ab", x: 196 },
-  { note: "A#", label: "A#/Bb", x: 238 },
+  { note: "C#", x: 28 },
+  { note: "D#", x: 70 },
+  { note: "F#", x: 154 },
+  { note: "G#", x: 196 },
+  { note: "A#", x: 238 },
 ];
+const notationStorageKey = "preferredNotation";
 
 let audioContext;
 let activePlaybackOutput;
 let pianoSampler;
 let pianoReady = false;
 let activeTimers = [];
+let preferredNotation = getStoredNotation();
 const startDelay = 0.5;
 const pianoSampleUrls = {
   A0: "A0.mp3",
@@ -128,6 +131,54 @@ function normalizeNote(note) {
   return sharpNames[noteValues[note.trim()]];
 }
 
+function getStoredNotation() {
+  try {
+    const storedNotation = window.localStorage?.getItem(notationStorageKey);
+    return storedNotation === "flat" ? "flat" : "sharp";
+  } catch {
+    return "sharp";
+  }
+}
+
+function storeNotation(notation) {
+  try {
+    window.localStorage?.setItem(notationStorageKey, notation);
+  } catch {
+    // The toggle still works when storage is blocked.
+  }
+}
+
+function normalizeValue(value) {
+  return ((value % 12) + 12) % 12;
+}
+
+function noteNameForValue(value, notation = preferredNotation) {
+  const names = notation === "flat" ? flatNames : sharpNames;
+  return names[normalizeValue(value)];
+}
+
+function displayNoteName(note) {
+  return noteNameForValue(noteValues[note.trim()]);
+}
+
+function displayNotes(notes) {
+  return notes.map(displayNoteName).join(" - ");
+}
+
+function getRootValue(root) {
+  return noteValues[root?.trim()];
+}
+
+function chordName(root, quality) {
+  return `${displayNoteName(root)} ${quality}`;
+}
+
+function majorChordNotes(rootValue) {
+  return [rootValue, rootValue + 4, rootValue + 7].map((value) => {
+    return sharpNames[normalizeValue(value)];
+  });
+}
+
 function chordFrequencies(notes) {
   const rootValue = noteValues[notes[0]];
 
@@ -176,7 +227,7 @@ function createKeyboard(notes) {
     svg.appendChild(label);
   });
 
-  blackKeys.forEach(({ note, label, x }) => {
+  blackKeys.forEach(({ note, x }) => {
     const key = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     key.setAttribute("class", `black-key${activeNotes.has(note) ? " key-active" : ""}`);
     key.setAttribute("x", x);
@@ -190,7 +241,7 @@ function createKeyboard(notes) {
     text.setAttribute("class", "black-label");
     text.setAttribute("x", x + 14);
     text.setAttribute("y", 72);
-    text.textContent = label;
+    text.textContent = displayNoteName(note);
     svg.appendChild(text);
   });
 
@@ -328,21 +379,142 @@ function playProgression(chordSymbols) {
   });
 }
 
-document.querySelectorAll(".card[data-notes]").forEach((card) => {
+function updateChordCardText(card) {
+  const notes = card.dataset.notes.split(",");
+  const title = card.querySelector("h2, h3");
+  const noteText = card.querySelector("p");
+  const keyboard = card.querySelector(".keyboard");
+  const button = card.querySelector(".play-button");
+  const displayedChordName = card.dataset.root && card.dataset.quality ? chordName(card.dataset.root, card.dataset.quality) : displayNotes(notes);
+
+  if (title && card.dataset.root && card.dataset.quality) {
+    title.textContent = displayedChordName;
+  }
+
+  if (noteText) {
+    noteText.textContent = `Notes: ${displayNotes(notes)}`;
+  }
+
+  if (button && card.dataset.root && card.dataset.quality) {
+    button.setAttribute("aria-label", `Play ${displayedChordName} chord`);
+  }
+
+  if (keyboard) {
+    keyboard.setAttribute("aria-label", `Piano keys for ${displayedChordName}`);
+    keyboard.replaceChildren(createKeyboard(notes));
+  }
+}
+
+function initializeChordCard(card) {
   const notes = card.dataset.notes.split(",");
   const keyboard = card.querySelector(".keyboard");
   const button = card.querySelector(".play-button");
 
-  keyboard.appendChild(createKeyboard(notes));
-  button.addEventListener("click", () => playChord(notes));
-});
+  if (keyboard && !keyboard.firstChild) {
+    keyboard.appendChild(createKeyboard(notes));
+  }
 
-document.querySelectorAll(".progressions li[data-progression]").forEach((item) => {
+  if (button && !card.dataset.playReady) {
+    button.addEventListener("click", () => playChord(notes));
+    card.dataset.playReady = "true";
+  }
+
+  updateChordCardText(card);
+}
+
+function initializeChordCards() {
+  document.querySelectorAll(".card[data-notes]").forEach(initializeChordCard);
+}
+
+function initializeProgressions() {
+  document.querySelectorAll(".progressions li[data-progression]").forEach((item) => {
   const button = item.querySelector(".progression-play");
   const chordSymbols = item.dataset.progression.split(",");
 
-  button.addEventListener("click", () => playProgression(chordSymbols));
-});
+    if (button && !item.dataset.playReady) {
+      button.addEventListener("click", () => playProgression(chordSymbols));
+      item.dataset.playReady = "true";
+    }
+  });
+}
+
+function updateRootMenu() {
+  document.querySelectorAll("[data-root-link]").forEach((link) => {
+    const rootValue = Number(link.dataset.rootLink);
+    const rootName = noteNameForValue(rootValue);
+    link.textContent = rootName;
+    link.setAttribute("href", `major.html?root=${encodeURIComponent(rootName)}`);
+  });
+}
+
+function updateNotationButtons() {
+  document.querySelectorAll("[data-notation]").forEach((button) => {
+    const isActive = button.dataset.notation === preferredNotation;
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+}
+
+function updateDynamicMajorText() {
+  const card = document.querySelector("[data-dynamic-major-card]");
+
+  if (!card) {
+    return;
+  }
+
+  const heading = document.querySelector("[data-major-title]");
+  const subtitle = document.querySelector("[data-major-subtitle]");
+  const chordTitle = chordName(card.dataset.root, "Major");
+
+  document.title = `${chordTitle} - Piano Chords`;
+
+  if (heading) {
+    heading.textContent = chordTitle;
+  }
+
+  if (subtitle) {
+    subtitle.textContent = `${displayNotes(card.dataset.notes.split(","))}`;
+  }
+}
+
+function updateNotation() {
+  updateNotationButtons();
+  updateRootMenu();
+  document.querySelectorAll(".card[data-notes]").forEach(updateChordCardText);
+  updateDynamicMajorText();
+}
+
+function initializeNotationToggle() {
+  document.querySelectorAll("[data-notation]").forEach((button) => {
+    button.addEventListener("click", () => {
+      preferredNotation = button.dataset.notation === "flat" ? "flat" : "sharp";
+      storeNotation(preferredNotation);
+      updateNotation();
+    });
+  });
+}
+
+function initializeDynamicMajorPage() {
+  const card = document.querySelector("[data-dynamic-major-card]");
+
+  if (!card) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const rootValue = getRootValue(params.get("root"));
+  const normalizedRootValue = Number.isInteger(rootValue) ? rootValue : 0;
+  const root = sharpNames[normalizedRootValue];
+  const notes = majorChordNotes(normalizedRootValue);
+  const button = card.querySelector(".play-button");
+
+  card.dataset.root = root;
+  card.dataset.quality = "Major";
+  card.dataset.notes = notes.join(",");
+
+  if (button) {
+    button.setAttribute("aria-label", `Play ${chordName(root, "Major")} chord`);
+  }
+}
 
 const menuToggle = document.querySelector(".menu-toggle");
 const menuBackdrop = document.querySelector(".menu-backdrop");
@@ -378,3 +550,8 @@ document.addEventListener("keydown", (event) => {
 });
 
 initializePianoSampler();
+initializeNotationToggle();
+initializeDynamicMajorPage();
+initializeChordCards();
+initializeProgressions();
+updateNotation();

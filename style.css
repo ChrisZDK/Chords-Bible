@@ -154,6 +154,50 @@ h1 {
   color: var(--muted);
 }
 
+.notation-toggle {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+  padding: 0.25rem;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.notation-toggle button {
+  min-width: 4.5rem;
+  padding: 0.45rem 0.7rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.notation-toggle button[aria-pressed="true"] {
+  background: var(--highlight);
+  color: #000;
+}
+
+.notation-toggle button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--highlight);
+  text-decoration: none;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  text-decoration: underline;
+  outline: 0;
+}
+
 section {
   margin-bottom: 2rem;
 }
@@ -161,6 +205,31 @@ section {
 h2 {
   margin-bottom: 0.75rem;
   color: var(--accent);
+}
+
+.root-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.root-menu a {
+  min-width: 3.25rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  color: var(--text);
+  text-align: center;
+  text-decoration: none;
+}
+
+.root-menu a:hover,
+.root-menu a:focus-visible {
+  border-color: var(--highlight);
+  background: var(--highlight);
+  color: #000;
+  outline: 0;
 }
 
 .grid {
@@ -223,6 +292,11 @@ h2 {
 .card p {
   margin: 0;
   color: var(--muted);
+}
+
+.dynamic-card {
+  max-width: 38rem;
+  margin: 0 auto;
 }
 
 .keyboard {
