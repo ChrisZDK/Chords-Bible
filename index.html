@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piano Chords</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
+</head>
+<body>
+  <button class="menu-toggle" type="button" aria-label="Open chord type menu" aria-expanded="false" aria-controls="chord-menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <aside class="sidebar" id="chord-menu" aria-label="Chord types in learning order">
+    <nav>
+      <h2>Chord Types</h2>
+      <ol class="menu-list">
+        <li><a href="#major-chords">Major</a></li>
+        <li><a href="#minor-chords">Minor</a></li>
+        <li><a href="#power-chords">Power</a></li>
+        <li>
+          <a href="#suspended-chords">Suspended</a>
+          <ol>
+            <li><a href="#sus2-chords">Sus2</a></li>
+            <li><a href="#sus4-chords">Sus4</a></li>
+          </ol>
+        </li>
+        <li><a href="#augmented-chords">Augmented</a></li>
+        <li><a href="#diminished-chords">Diminished</a></li>
+        <li><a href="#major-7th-chords">Major 7th</a></li>
+        <li><a href="#minor-7th-chords">Minor 7th</a></li>
+        <li><a href="#dominant-7th-chords">Dominant 7th</a></li>
+        <li><a href="#minor-major-7th-chords">Minor Major 7th</a></li>
+        <li><a href="#half-diminished-chords">Half-Diminished</a></li>
+        <li><a href="#diminished-7th-chords">Diminished 7th</a></li>
+        <li>
+          <a href="#add-chords">Add</a>
+          <ol>
+            <li><a href="#add9-chords">Add9</a></li>
+            <li><a href="#add11-chords">Add11</a></li>
+          </ol>
+        </li>
+        <li>
+          <a href="#sixth-chords">6th</a>
+          <ol>
+            <li><a href="#major-6th-chords">Major 6th</a></li>
+            <li><a href="#minor-6th-chords">Minor 6th</a></li>
+          </ol>
+        </li>
+        <li>
+          <a href="#ninth-chords">9th</a>
+          <ol>
+            <li><a href="#major-9th-chords">Major 9th</a></li>
+            <li><a href="#minor-9th-chords">Minor 9th</a></li>
+            <li><a href="#dominant-9th-chords">Dominant 9th</a></li>
+          </ol>
+        </li>
+        <li>
+          <a href="#eleventh-chords">11th</a>
+          <ol>
+            <li><a href="#major-11th-chords">Major 11th</a></li>
+            <li><a href="#minor-11th-chords">Minor 11th</a></li>
+            <li><a href="#dominant-11th-chords">Dominant 11th</a></li>
+          </ol>
+        </li>
+        <li>
+          <a href="#thirteenth-chords">13th</a>
+          <ol>
+            <li><a href="#major-13th-chords">Major 13th</a></li>
+            <li><a href="#minor-13th-chords">Minor 13th</a></li>
+            <li><a href="#dominant-13th-chords">Dominant 13th</a></li>
+          </ol>
+        </li>
+        <li>
+          <a href="#altered-chords">Altered</a>
+          <ol>
+            <li><a href="#seven-flat-five-chords">7b5</a></li>
+            <li><a href="#seven-sharp-five-chords">7#5</a></li>
+            <li><a href="#seven-flat-nine-chords">7b9</a></li>
+            <li><a href="#seven-sharp-nine-chords">7#9</a></li>
+            <li><a href="#seven-sharp-eleven-chords">7#11</a></li>
+            <li><a href="#seven-flat-thirteen-chords">7b13</a></li>
+          </ol>
+        </li>
+        <li><a href="#extended-altered-chords">Extended Altered</a></li>
+        <li><a href="#slash-chords">Slash</a></li>
+        <li><a href="#inverted-chords">Inverted</a></li>
+        <li><a href="#quartal-chords">Quartal</a></li>
+        <li><a href="#polychords">Polychords</a></li>
+        <li><a href="#hybrid-chords">Hybrid</a></li>
+        <li><a href="#cluster-chords">Cluster</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <div class="menu-backdrop" hidden></div>
+
+  <header>
+    <h1>Piano Chords</h1>
+    <p class="subtitle">A quick reference for triads</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="major-chords">
+      <h2 id="major-chords">Major Chords</h2>
+      <div class="grid">
+        <article class="card" data-notes="C,E,G">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play C Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>C Major</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
+          <p>Notes: C - E - G</p>
+        </article>
+        <article class="card" data-notes="G,B,D">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play G Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>G Major</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for G Major chord"></div>
+          <p>Notes: G - B - D</p>
+        </article>
+        <article class="card" data-notes="D,F#,A">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play D Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>D Major</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for D Major chord"></div>
+          <p>Notes: D - F# - A</p>
+        </article>
+        <article class="card" data-notes="A,C#,E">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play A Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>A Major</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for A Major chord"></div>
+          <p>Notes: A - C# - E</p>
+        </article>
+        <article class="card" data-notes="F,A,C">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play F Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>F Major</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for F Major chord"></div>
+          <p>Notes: F - A - C</p>
+        </article>
+        <article class="card" data-notes="Bb,D,F">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play Bb Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>Bb Major</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for Bb Major chord"></div>
+          <p>Notes: Bb - D - F</p>
+        </article>
+      </div>
+      <div class="progressions" aria-label="Basic major chord progressions and famous songs">
+        <h3>Chord Progressions</h3>
+        <ol>
+          <li data-progression="C,F,G">
+            <button class="play-button progression-play" type="button" aria-label="Play I - IV - V progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>I - IV - V</span>
+              C - F - G
+              <ul class="progression-songs">
+                <li>"La Bamba" - Ritchie Valens</li>
+                <li>"Wild Thing" - The Troggs</li>
+                <li>"Twist and Shout" - The Beatles</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="C,G,Am,F">
+            <button class="play-button progression-play" type="button" aria-label="Play I - V - vi - IV progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>I - V - vi - IV</span>
+              C - G - Am - F
+              <ul class="progression-songs">
+                <li>"Let It Be" - The Beatles</li>
+                <li>"No Woman, No Cry" - Bob Marley</li>
+                <li>"Don't Stop Believin'" - Journey</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="C,Am,F,G">
+            <button class="play-button progression-play" type="button" aria-label="Play I - vi - IV - V progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>I - vi - IV - V</span>
+              C - Am - F - G
+              <ul class="progression-songs">
+                <li>"Stand by Me" - Ben E. King</li>
+                <li>"Earth Angel" - The Penguins</li>
+                <li>"Blue Moon" - The Marcels</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="C,F,C,G">
+            <button class="play-button progression-play" type="button" aria-label="Play I - IV - I - V progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>I - IV - I - V</span>
+              C - F - C - G
+              <ul class="progression-songs">
+                <li>"Louie Louie" - The Kingsmen</li>
+                <li>"Barbara Ann" - The Beach Boys</li>
+                <li>"Good Lovin'" - The Young Rascals</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="C,G,F,C">
+            <button class="play-button progression-play" type="button" aria-label="Play I - V - IV - I progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>I - V - IV - I</span>
+              C - G - F - C
+              <ul class="progression-songs">
+                <li>"Sweet Home Alabama" - Lynyrd Skynyrd</li>
+                <li>"Werewolves of London" - Warren Zevon</li>
+                <li>"All Summer Long" - Kid Rock</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="C,Dm,G,C">
+            <button class="play-button progression-play" type="button" aria-label="Play I - ii - V - I progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>I - ii - V - I</span>
+              C - Dm - G - C
+              <ul class="progression-songs">
+                <li>"Heart and Soul" - Hoagy Carmichael</li>
+                <li>"Sunday Morning" - Maroon 5</li>
+                <li>"Satin Doll" - Duke Ellington</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section aria-labelledby="minor-chords">
+      <h2 id="minor-chords">Minor Chords</h2>
+      <div class="grid">
+        <article class="card" data-notes="A,C,E">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play A Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>A Minor</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for A Minor chord"></div>
+          <p>Notes: A - C - E</p>
+        </article>
+        <article class="card" data-notes="E,G,B">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play E Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>E Minor</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for E Minor chord"></div>
+          <p>Notes: E - G - B</p>
+        </article>
+        <article class="card" data-notes="D,F,A">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play D Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>D Minor</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for D Minor chord"></div>
+          <p>Notes: D - F - A</p>
+        </article>
+        <article class="card" data-notes="G,Bb,D">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play G Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>G Minor</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for G Minor chord"></div>
+          <p>Notes: G - Bb - D</p>
+        </article>
+        <article class="card" data-notes="C,Eb,G">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play C Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>C Minor</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for C Minor chord"></div>
+          <p>Notes: C - Eb - G</p>
+        </article>
+        <article class="card" data-notes="B,D,F#">
+          <div class="card-title">
+            <button class="play-button" type="button" aria-label="Play B Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
+            <h3>B Minor</h3>
+          </div>
+          <div class="keyboard" role="img" aria-label="Piano keys for B Minor chord"></div>
+          <p>Notes: B - D - F#</p>
+        </article>
+      </div>
+      <div class="progressions" aria-label="Basic minor chord progressions and famous songs">
+        <h3>Chord Progressions</h3>
+        <ol>
+          <li data-progression="Am,Dm,Em">
+            <button class="play-button progression-play" type="button" aria-label="Play i - iv - v progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>i - iv - v</span>
+              Am - Dm - Em
+              <ul class="progression-songs">
+                <li>"House of the Rising Sun" - The Animals</li>
+                <li>"Summertime" - George Gershwin</li>
+                <li>"Greensleeves" - Traditional</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="Am,F,C,G">
+            <button class="play-button progression-play" type="button" aria-label="Play i - VI - III - VII progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>i - VI - III - VII</span>
+              Am - F - C - G
+              <ul class="progression-songs">
+                <li>"Zombie" - The Cranberries</li>
+                <li>"Numb" - Linkin Park</li>
+                <li>"In the End" - Linkin Park</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="Am,G,F,G">
+            <button class="play-button progression-play" type="button" aria-label="Play i - VII - VI - VII progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>i - VII - VI - VII</span>
+              Am - G - F - G
+              <ul class="progression-songs">
+                <li>"All Along the Watchtower" - Bob Dylan</li>
+                <li>"Stairway to Heaven" - Led Zeppelin</li>
+                <li>"Sultans of Swing" - Dire Straits</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="Am,Dm,G,C">
+            <button class="play-button progression-play" type="button" aria-label="Play i - iv - VII - III progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>i - iv - VII - III</span>
+              Am - Dm - G - C
+              <ul class="progression-songs">
+                <li>"Ain't No Sunshine" - Bill Withers</li>
+                <li>"Autumn Leaves" - Joseph Kosma</li>
+                <li>"Fly Me to the Moon" - Bart Howard</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="Am,Em,F,Dm">
+            <button class="play-button progression-play" type="button" aria-label="Play i - v - VI - iv progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>i - v - VI - iv</span>
+              Am - Em - F - Dm
+              <ul class="progression-songs">
+                <li>"The Sound of Silence" - Simon & Garfunkel</li>
+                <li>"Losing My Religion" - R.E.M.</li>
+                <li>"Mad World" - Tears for Fears</li>
+              </ul>
+            </div>
+          </li>
+          <li data-progression="Am,F,Dm,E">
+            <button class="play-button progression-play" type="button" aria-label="Play i - VI - iv - V progression"><span class="play-icon" aria-hidden="true"></span></button>
+            <div>
+              <span>i - VI - iv - V</span>
+              Am - F - Dm - E
+              <ul class="progression-songs">
+                <li>"Hit the Road Jack" - Ray Charles</li>
+                <li>"Smooth Criminal" - Michael Jackson</li>
+                <li>"Hava Nagila" - Traditional</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="tips" aria-labelledby="tips-title">
+      <h2 id="tips-title">Quick Tips</h2>
+      <ul>
+        <li>Major chord formula: Root + Major 3rd + Perfect 5th</li>
+        <li>Minor chord formula: Root + Minor 3rd + Perfect 5th</li>
+        <li>Practice each chord with both left and right hands.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made for beginner piano practice.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
