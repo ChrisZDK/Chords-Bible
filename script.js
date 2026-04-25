@@ -139,6 +139,8 @@ let pianoReady = false;
 let activeTimers = [];
 let preferredNotation = getStoredNotation();
 const startDelay = 0.5;
+const progressionChordSpacing = 1.05;
+const progressionChordDuration = 1.45;
 const pianoSampleUrls = {
   A0: "A0.mp3",
   C1: "C1.mp3",
@@ -205,6 +207,7 @@ function startNewPlayback() {
   getAudioContext();
   activeTimers.forEach((timerId) => window.clearTimeout(timerId));
   activeTimers = [];
+  resetProgressionAnimations();
 
   if (pianoSampler) {
     pianoSampler.releaseAll();
@@ -328,6 +331,17 @@ function qualitySuffix(quality) {
 
 function chordSymbol(root, quality) {
   return `${normalizeNote(root)}${qualitySuffix(quality)}`;
+}
+
+function displayChordSymbol(symbol) {
+  const match = symbol.trim().match(/^([A-G](?:#|b)?)(dim|m?)$/);
+
+  if (!match) {
+    return symbol;
+  }
+
+  const [, root, suffix] = match;
+  return `${displayNoteName(root)}${suffix}`;
 }
 
 function keyChords(rootValue, config = getKeyConfig()) {
@@ -518,6 +532,20 @@ function chordNoteNamesFromSymbol(symbol) {
   });
 }
 
+function chordNotesFromSymbol(symbol) {
+  const match = symbol.trim().match(/^([A-G](?:#|b)?)(dim|m?)$/);
+
+  if (!match) {
+    return [];
+  }
+
+  const [, root, quality] = match;
+  const rootValue = noteValues[root];
+  const intervals = quality === "dim" ? [0, 3, 6] : [0, quality ? 3 : 4, 7];
+
+  return chordNotesFromRoot(rootValue, intervals);
+}
+
 function frequenciesFromChordSymbol(symbol) {
   return chordNoteNamesFromSymbol(symbol).map((noteName) => {
     const [, note, octave] = noteName.match(/^([A-G]#?)(\d)$/);
@@ -544,18 +572,110 @@ function playSynthNote(frequency, startTime, duration = 1.35, destination = audi
   oscillator.stop(startTime + duration + 0.04);
 }
 
-function playProgression(chordSymbols) {
+function resetProgressionAnimations() {
+  document.querySelectorAll("[data-progression-animation]").forEach((animation) => {
+    setProgressionAnimationChord(animation, 0);
+    animation.classList.remove("is-active");
+  });
+  document.querySelectorAll(".progressions li.is-playing").forEach((item) => {
+    item.classList.remove("is-playing");
+  });
+}
+
+function ensureProgressionAnimation(item, chordSymbols) {
+  let animation = item.querySelector("[data-progression-animation]");
+  const content = item.querySelector(".progression-play + div") || item;
+
+  if (!animation) {
+    animation = document.createElement("div");
+    animation.className = "progression-animation";
+    animation.dataset.progressionAnimation = "";
+    animation.setAttribute("aria-label", "Played chord sequence");
+
+    const songs = item.querySelector(".progression-songs");
+    if (songs) {
+      content.insertBefore(animation, songs);
+    } else {
+      content.appendChild(animation);
+    }
+  }
+
+  animation.dataset.symbols = chordSymbols.join(",");
+  updateProgressionAnimation(animation);
+
+  return animation;
+}
+
+function updateProgressionAnimation(animation) {
+  const symbols = animation.dataset.symbols?.split(",").filter(Boolean) || [];
+
+  if (!animation.querySelector(".progression-step")) {
+    const step = document.createElement("div");
+    step.className = "progression-step";
+    step.append(document.createElement("span"), document.createElement("div"));
+    animation.replaceChildren(step);
+  }
+
+  setProgressionAnimationChord(animation, Number(animation.dataset.activeIndex) || 0);
+}
+
+function setProgressionAnimationChord(animation, index) {
+  const symbols = animation.dataset.symbols?.split(",").filter(Boolean) || [];
+  const symbol = symbols[index] || symbols[0];
+  const step = animation.querySelector(".progression-step");
+
+  if (!symbol || !step) {
+    return;
+  }
+
+  const label = step.querySelector("span");
+  const keyboard = step.querySelector("div");
+  const notes = chordNotesFromSymbol(symbol);
+
+  animation.dataset.activeIndex = String(index);
+  label.textContent = displayChordSymbol(symbol);
+  keyboard.className = "progression-keyboard";
+  keyboard.setAttribute("aria-hidden", "true");
+  keyboard.replaceChildren(createKeyboard(notes));
+}
+
+function updateProgressionAnimationLabels() {
+  document.querySelectorAll("[data-progression-animation]").forEach(updateProgressionAnimation);
+}
+
+function scheduleProgressionAnimation(item, chordSymbols) {
+  if (!item) {
+    return;
+  }
+
+  const animation = ensureProgressionAnimation(item, chordSymbols);
+  item.classList.add("is-playing");
+
+  chordSymbols.forEach((_, index) => {
+    schedulePlayback(() => {
+      animation.classList.add("is-active");
+      setProgressionAnimationChord(animation, index);
+    }, startDelay + index * progressionChordSpacing);
+  });
+
+  schedulePlayback(() => {
+    animation.classList.remove("is-active");
+    setProgressionAnimationChord(animation, 0);
+    item.classList.remove("is-playing");
+  }, startDelay + chordSymbols.length * progressionChordSpacing + 0.2);
+}
+
+function playProgression(chordSymbols, item) {
   const playbackOutput = startNewPlayback();
-  const chordSpacing = 1.05;
-  const chordDuration = 1.45;
+  scheduleProgressionAnimation(item, chordSymbols);
 
   if (pianoReady) {
     Tone.start();
 
     chordSymbols.forEach((symbol, index) => {
       schedulePlayback(() => {
-        pianoSampler.triggerAttackRelease(chordNoteNamesFromSymbol(symbol), chordDuration, undefined, 0.82);
-      }, startDelay + index * chordSpacing);
+        pianoSampler.triggerAttackRelease(chordNoteNamesFromSymbol(symbol), progressionChordDuration, undefined, 0.82);
+      }, startDelay + index * progressionChordSpacing);
     });
 
     return;
@@ -565,17 +685,17 @@ function playProgression(chordSymbols) {
 
   chordSymbols.forEach((symbol, index) => {
     const output = audioContext.createGain();
-    const startTime = now + index * chordSpacing;
+    const startTime = now + index * progressionChordSpacing;
     const chordFrequencies = frequenciesFromChordSymbol(symbol);
 
     output.gain.setValueAtTime(0.0001, startTime);
     output.gain.exponentialRampToValueAtTime(0.2, startTime + 0.03);
     output.gain.exponentialRampToValueAtTime(0.14, startTime + 0.6);
-    output.gain.exponentialRampToValueAtTime(0.0001, startTime + chordDuration);
+    output.gain.exponentialRampToValueAtTime(0.0001, startTime + progressionChordDuration);
     output.connect(playbackOutput);
 
     chordFrequencies.forEach((frequency) => {
-      playSynthNote(frequency, startTime, chordDuration, output);
+      playSynthNote(frequency, startTime, progressionChordDuration, output);
     });
   });
 }
@@ -629,11 +749,12 @@ function initializeChordCards() {
 
 function initializeProgressions() {
   document.querySelectorAll(".progressions li[data-progression]").forEach((item) => {
-  const button = item.querySelector(".progression-play");
-  const chordSymbols = item.dataset.progression.split(",");
+    const button = item.querySelector(".progression-play");
+    const chordSymbols = item.dataset.progression.split(",");
+    ensureProgressionAnimation(item, chordSymbols);
 
     if (button && !item.dataset.playReady) {
-      button.addEventListener("click", () => playProgression(chordSymbols));
+      button.addEventListener("click", () => playProgression(chordSymbols, item));
       item.dataset.playReady = "true";
     }
   });
@@ -708,6 +829,8 @@ function updateNotation() {
   updateRootMenu();
   document.querySelectorAll(".card[data-notes]").forEach(updateChordCardText);
   updateDynamicKeyText();
+  updateProgressionLabels();
+  updateProgressionAnimationLabels();
 }
 
 function initializeNotationToggle() {
