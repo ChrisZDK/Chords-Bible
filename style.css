@@ -469,6 +469,19 @@ h2 {
   list-style: disc;
 }
 
+.progression-songs a {
+  color: inherit;
+  text-decoration-color: rgba(73, 220, 250, 0.55);
+  text-underline-offset: 0.18rem;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.progression-songs a:hover,
+.progression-songs a:focus-visible {
+  color: var(--highlight);
+  text-decoration-color: var(--highlight);
+}
+
 @media (max-width: 700px) {
   .progression-columns,
   .progressions ol {
