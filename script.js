@@ -38,6 +38,52 @@ const keyChordPattern = [
   { roman: "vi", quality: "Minor", intervals: [0, 3, 7] },
   { roman: "vii\u00b0", quality: "Diminished", intervals: [0, 3, 6] },
 ];
+const progressionSets = {
+  common: [
+    {
+      roman: "I - IV - V",
+      degrees: [0, 3, 4],
+    },
+    {
+      roman: "I - V - vi - IV",
+      degrees: [0, 4, 5, 3],
+    },
+    {
+      roman: "I - vi - IV - V",
+      degrees: [0, 5, 3, 4],
+    },
+    {
+      roman: "I - IV - I - V",
+      degrees: [0, 3, 0, 4],
+    },
+    {
+      roman: "I - ii - V - I",
+      degrees: [0, 1, 4, 0],
+    },
+  ],
+  uncommon: [
+    {
+      roman: "I - iii - IV - iv",
+      degrees: [0, 2, 3, { degree: 3, quality: "Minor" }],
+    },
+    {
+      roman: "I - bVII - IV - I",
+      degrees: [0, { rootOffset: 10, quality: "Major" }, 3, 0],
+    },
+    {
+      roman: "I - bVI - bVII - I",
+      degrees: [0, { rootOffset: 8, quality: "Major" }, { rootOffset: 10, quality: "Major" }, 0],
+    },
+    {
+      roman: "I - V - bVII - IV",
+      degrees: [0, 4, { rootOffset: 10, quality: "Major" }, 3],
+    },
+    {
+      roman: "I - #iv\u00b0 - V - I",
+      degrees: [0, { rootOffset: 6, quality: "Diminished" }, 4, 0],
+    },
+  ],
+};
 const notationStorageKey = "preferredNotation";
 
 let audioContext;
@@ -214,6 +260,22 @@ function chordNotesFromRoot(rootValue, intervals) {
   return notesFromValues(intervals.map((interval) => rootValue + interval));
 }
 
+function qualitySuffix(quality) {
+  if (quality === "Minor") {
+    return "m";
+  }
+
+  if (quality === "Diminished") {
+    return "dim";
+  }
+
+  return "";
+}
+
+function chordSymbol(root, quality) {
+  return `${normalizeNote(root)}${qualitySuffix(quality)}`;
+}
+
 function keyChords(rootValue) {
   return majorScaleValues(rootValue).map((scaleValue, index) => {
     const chord = keyChordPattern[index];
@@ -223,7 +285,43 @@ function keyChords(rootValue) {
       root: sharpNames[scaleValue],
       quality: chord.quality,
       notes: chordNotesFromRoot(scaleValue, chord.intervals),
+      symbol: chordSymbol(sharpNames[scaleValue], chord.quality),
     };
+  });
+}
+
+function progressionChordFromItem(item, rootValue, diatonicChords) {
+  if (typeof item === "number") {
+    return diatonicChords[item];
+  }
+
+  if (Number.isInteger(item.degree)) {
+    const baseChord = diatonicChords[item.degree];
+    const pattern = keyChordPattern.find((entry) => entry.quality === item.quality) || keyChordPattern[0];
+
+    return {
+      root: baseChord.root,
+      quality: item.quality,
+      notes: chordNotesFromRoot(noteValues[baseChord.root], pattern.intervals),
+      symbol: chordSymbol(baseChord.root, item.quality),
+    };
+  }
+
+  const quality = item.quality || "Major";
+  const pattern = keyChordPattern.find((entry) => entry.quality === quality) || keyChordPattern[0];
+  const chordRoot = sharpNames[normalizeValue(rootValue + item.rootOffset)];
+
+  return {
+    root: chordRoot,
+    quality,
+    notes: chordNotesFromRoot(noteValues[chordRoot], pattern.intervals),
+    symbol: chordSymbol(chordRoot, quality),
+  };
+}
+
+function progressionChords(progression, rootValue, diatonicChords = keyChords(rootValue)) {
+  return progression.degrees.map((item) => {
+    return progressionChordFromItem(item, rootValue, diatonicChords);
   });
 }
 
@@ -344,16 +442,17 @@ function playChord(notes) {
 }
 
 function chordNoteNamesFromSymbol(symbol) {
-  const match = symbol.trim().match(/^([A-G](?:#|b)?)(m?)$/);
+  const match = symbol.trim().match(/^([A-G](?:#|b)?)(dim|m?)$/);
 
   if (!match) {
     return [];
   }
 
-  const [, root, minor] = match;
+  const [, root, quality] = match;
   const rootValue = noteValues[root];
-  const thirdInterval = minor ? 3 : 4;
-  const midiNumbers = [rootValue, rootValue + thirdInterval, rootValue + 7].map((value) => {
+  const intervals = quality === "dim" ? [0, 3, 6] : [0, quality ? 3 : 4, 7];
+  const midiNumbers = intervals.map((interval) => {
+    const value = rootValue + interval;
     return 60 + value;
   });
 
@@ -503,7 +602,7 @@ function updateNotationButtons() {
 }
 
 function updateDynamicMajorText() {
-  const card = document.querySelector("[data-dynamic-major-card]");
+  const card = document.querySelector("[data-tonic-card]");
 
   if (!card) {
     return;
@@ -512,6 +611,10 @@ function updateDynamicMajorText() {
   const heading = document.querySelector("[data-major-title]");
   const subtitle = document.querySelector("[data-major-subtitle]");
   const scaleText = document.querySelector("[data-dynamic-scale-notes]");
+  const tonicSectionTitle = document.querySelector("[data-tonic-section-title]");
+  const keyChordsTitle = document.querySelector("[data-key-chords-title]");
+  const commonProgressionsTitle = document.querySelector("[data-common-progressions-title]");
+  const uncommonProgressionsTitle = document.querySelector("[data-uncommon-progressions-title]");
   const chordTitle = chordName(card.dataset.root, "Major");
 
   document.title = `${chordTitle} - Piano Chords`;
@@ -524,9 +627,27 @@ function updateDynamicMajorText() {
     subtitle.textContent = "Major scale and diatonic triads";
   }
 
+  if (tonicSectionTitle) {
+    tonicSectionTitle.textContent = `${chordTitle} tonic chord`;
+  }
+
+  if (keyChordsTitle) {
+    keyChordsTitle.textContent = `Other chords in ${chordTitle} key`;
+  }
+
+  if (commonProgressionsTitle) {
+    commonProgressionsTitle.textContent = `Common progressions in ${chordTitle}`;
+  }
+
+  if (uncommonProgressionsTitle) {
+    uncommonProgressionsTitle.textContent = `Uncommon progressions in ${chordTitle}`;
+  }
+
   if (scaleText) {
     scaleText.textContent = `Scale: ${displayNotes(card.dataset.scaleNotes.split(","))}`;
   }
+
+  updateProgressionLabels();
 }
 
 function updateNotation() {
@@ -547,9 +668,9 @@ function initializeNotationToggle() {
 }
 
 function initializeDynamicMajorPage() {
-  const card = document.querySelector("[data-dynamic-major-card]");
+  const tonicContainer = document.querySelector("[data-tonic-chord]");
 
-  if (!card) {
+  if (!tonicContainer) {
     return;
   }
 
@@ -557,23 +678,71 @@ function initializeDynamicMajorPage() {
   const rootValue = getRootValue(params.get("root"));
   const normalizedRootValue = Number.isInteger(rootValue) ? rootValue : 0;
   const root = sharpNames[normalizedRootValue];
-  const notes = majorChordNotes(normalizedRootValue);
   const scaleNotes = majorScaleNotes(normalizedRootValue);
-  const button = card.querySelector(".play-button");
+  const chords = keyChords(normalizedRootValue);
 
-  card.dataset.root = root;
-  card.dataset.quality = "Major";
-  card.dataset.notes = notes.join(",");
-  card.dataset.scaleNotes = scaleNotes.join(",");
-
-  if (button) {
-    button.setAttribute("aria-label", `Play ${chordName(root, "Major")} chord`);
-  }
-
-  renderKeyChords(normalizedRootValue);
+  renderTonicChord(chords[0], scaleNotes);
+  renderKeyChords(chords.slice(1));
+  renderProgressions(normalizedRootValue, chords);
 }
 
-function renderKeyChords(rootValue) {
+function createChordCard(chord, options = {}) {
+  const article = document.createElement("article");
+  article.className = "card";
+  article.dataset.notes = chord.notes.join(",");
+  article.dataset.root = chord.root;
+  article.dataset.quality = chord.quality;
+
+  if (chord.roman) {
+    article.dataset.roman = chord.roman;
+  }
+
+  if (options.tonic) {
+    article.dataset.tonicCard = "";
+  }
+
+  if (options.scaleNotes) {
+    article.dataset.scaleNotes = options.scaleNotes.join(",");
+  }
+
+  const titleRow = document.createElement("div");
+  titleRow.className = "card-title";
+
+  const button = document.createElement("button");
+  button.className = "play-button";
+  button.type = "button";
+  button.setAttribute("aria-label", `Play ${chordTitleForCard(article)} chord`);
+
+  const icon = document.createElement("span");
+  icon.className = "play-icon";
+  icon.setAttribute("aria-hidden", "true");
+  button.appendChild(icon);
+
+  const title = document.createElement("h3");
+  titleRow.append(button, title);
+
+  const keyboard = document.createElement("div");
+  keyboard.className = "keyboard";
+  keyboard.setAttribute("role", "img");
+
+  const notes = document.createElement("p");
+
+  article.append(titleRow, keyboard, notes);
+
+  return article;
+}
+
+function renderTonicChord(chord, scaleNotes) {
+  const container = document.querySelector("[data-tonic-chord]");
+
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren(createChordCard(chord, { tonic: true, scaleNotes }));
+}
+
+function renderKeyChords(chords) {
   const container = document.querySelector("[data-key-chords]");
 
   if (!container) {
@@ -582,38 +751,61 @@ function renderKeyChords(rootValue) {
 
   container.replaceChildren();
 
-  keyChords(rootValue).forEach((chord) => {
-    const article = document.createElement("article");
-    article.className = "card";
-    article.dataset.notes = chord.notes.join(",");
-    article.dataset.root = chord.root;
-    article.dataset.quality = chord.quality;
-    article.dataset.roman = chord.roman;
+  chords.forEach((chord) => {
+    container.appendChild(createChordCard(chord));
+  });
+}
 
-    const titleRow = document.createElement("div");
-    titleRow.className = "card-title";
+function renderProgressionList(container, progressions, rootValue, chords) {
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren();
+
+  progressions.forEach((progression) => {
+    const progressionChordsForKey = progressionChords(progression, rootValue, chords);
+    const item = document.createElement("li");
+    item.dataset.progression = progressionChordsForKey.map((chord) => chord.symbol).join(",");
+    item.dataset.roman = progression.roman;
 
     const button = document.createElement("button");
-    button.className = "play-button";
+    button.className = "play-button progression-play";
     button.type = "button";
-    button.setAttribute("aria-label", `Play ${chord.roman} ${chordName(chord.root, chord.quality)} chord`);
+    button.setAttribute("aria-label", `Play ${progression.roman} progression`);
 
     const icon = document.createElement("span");
     icon.className = "play-icon";
     icon.setAttribute("aria-hidden", "true");
     button.appendChild(icon);
 
-    const title = document.createElement("h3");
-    titleRow.append(button, title);
+    const content = document.createElement("div");
+    const roman = document.createElement("span");
+    roman.textContent = progression.roman;
 
-    const keyboard = document.createElement("div");
-    keyboard.className = "keyboard";
-    keyboard.setAttribute("role", "img");
+    const chordLine = document.createElement("div");
+    chordLine.className = "progression-chords";
+    chordLine.dataset.progressionChords = progressionChordsForKey.map((chord) => `${chord.root}:${chord.quality}`).join(",");
 
-    const notes = document.createElement("p");
+    content.append(roman, chordLine);
+    item.append(button, content);
+    container.appendChild(item);
+  });
+}
 
-    article.append(titleRow, keyboard, notes);
-    container.appendChild(article);
+function renderProgressions(rootValue, chords) {
+  renderProgressionList(document.querySelector("[data-common-progressions]"), progressionSets.common, rootValue, chords);
+  renderProgressionList(document.querySelector("[data-uncommon-progressions]"), progressionSets.uncommon, rootValue, chords);
+}
+
+function updateProgressionLabels() {
+  document.querySelectorAll("[data-progression-chords]").forEach((line) => {
+    const labels = line.dataset.progressionChords.split(",").map((entry) => {
+      const [root, quality] = entry.split(":");
+      return quality === "Major" ? displayNoteName(root) : `${displayNoteName(root)}${qualitySuffix(quality)}`;
+    });
+
+    line.textContent = labels.join(" - ");
   });
 }
 

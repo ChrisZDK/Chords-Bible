@@ -214,6 +214,11 @@ h2 {
   margin: 0 0 1rem;
 }
 
+.root-menu-centered {
+  justify-content: center;
+  margin: 1rem auto 1.35rem;
+}
+
 .root-menu a {
   min-width: 3.25rem;
   padding: 0.45rem 0.7rem;
@@ -236,6 +241,11 @@ h2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.85rem;
+}
+
+[data-tonic-chord] {
+  grid-template-columns: minmax(220px, 320px);
+  justify-content: center;
 }
 
 .card {
@@ -297,6 +307,20 @@ h2 {
 .dynamic-card {
   max-width: 38rem;
   margin: 0 auto;
+}
+
+.scale-line {
+  margin: 0.85rem 0 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.key-chords {
+  margin-top: 2.5rem;
+}
+
+.progression-chords {
+  margin-bottom: 0.25rem;
 }
 
 .keyboard {
