@@ -28,6 +28,16 @@ const blackKeys = [
   { note: "G#", x: 196 },
   { note: "A#", x: 238 },
 ];
+const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
+const keyChordPattern = [
+  { roman: "I", quality: "Major", intervals: [0, 4, 7] },
+  { roman: "ii", quality: "Minor", intervals: [0, 3, 7] },
+  { roman: "iii", quality: "Minor", intervals: [0, 3, 7] },
+  { roman: "IV", quality: "Major", intervals: [0, 4, 7] },
+  { roman: "V", quality: "Major", intervals: [0, 4, 7] },
+  { roman: "vi", quality: "Minor", intervals: [0, 3, 7] },
+  { roman: "vii\u00b0", quality: "Diminished", intervals: [0, 3, 6] },
+];
 const notationStorageKey = "preferredNotation";
 
 let audioContext;
@@ -173,9 +183,47 @@ function chordName(root, quality) {
   return `${displayNoteName(root)} ${quality}`;
 }
 
+function chordTitleForCard(card) {
+  const name = chordName(card.dataset.root, card.dataset.quality);
+  return card.dataset.roman ? `${card.dataset.roman} ${name}` : name;
+}
+
 function majorChordNotes(rootValue) {
   return [rootValue, rootValue + 4, rootValue + 7].map((value) => {
     return sharpNames[normalizeValue(value)];
+  });
+}
+
+function notesFromValues(values) {
+  return values.map((value) => {
+    return sharpNames[normalizeValue(value)];
+  });
+}
+
+function majorScaleValues(rootValue) {
+  return majorScaleIntervals.map((interval) => {
+    return normalizeValue(rootValue + interval);
+  });
+}
+
+function majorScaleNotes(rootValue) {
+  return notesFromValues(majorScaleValues(rootValue));
+}
+
+function chordNotesFromRoot(rootValue, intervals) {
+  return notesFromValues(intervals.map((interval) => rootValue + interval));
+}
+
+function keyChords(rootValue) {
+  return majorScaleValues(rootValue).map((scaleValue, index) => {
+    const chord = keyChordPattern[index];
+
+    return {
+      roman: chord.roman,
+      root: sharpNames[scaleValue],
+      quality: chord.quality,
+      notes: chordNotesFromRoot(scaleValue, chord.intervals),
+    };
   });
 }
 
@@ -382,17 +430,17 @@ function playProgression(chordSymbols) {
 function updateChordCardText(card) {
   const notes = card.dataset.notes.split(",");
   const title = card.querySelector("h2, h3");
-  const noteText = card.querySelector("p");
+  const noteText = card.querySelector("[data-dynamic-chord-notes]") || card.querySelector("p");
   const keyboard = card.querySelector(".keyboard");
   const button = card.querySelector(".play-button");
-  const displayedChordName = card.dataset.root && card.dataset.quality ? chordName(card.dataset.root, card.dataset.quality) : displayNotes(notes);
+  const displayedChordName = card.dataset.root && card.dataset.quality ? chordTitleForCard(card) : displayNotes(notes);
 
   if (title && card.dataset.root && card.dataset.quality) {
     title.textContent = displayedChordName;
   }
 
   if (noteText) {
-    noteText.textContent = `Notes: ${displayNotes(notes)}`;
+    noteText.textContent = `${card.hasAttribute("data-dynamic-major-card") ? "Chord" : "Notes"}: ${displayNotes(notes)}`;
   }
 
   if (button && card.dataset.root && card.dataset.quality) {
@@ -463,6 +511,7 @@ function updateDynamicMajorText() {
 
   const heading = document.querySelector("[data-major-title]");
   const subtitle = document.querySelector("[data-major-subtitle]");
+  const scaleText = document.querySelector("[data-dynamic-scale-notes]");
   const chordTitle = chordName(card.dataset.root, "Major");
 
   document.title = `${chordTitle} - Piano Chords`;
@@ -472,7 +521,11 @@ function updateDynamicMajorText() {
   }
 
   if (subtitle) {
-    subtitle.textContent = `${displayNotes(card.dataset.notes.split(","))}`;
+    subtitle.textContent = "Major scale and diatonic triads";
+  }
+
+  if (scaleText) {
+    scaleText.textContent = `Scale: ${displayNotes(card.dataset.scaleNotes.split(","))}`;
   }
 }
 
@@ -505,15 +558,63 @@ function initializeDynamicMajorPage() {
   const normalizedRootValue = Number.isInteger(rootValue) ? rootValue : 0;
   const root = sharpNames[normalizedRootValue];
   const notes = majorChordNotes(normalizedRootValue);
+  const scaleNotes = majorScaleNotes(normalizedRootValue);
   const button = card.querySelector(".play-button");
 
   card.dataset.root = root;
   card.dataset.quality = "Major";
   card.dataset.notes = notes.join(",");
+  card.dataset.scaleNotes = scaleNotes.join(",");
 
   if (button) {
     button.setAttribute("aria-label", `Play ${chordName(root, "Major")} chord`);
   }
+
+  renderKeyChords(normalizedRootValue);
+}
+
+function renderKeyChords(rootValue) {
+  const container = document.querySelector("[data-key-chords]");
+
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren();
+
+  keyChords(rootValue).forEach((chord) => {
+    const article = document.createElement("article");
+    article.className = "card";
+    article.dataset.notes = chord.notes.join(",");
+    article.dataset.root = chord.root;
+    article.dataset.quality = chord.quality;
+    article.dataset.roman = chord.roman;
+
+    const titleRow = document.createElement("div");
+    titleRow.className = "card-title";
+
+    const button = document.createElement("button");
+    button.className = "play-button";
+    button.type = "button";
+    button.setAttribute("aria-label", `Play ${chord.roman} ${chordName(chord.root, chord.quality)} chord`);
+
+    const icon = document.createElement("span");
+    icon.className = "play-icon";
+    icon.setAttribute("aria-hidden", "true");
+    button.appendChild(icon);
+
+    const title = document.createElement("h3");
+    titleRow.append(button, title);
+
+    const keyboard = document.createElement("div");
+    keyboard.className = "keyboard";
+    keyboard.setAttribute("role", "img");
+
+    const notes = document.createElement("p");
+
+    article.append(titleRow, keyboard, notes);
+    container.appendChild(article);
+  });
 }
 
 const menuToggle = document.querySelector(".menu-toggle");
