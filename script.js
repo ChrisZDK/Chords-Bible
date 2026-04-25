@@ -29,6 +29,7 @@ const blackKeys = [
   { note: "A#", x: 238 },
 ];
 const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
+const minorScaleIntervals = [0, 2, 3, 5, 7, 8, 10];
 const keyChordPattern = [
   { roman: "I", quality: "Major", intervals: [0, 4, 7] },
   { roman: "ii", quality: "Minor", intervals: [0, 3, 7] },
@@ -37,6 +38,15 @@ const keyChordPattern = [
   { roman: "V", quality: "Major", intervals: [0, 4, 7] },
   { roman: "vi", quality: "Minor", intervals: [0, 3, 7] },
   { roman: "vii\u00b0", quality: "Diminished", intervals: [0, 3, 6] },
+];
+const minorKeyChordPattern = [
+  { roman: "i", quality: "Minor", intervals: [0, 3, 7] },
+  { roman: "ii\u00b0", quality: "Diminished", intervals: [0, 3, 6] },
+  { roman: "III", quality: "Major", intervals: [0, 4, 7] },
+  { roman: "iv", quality: "Minor", intervals: [0, 3, 7] },
+  { roman: "v", quality: "Minor", intervals: [0, 3, 7] },
+  { roman: "VI", quality: "Major", intervals: [0, 4, 7] },
+  { roman: "VII", quality: "Major", intervals: [0, 4, 7] },
 ];
 const progressionSets = {
   common: [
@@ -83,6 +93,42 @@ const progressionSets = {
       degrees: [0, { rootOffset: 6, quality: "Diminished" }, 4, 0],
     },
   ],
+};
+const minorProgressionSets = {
+  common: [
+    { roman: "i - iv - v", degrees: [0, 3, 4] },
+    { roman: "i - VI - III - VII", degrees: [0, 5, 2, 6] },
+    { roman: "i - VII - VI - VII", degrees: [0, 6, 5, 6] },
+    { roman: "i - iv - VII - III", degrees: [0, 3, 6, 2] },
+    { roman: "i - VI - iv - V", degrees: [0, 5, 3, { degree: 4, quality: "Major" }] },
+  ],
+  uncommon: [
+    { roman: "i - v - VI - iv", degrees: [0, 4, 5, 3] },
+    { roman: "i - III - VII - iv", degrees: [0, 2, 6, 3] },
+    { roman: "i - bII - VII - i", degrees: [0, { rootOffset: 1, quality: "Major" }, 6, 0] },
+    { roman: "i - iv - bVII - VI", degrees: [0, 3, { rootOffset: 10, quality: "Major" }, 5] },
+    { roman: "i - ii\u00b0 - V - i", degrees: [0, 1, { degree: 4, quality: "Major" }, 0] },
+  ],
+};
+const keyModeConfigs = {
+  major: {
+    titleQuality: "Major",
+    subtitle: "Major scale and diatonic triads",
+    fallbackRoot: "C",
+    page: "major.html",
+    scaleIntervals: majorScaleIntervals,
+    chordPattern: keyChordPattern,
+    progressions: progressionSets,
+  },
+  minor: {
+    titleQuality: "Minor",
+    subtitle: "Natural minor scale and diatonic triads",
+    fallbackRoot: "A",
+    page: "minor.html",
+    scaleIntervals: minorScaleIntervals,
+    chordPattern: minorKeyChordPattern,
+    progressions: minorProgressionSets,
+  },
 };
 const notationStorageKey = "preferredNotation";
 
@@ -229,6 +275,14 @@ function chordName(root, quality) {
   return `${displayNoteName(root)} ${quality}`;
 }
 
+function getKeyMode() {
+  return document.body.dataset.keyMode === "minor" ? "minor" : "major";
+}
+
+function getKeyConfig() {
+  return keyModeConfigs[getKeyMode()];
+}
+
 function chordTitleForCard(card) {
   const name = chordName(card.dataset.root, card.dataset.quality);
   return card.dataset.roman ? `${card.dataset.roman} ${name}` : name;
@@ -246,14 +300,14 @@ function notesFromValues(values) {
   });
 }
 
-function majorScaleValues(rootValue) {
-  return majorScaleIntervals.map((interval) => {
+function scaleValues(rootValue, config = getKeyConfig()) {
+  return config.scaleIntervals.map((interval) => {
     return normalizeValue(rootValue + interval);
   });
 }
 
-function majorScaleNotes(rootValue) {
-  return notesFromValues(majorScaleValues(rootValue));
+function scaleNotes(rootValue, config = getKeyConfig()) {
+  return notesFromValues(scaleValues(rootValue, config));
 }
 
 function chordNotesFromRoot(rootValue, intervals) {
@@ -276,9 +330,9 @@ function chordSymbol(root, quality) {
   return `${normalizeNote(root)}${qualitySuffix(quality)}`;
 }
 
-function keyChords(rootValue) {
-  return majorScaleValues(rootValue).map((scaleValue, index) => {
-    const chord = keyChordPattern[index];
+function keyChords(rootValue, config = getKeyConfig()) {
+  return scaleValues(rootValue, config).map((scaleValue, index) => {
+    const chord = config.chordPattern[index];
 
     return {
       roman: chord.roman,
@@ -297,7 +351,7 @@ function progressionChordFromItem(item, rootValue, diatonicChords) {
 
   if (Number.isInteger(item.degree)) {
     const baseChord = diatonicChords[item.degree];
-    const pattern = keyChordPattern.find((entry) => entry.quality === item.quality) || keyChordPattern[0];
+    const pattern = getKeyConfig().chordPattern.find((entry) => entry.quality === item.quality) || keyChordPattern[0];
 
     return {
       root: baseChord.root,
@@ -308,7 +362,7 @@ function progressionChordFromItem(item, rootValue, diatonicChords) {
   }
 
   const quality = item.quality || "Major";
-  const pattern = keyChordPattern.find((entry) => entry.quality === quality) || keyChordPattern[0];
+  const pattern = getKeyConfig().chordPattern.find((entry) => entry.quality === quality) || keyChordPattern[0];
   const chordRoot = sharpNames[normalizeValue(rootValue + item.rootOffset)];
 
   return {
@@ -589,8 +643,10 @@ function updateRootMenu() {
   document.querySelectorAll("[data-root-link]").forEach((link) => {
     const rootValue = Number(link.dataset.rootLink);
     const rootName = noteNameForValue(rootValue);
+    const rootMenu = link.closest("[data-root-menu]");
+    const page = rootMenu?.dataset.keyPage || getKeyConfig().page;
     link.textContent = rootName;
-    link.setAttribute("href", `major.html?root=${encodeURIComponent(rootName)}`);
+    link.setAttribute("href", `${page}?root=${encodeURIComponent(rootName)}`);
   });
 }
 
@@ -601,21 +657,22 @@ function updateNotationButtons() {
   });
 }
 
-function updateDynamicMajorText() {
+function updateDynamicKeyText() {
   const card = document.querySelector("[data-key-chords] .card[data-notes]");
 
   if (!card) {
     return;
   }
 
-  const heading = document.querySelector("[data-major-title]");
-  const subtitle = document.querySelector("[data-major-subtitle]");
+  const config = getKeyConfig();
+  const heading = document.querySelector("[data-key-title], [data-major-title]");
+  const subtitle = document.querySelector("[data-key-subtitle], [data-major-subtitle]");
   const scaleText = document.querySelector("[data-dynamic-scale-notes]");
   const keyChordsContainer = document.querySelector("[data-key-chords]");
   const keyChordsTitle = document.querySelector("[data-key-chords-title]");
   const commonProgressionsTitle = document.querySelector("[data-common-progressions-title]");
   const uncommonProgressionsTitle = document.querySelector("[data-uncommon-progressions-title]");
-  const chordTitle = chordName(card.dataset.root, "Major");
+  const chordTitle = chordName(card.dataset.root, config.titleQuality);
 
   document.title = `${chordTitle} - Piano Chords`;
 
@@ -624,7 +681,7 @@ function updateDynamicMajorText() {
   }
 
   if (subtitle) {
-    subtitle.textContent = "Major scale and diatonic triads";
+    subtitle.textContent = config.subtitle;
   }
 
   if (keyChordsTitle) {
@@ -650,7 +707,7 @@ function updateNotation() {
   updateNotationButtons();
   updateRootMenu();
   document.querySelectorAll(".card[data-notes]").forEach(updateChordCardText);
-  updateDynamicMajorText();
+  updateDynamicKeyText();
 }
 
 function initializeNotationToggle() {
@@ -670,16 +727,17 @@ function initializeDynamicMajorPage() {
     return;
   }
 
+  const config = getKeyConfig();
   const params = new URLSearchParams(window.location.search);
   const rootValue = getRootValue(params.get("root"));
-  const normalizedRootValue = Number.isInteger(rootValue) ? rootValue : 0;
-  const root = sharpNames[normalizedRootValue];
-  const scaleNotes = majorScaleNotes(normalizedRootValue);
-  const chords = keyChords(normalizedRootValue);
+  const fallbackRootValue = noteValues[config.fallbackRoot];
+  const normalizedRootValue = Number.isInteger(rootValue) ? rootValue : fallbackRootValue;
+  const scaleNoteNames = scaleNotes(normalizedRootValue, config);
+  const chords = keyChords(normalizedRootValue, config);
 
-  keyChordsContainer.dataset.scaleNotes = scaleNotes.join(",");
+  keyChordsContainer.dataset.scaleNotes = scaleNoteNames.join(",");
   renderKeyChords(chords);
-  renderProgressions(normalizedRootValue, chords);
+  renderProgressions(normalizedRootValue, chords, config);
 }
 
 function createChordCard(chord, options = {}) {
@@ -779,9 +837,9 @@ function renderProgressionList(container, progressions, rootValue, chords) {
   });
 }
 
-function renderProgressions(rootValue, chords) {
-  renderProgressionList(document.querySelector("[data-common-progressions]"), progressionSets.common, rootValue, chords);
-  renderProgressionList(document.querySelector("[data-uncommon-progressions]"), progressionSets.uncommon, rootValue, chords);
+function renderProgressions(rootValue, chords, config = getKeyConfig()) {
+  renderProgressionList(document.querySelector("[data-common-progressions]"), config.progressions.common, rootValue, chords);
+  renderProgressionList(document.querySelector("[data-uncommon-progressions]"), config.progressions.uncommon, rootValue, chords);
 }
 
 function updateProgressionLabels() {
