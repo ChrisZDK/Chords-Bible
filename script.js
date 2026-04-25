@@ -602,7 +602,7 @@ function updateNotationButtons() {
 }
 
 function updateDynamicMajorText() {
-  const card = document.querySelector("[data-tonic-card]");
+  const card = document.querySelector("[data-key-chords] .card[data-notes]");
 
   if (!card) {
     return;
@@ -611,7 +611,7 @@ function updateDynamicMajorText() {
   const heading = document.querySelector("[data-major-title]");
   const subtitle = document.querySelector("[data-major-subtitle]");
   const scaleText = document.querySelector("[data-dynamic-scale-notes]");
-  const tonicSectionTitle = document.querySelector("[data-tonic-section-title]");
+  const keyChordsContainer = document.querySelector("[data-key-chords]");
   const keyChordsTitle = document.querySelector("[data-key-chords-title]");
   const commonProgressionsTitle = document.querySelector("[data-common-progressions-title]");
   const uncommonProgressionsTitle = document.querySelector("[data-uncommon-progressions-title]");
@@ -627,12 +627,8 @@ function updateDynamicMajorText() {
     subtitle.textContent = "Major scale and diatonic triads";
   }
 
-  if (tonicSectionTitle) {
-    tonicSectionTitle.textContent = `${chordTitle} tonic chord`;
-  }
-
   if (keyChordsTitle) {
-    keyChordsTitle.textContent = `Other chords in ${chordTitle} key`;
+    keyChordsTitle.textContent = `Chords in ${chordTitle} key`;
   }
 
   if (commonProgressionsTitle) {
@@ -644,7 +640,7 @@ function updateDynamicMajorText() {
   }
 
   if (scaleText) {
-    scaleText.textContent = `Scale: ${displayNotes(card.dataset.scaleNotes.split(","))}`;
+    scaleText.textContent = `Scale: ${displayNotes(keyChordsContainer.dataset.scaleNotes.split(","))}`;
   }
 
   updateProgressionLabels();
@@ -668,9 +664,9 @@ function initializeNotationToggle() {
 }
 
 function initializeDynamicMajorPage() {
-  const tonicContainer = document.querySelector("[data-tonic-chord]");
+  const keyChordsContainer = document.querySelector("[data-key-chords]");
 
-  if (!tonicContainer) {
+  if (!keyChordsContainer) {
     return;
   }
 
@@ -681,8 +677,8 @@ function initializeDynamicMajorPage() {
   const scaleNotes = majorScaleNotes(normalizedRootValue);
   const chords = keyChords(normalizedRootValue);
 
-  renderTonicChord(chords[0], scaleNotes);
-  renderKeyChords(chords.slice(1));
+  keyChordsContainer.dataset.scaleNotes = scaleNotes.join(",");
+  renderKeyChords(chords);
   renderProgressions(normalizedRootValue, chords);
 }
 
@@ -730,16 +726,6 @@ function createChordCard(chord, options = {}) {
   article.append(titleRow, keyboard, notes);
 
   return article;
-}
-
-function renderTonicChord(chord, scaleNotes) {
-  const container = document.querySelector("[data-tonic-chord]");
-
-  if (!container) {
-    return;
-  }
-
-  container.replaceChildren(createChordCard(chord, { tonic: true, scaleNotes }));
 }
 
 function renderKeyChords(chords) {

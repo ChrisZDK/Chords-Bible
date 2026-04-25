@@ -243,11 +243,6 @@ h2 {
   gap: 0.85rem;
 }
 
-[data-tonic-chord] {
-  grid-template-columns: minmax(220px, 320px);
-  justify-content: center;
-}
-
 .card {
   background: var(--panel);
   border: 1px solid #fff;
@@ -317,10 +312,6 @@ h2 {
 
 .key-chords {
   margin-top: 2.5rem;
-}
-
-[data-tonic-section-title] {
-  text-align: center;
 }
 
 .progression-columns {
