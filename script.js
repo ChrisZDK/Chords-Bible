@@ -292,6 +292,7 @@ const keyModeConfigs = {
   },
 };
 const notationStorageKey = "preferredNotation";
+const pianoValleyThemeStorageKey = "pianoValleyTheme";
 
 let audioContext;
 let activePlaybackOutput;
@@ -1535,6 +1536,47 @@ function initializeHeaderMenus() {
   });
 }
 
+function initializePianoValleyTheme() {
+  const page = document.querySelector('[data-page="piano-valley"]');
+  const themeMenu = page?.querySelector("#theme-menu");
+
+  if (!page || !themeMenu) {
+    return;
+  }
+
+  const themeOptions = Array.from(themeMenu.options);
+  const availableThemes = themeOptions
+    .filter((option) => !option.disabled && option.value)
+    .map((option) => option.value);
+
+  const isAvailableTheme = (theme) => availableThemes.includes(theme);
+  let storedTheme = "";
+
+  try {
+    storedTheme = localStorage.getItem(pianoValleyThemeStorageKey) || "";
+  } catch (error) {
+    storedTheme = "";
+  }
+
+  const initialTheme = isAvailableTheme(storedTheme) ? storedTheme : "dark";
+
+  page.dataset.theme = initialTheme;
+  themeMenu.value = initialTheme;
+
+  themeMenu.addEventListener("change", () => {
+    const nextTheme = isAvailableTheme(themeMenu.value) ? themeMenu.value : "dark";
+
+    page.dataset.theme = nextTheme;
+    themeMenu.value = nextTheme;
+
+    try {
+      localStorage.setItem(pianoValleyThemeStorageKey, nextTheme);
+    } catch (error) {
+      // Theme selection still works for this session if storage is unavailable.
+    }
+  });
+}
+
 function initializeDynamicMajorPage() {
   const keyChordsContainer = document.querySelector("[data-key-chords]");
 
@@ -1857,6 +1899,7 @@ document.addEventListener("keydown", (event) => {
 
 initializePianoSampler();
 initializeHeaderMenus();
+initializePianoValleyTheme();
 initializeNotationToggle();
 initializeMajorChordPage();
 initializeMajorKeyPage();
