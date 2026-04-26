@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Major - Chords Bible</title>
+  <title>Major Chords - Chords Bible</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
     <span></span>
   </button>
 
-  <aside class="sidebar" id="chord-menu" aria-label="Chord types in learning order">
+  <aside class="sidebar" id="chord-menu" aria-label="Piano navigation">
     <nav>
       <h2>Chord Types</h2>
       <ol class="menu-list">
@@ -96,6 +96,11 @@
         <li><a href="#hybrid-chords">Hybrid</a></li>
         <li><a href="#cluster-chords">Cluster</a></li>
       </ol>
+
+      <h2>Theory</h2>
+      <ol class="menu-list">
+        <li><a href="piano-keys-progressions.html">Keys &amp; Progressions</a></li>
+      </ol>
     </nav>
   </aside>
 
@@ -107,133 +112,48 @@
 
   <header>
     <h1>Major Chords</h1>
-    <p class="subtitle">A quick reference for triads and progressions</p>
+    <p class="subtitle">A major chord is built from a root, a major third, and a perfect fifth.</p>
+    <p class="formula-line">Root + Major 3rd + Perfect 5th</p>
     <div class="notation-toggle" role="group" aria-label="Choose note naming">
       <button type="button" data-notation="sharp" aria-pressed="true">Sharp</button>
       <button type="button" data-notation="flat" aria-pressed="false">Flat</button>
     </div>
-    <nav class="root-menu root-menu-centered" aria-label="Major chord roots" data-root-menu data-key-page="piano-major-key.html">
-      <a href="piano-major-key.html?root=C" data-root-link="0">C</a>
-      <a href="piano-major-key.html?root=C%23" data-root-link="1">C#</a>
-      <a href="piano-major-key.html?root=D" data-root-link="2">D</a>
-      <a href="piano-major-key.html?root=D%23" data-root-link="3">D#</a>
-      <a href="piano-major-key.html?root=E" data-root-link="4">E</a>
-      <a href="piano-major-key.html?root=F" data-root-link="5">F</a>
-      <a href="piano-major-key.html?root=F%23" data-root-link="6">F#</a>
-      <a href="piano-major-key.html?root=G" data-root-link="7">G</a>
-      <a href="piano-major-key.html?root=G%23" data-root-link="8">G#</a>
-      <a href="piano-major-key.html?root=A" data-root-link="9">A</a>
-      <a href="piano-major-key.html?root=A%23" data-root-link="10">A#</a>
-      <a href="piano-major-key.html?root=B" data-root-link="11">B</a>
-    </nav>
   </header>
 
   <main>
-    <section aria-labelledby="major-chords">
-      <h2 id="major-chords">Chords in A Major key</h2>
-      <div class="grid">
-        <article class="card" data-notes="C,E,G" data-root="C" data-quality="Major">
-          <div class="card-title">
-            <button class="play-button" type="button" aria-label="Play C Major chord"><span class="play-icon" aria-hidden="true"></span></button>
-            <h3>C Major</h3>
-          </div>
-          <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
-          <p>Notes: C - E - G</p>
-        </article>
-        <article class="card" data-notes="G,B,D" data-root="G" data-quality="Major">
-          <div class="card-title">
-            <button class="play-button" type="button" aria-label="Play G Major chord"><span class="play-icon" aria-hidden="true"></span></button>
-            <h3>G Major</h3>
-          </div>
-          <div class="keyboard" role="img" aria-label="Piano keys for G Major chord"></div>
-          <p>Notes: G - B - D</p>
-        </article>
-        <article class="card" data-notes="D,F#,A" data-root="D" data-quality="Major">
-          <div class="card-title">
-            <button class="play-button" type="button" aria-label="Play D Major chord"><span class="play-icon" aria-hidden="true"></span></button>
-            <h3>D Major</h3>
-          </div>
-          <div class="keyboard" role="img" aria-label="Piano keys for D Major chord"></div>
-          <p>Notes: D - F# - A</p>
-        </article>
-        <article class="card" data-notes="A,C#,E" data-root="A" data-quality="Major">
-          <div class="card-title">
-            <button class="play-button" type="button" aria-label="Play A Major chord"><span class="play-icon" aria-hidden="true"></span></button>
-            <h3>A Major</h3>
-          </div>
-          <div class="keyboard" role="img" aria-label="Piano keys for A Major chord"></div>
-          <p>Notes: A - C# - E</p>
-        </article>
-        <article class="card" data-notes="F,A,C" data-root="F" data-quality="Major">
-          <div class="card-title">
-            <button class="play-button" type="button" aria-label="Play F Major chord"><span class="play-icon" aria-hidden="true"></span></button>
-            <h3>F Major</h3>
-          </div>
-          <div class="keyboard" role="img" aria-label="Piano keys for F Major chord"></div>
-          <p>Notes: F - A - C</p>
-        </article>
-        <article class="card" data-notes="Bb,D,F" data-root="Bb" data-quality="Major">
-          <div class="card-title">
-            <button class="play-button" type="button" aria-label="Play Bb Major chord"><span class="play-icon" aria-hidden="true"></span></button>
-            <h3>Bb Major</h3>
-          </div>
-          <div class="keyboard" role="img" aria-label="Piano keys for Bb Major chord"></div>
-          <p>Notes: Bb - D - F</p>
-        </article>
+    <section aria-labelledby="major-chords" data-major-chord-page>
+      <h2 id="major-chords">Choose root note</h2>
+      <p class="helper-text">Root note = starting note of the chord.</p>
+      <div class="root-menu root-menu-centered" role="group" aria-label="Choose major chord root note" data-chord-root-menu>
+        <button type="button" data-chord-root="C" aria-pressed="true">C</button>
+        <button type="button" data-chord-root="C#" aria-pressed="false">C#/Db</button>
+        <button type="button" data-chord-root="D" aria-pressed="false">D</button>
+        <button type="button" data-chord-root="D#" aria-pressed="false">D#/Eb</button>
+        <button type="button" data-chord-root="E" aria-pressed="false">E</button>
+        <button type="button" data-chord-root="F" aria-pressed="false">F</button>
+        <button type="button" data-chord-root="F#" aria-pressed="false">F#/Gb</button>
+        <button type="button" data-chord-root="G" aria-pressed="false">G</button>
+        <button type="button" data-chord-root="G#" aria-pressed="false">G#/Ab</button>
+        <button type="button" data-chord-root="A" aria-pressed="false">A</button>
+        <button type="button" data-chord-root="A#" aria-pressed="false">A#/Bb</button>
+        <button type="button" data-chord-root="B" aria-pressed="false">B</button>
       </div>
-      <div class="progressions" aria-label="Basic major chord progressions">
-        <h3>Chord Progressions</h3>
-        <ol>
-          <li data-progression="C,F,G">
-            <button class="play-button progression-play" type="button" aria-label="Play I - IV - V progression"><span class="play-icon" aria-hidden="true"></span></button>
-            <div>
-              <span>I - IV - V</span>
-              C - F - G
-            </div>
-          </li>
-          <li data-progression="C,G,Am,F">
-            <button class="play-button progression-play" type="button" aria-label="Play I - V - vi - IV progression"><span class="play-icon" aria-hidden="true"></span></button>
-            <div>
-              <span>I - V - vi - IV</span>
-              C - G - Am - F
-            </div>
-          </li>
-          <li data-progression="C,Am,F,G">
-            <button class="play-button progression-play" type="button" aria-label="Play I - vi - IV - V progression"><span class="play-icon" aria-hidden="true"></span></button>
-            <div>
-              <span>I - vi - IV - V</span>
-              C - Am - F - G
-            </div>
-          </li>
-          <li data-progression="C,F,C,G">
-            <button class="play-button progression-play" type="button" aria-label="Play I - IV - I - V progression"><span class="play-icon" aria-hidden="true"></span></button>
-            <div>
-              <span>I - IV - I - V</span>
-              C - F - C - G
-            </div>
-          </li>
-          <li data-progression="C,G,F,C">
-            <button class="play-button progression-play" type="button" aria-label="Play I - V - IV - I progression"><span class="play-icon" aria-hidden="true"></span></button>
-            <div>
-              <span>I - V - IV - I</span>
-              C - G - F - C
-            </div>
-          </li>
-          <li data-progression="C,Dm,G,C">
-            <button class="play-button progression-play" type="button" aria-label="Play I - ii - V - I progression"><span class="play-icon" aria-hidden="true"></span></button>
-            <div>
-              <span>I - ii - V - I</span>
-              C - Dm - G - C
-            </div>
-          </li>
-        </ol>
-      </div>
+
+      <article class="card dynamic-card" data-major-chord-card data-notes="C,E,G" data-root="C" data-quality="Major">
+        <div class="card-title">
+          <button class="play-button" type="button" aria-label="Play C Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+          <h3>C Major</h3>
+        </div>
+        <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
+        <p>Notes: C - E - G</p>
+      </article>
     </section>
+
     <section class="tips" aria-labelledby="tips-title">
       <h2 id="tips-title">Quick Tips</h2>
       <ul>
-        <li>Major chord formula: Root + Major 3rd + Perfect 5th</li>
-        <li>Minor chord formula: Root + Minor 3rd + Perfect 5th</li>
+        <li>A major chord answers: which major triad is built on this root note?</li>
+        <li>Keys and progressions live on the dedicated Theory page.</li>
         <li>Practice each chord with both left and right hands.</li>
       </ul>
     </section>
@@ -242,6 +162,6 @@
   <footer>
     <p>Made for beginner piano practice.</p>
   </footer>
-  <script src="../script.js?v=8"></script>
+  <script src="../script.js?v=9"></script>
 </body>
 </html>

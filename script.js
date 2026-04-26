@@ -1,11 +1,15 @@
 const noteValues = {
+  Cb: 11,
   C: 0,
+  "B#": 0,
   "C#": 1,
   Db: 1,
   D: 2,
   "D#": 3,
   Eb: 3,
   E: 4,
+  Fb: 4,
+  "E#": 5,
   F: 5,
   "F#": 6,
   Gb: 6,
@@ -20,6 +24,58 @@ const noteValues = {
 
 const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+const rootSelectorNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const enharmonicRootLabels = {
+  "C#": "C#/Db",
+  "D#": "D#/Eb",
+  "F#": "F#/Gb",
+  "G#": "G#/Ab",
+  "A#": "A#/Bb",
+};
+const majorChordsByRoot = Object.fromEntries(
+  rootSelectorNotes.map((root) => {
+    const rootValue = noteValues[root];
+
+    return [
+      root,
+      {
+        root,
+        quality: "Major",
+        notes: [rootValue, rootValue + 4, rootValue + 7].map((value) => sharpNames[normalizeValue(value)]),
+      },
+    ];
+  })
+);
+const majorKeys = {
+  C: ["C", "D", "E", "F", "G", "A", "B"],
+  G: ["G", "A", "B", "C", "D", "E", "F#"],
+  D: ["D", "E", "F#", "G", "A", "B", "C#"],
+  A: ["A", "B", "C#", "D", "E", "F#", "G#"],
+  E: ["E", "F#", "G#", "A", "B", "C#", "D#"],
+  B: ["B", "C#", "D#", "E", "F#", "G#", "A#"],
+  "F#": ["F#", "G#", "A#", "B", "C#", "D#", "E#"],
+  Db: ["Db", "Eb", "F", "Gb", "Ab", "Bb", "C"],
+  Ab: ["Ab", "Bb", "C", "Db", "Eb", "F", "G"],
+  Eb: ["Eb", "F", "G", "Ab", "Bb", "C", "D"],
+  Bb: ["Bb", "C", "D", "Eb", "F", "G", "A"],
+  F: ["F", "G", "A", "Bb", "C", "D", "E"],
+};
+const majorKeyOrder = Object.keys(majorKeys);
+const majorDiatonicPattern = [
+  { roman: "I", quality: "Major", suffix: "" },
+  { roman: "ii", quality: "Minor", suffix: "m" },
+  { roman: "iii", quality: "Minor", suffix: "m" },
+  { roman: "IV", quality: "Major", suffix: "" },
+  { roman: "V", quality: "Major", suffix: "" },
+  { roman: "vi", quality: "Minor", suffix: "m" },
+  { roman: "vii\u00b0", quality: "Diminished", suffix: "dim" },
+];
+const commonProgressions = [
+  { roman: "I - IV - V", degrees: [0, 3, 4] },
+  { roman: "I - V - vi - IV", degrees: [0, 4, 5, 3] },
+  { roman: "ii - V - I", degrees: [1, 4, 0] },
+  { roman: "vi - IV - I - V", degrees: [5, 3, 0, 4] },
+];
 const whiteKeys = ["C", "D", "E", "F", "G", "A", "B"];
 const blackKeys = [
   { note: "C#", x: 28 },
@@ -233,7 +289,7 @@ function schedulePlayback(callback, delaySeconds) {
 }
 
 function normalizeNote(note) {
-  return sharpNames[noteValues[note.trim()]];
+  return sharpNames[normalizeValue(noteValues[note.trim()])];
 }
 
 function getStoredNotation() {
@@ -276,6 +332,34 @@ function getRootValue(root) {
 
 function chordName(root, quality) {
   return `${displayNoteName(root)} ${quality}`;
+}
+
+function rootSelectorLabel(root) {
+  return enharmonicRootLabels[root] || root;
+}
+
+function selectedChordRootName(root) {
+  return noteNameForValue(noteValues[root]);
+}
+
+function getMajorChordForRoot(root) {
+  const normalizedRoot = sharpNames[normalizeValue(noteValues[root] ?? 0)];
+  const chord = majorChordsByRoot[normalizedRoot] || majorChordsByRoot.C;
+  const displayRoot = selectedChordRootName(chord.root);
+
+  return {
+    root: displayRoot,
+    quality: chord.quality,
+    notes: chord.notes,
+  };
+}
+
+function keySymbol(root, quality) {
+  return `${root}${qualitySuffix(quality)}`;
+}
+
+function displayKeyChordName(chord) {
+  return `${chord.roman}: ${chord.root}${chord.suffix}`;
 }
 
 function getKeyMode() {
@@ -416,8 +500,13 @@ function chordNoteNames(notes) {
   });
 }
 
-function createKeyboard(notes) {
+function createKeyboard(notes, preserveLabels = false) {
   const activeNotes = new Set(notes.map(normalizeNote));
+  const activeLabels = new Map(
+    preserveLabels
+      ? notes.map((note) => [normalizeValue(noteValues[note]), note])
+      : []
+  );
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("class", "piano-svg");
   svg.setAttribute("viewBox", "0 0 294 132");
@@ -437,7 +526,7 @@ function createKeyboard(notes) {
     label.setAttribute("class", "key-label");
     label.setAttribute("x", x + 21);
     label.setAttribute("y", 118);
-    label.textContent = note;
+    label.textContent = activeLabels.get(noteValues[note]) || note;
     svg.appendChild(label);
   });
 
@@ -455,7 +544,7 @@ function createKeyboard(notes) {
     text.setAttribute("class", "black-label");
     text.setAttribute("x", x + 14);
     text.setAttribute("y", 72);
-    text.textContent = displayNoteName(note);
+    text.textContent = activeLabels.get(noteValues[note]) || displayNoteName(note);
     svg.appendChild(text);
   });
 
@@ -548,7 +637,7 @@ function chordNotesFromSymbol(symbol) {
 
 function frequenciesFromChordSymbol(symbol) {
   return chordNoteNamesFromSymbol(symbol).map((noteName) => {
-    const [, note, octave] = noteName.match(/^([A-G]#?)(\d)$/);
+    const [, note, octave] = noteName.match(/^([A-G](?:#|b)?)(\d)$/);
     const midiNumber = 12 * (Number(octave) + 1) + noteValues[note];
 
     return 440 * 2 ** ((midiNumber - 69) / 12);
@@ -596,6 +685,9 @@ function ensureProgressionAnimation(item, chordSymbols) {
   }
 
   animation.dataset.symbols = chordSymbols.join(",");
+  if (item.dataset.displayProgression) {
+    animation.dataset.displaySymbols = item.dataset.displayProgression;
+  }
   updateProgressionAnimation(animation);
 
   return animation;
@@ -626,9 +718,10 @@ function setProgressionAnimationChord(animation, index) {
   const label = step.querySelector("span");
   const keyboard = step.querySelector("div");
   const notes = chordNotesFromSymbol(symbol);
+  const displaySymbols = animation.dataset.displaySymbols?.split(",").filter(Boolean) || [];
 
   animation.dataset.activeIndex = String(index);
-  label.textContent = displayChordSymbol(symbol);
+  label.textContent = displaySymbols[index] || displayChordSymbol(symbol);
   keyboard.className = "progression-keyboard";
   keyboard.setAttribute("aria-hidden", "true");
   keyboard.replaceChildren(createKeyboard(notes));
@@ -701,14 +794,21 @@ function updateChordCardText(card) {
   const noteText = card.querySelector("[data-dynamic-chord-notes]") || card.querySelector("p");
   const keyboard = card.querySelector(".keyboard");
   const button = card.querySelector(".play-button");
-  const displayedChordName = card.dataset.root && card.dataset.quality ? chordTitleForCard(card) : displayNotes(notes);
+  const displayedChordName = card.hasAttribute("data-preserve-spelling")
+    ? card.dataset.displayTitle
+    : card.dataset.root && card.dataset.quality
+      ? chordTitleForCard(card)
+      : displayNotes(notes);
+  const displayedNotes = card.hasAttribute("data-preserve-spelling")
+    ? card.dataset.displayNotes
+    : displayNotes(notes);
 
   if (title && card.dataset.root && card.dataset.quality) {
     title.textContent = displayedChordName;
   }
 
   if (noteText) {
-    noteText.textContent = `${card.hasAttribute("data-dynamic-major-card") ? "Chord" : "Notes"}: ${displayNotes(notes)}`;
+    noteText.textContent = `${card.hasAttribute("data-dynamic-major-card") ? "Chord" : "Notes"}: ${displayedNotes}`;
   }
 
   if (button && card.dataset.root && card.dataset.quality) {
@@ -717,7 +817,7 @@ function updateChordCardText(card) {
 
   if (keyboard) {
     keyboard.setAttribute("aria-label", `Piano keys for ${displayedChordName}`);
-    keyboard.replaceChildren(createKeyboard(notes));
+    keyboard.replaceChildren(createKeyboard(notes, card.hasAttribute("data-preserve-spelling")));
   }
 }
 
@@ -731,7 +831,7 @@ function initializeChordCard(card) {
   }
 
   if (button && !card.dataset.playReady) {
-    button.addEventListener("click", () => playChord(notes));
+    button.addEventListener("click", () => playChord(card.dataset.notes.split(",")));
     card.dataset.playReady = "true";
   }
 
@@ -753,6 +853,63 @@ function initializeProgressions() {
       item.dataset.playReady = "true";
     }
   });
+}
+
+function updateChordRootButtons() {
+  document.querySelectorAll("[data-chord-root]").forEach((button) => {
+    const root = button.dataset.chordRoot;
+    const displayRoot = selectedChordRootName(root);
+    const label = rootSelectorLabel(root);
+
+    button.textContent = label;
+    button.setAttribute("aria-label", `Choose ${displayRoot} major chord root`);
+  });
+}
+
+function setMajorChordRoot(root) {
+  const card = document.querySelector("[data-major-chord-card]");
+
+  if (!card) {
+    return;
+  }
+
+  const chord = getMajorChordForRoot(root);
+  card.dataset.root = chord.root;
+  card.dataset.quality = chord.quality;
+  card.dataset.notes = chord.notes.join(",");
+  document.title = `${chord.root} Major - Chords Bible`;
+
+  document.querySelectorAll("[data-chord-root]").forEach((button) => {
+    const isActive = normalizeValue(noteValues[button.dataset.chordRoot]) === normalizeValue(noteValues[root]);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  updateChordCardText(card);
+}
+
+function initializeMajorChordPage() {
+  const page = document.querySelector("[data-major-chord-page]");
+
+  if (!page) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const root = params.get("root") || "C";
+  const initialRoot = Number.isInteger(getRootValue(root)) ? root : "C";
+
+  page.querySelectorAll("[data-chord-root]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextRoot = button.dataset.chordRoot;
+      const url = new URL(window.location.href);
+      url.searchParams.set("root", selectedChordRootName(nextRoot));
+      window.history.replaceState({}, "", url);
+      setMajorChordRoot(nextRoot);
+    });
+  });
+
+  updateChordRootButtons();
+  setMajorChordRoot(initialRoot);
 }
 
 function updateRootMenu() {
@@ -822,6 +979,7 @@ function updateDynamicKeyText() {
 function updateNotation() {
   updateNotationButtons();
   updateRootMenu();
+  updateChordRootButtons();
   document.querySelectorAll(".card[data-notes]").forEach(updateChordCardText);
   updateDynamicKeyText();
   updateProgressionLabels();
@@ -856,6 +1014,157 @@ function initializeDynamicMajorPage() {
   keyChordsContainer.dataset.scaleNotes = scaleNoteNames.join(",");
   renderKeyChords(chords);
   renderProgressions(normalizedRootValue, chords, config);
+}
+
+function canonicalMajorKey(key) {
+  const trimmedKey = key?.trim() || "C";
+
+  if (majorKeys[trimmedKey]) {
+    return trimmedKey;
+  }
+
+  const value = noteValues[trimmedKey];
+
+  return majorKeyOrder.find((keyName) => noteValues[keyName] === value) || "C";
+}
+
+function majorKeyDiatonicChords(keyName) {
+  const scale = majorKeys[keyName];
+
+  return majorDiatonicPattern.map((pattern, index) => {
+    const notes = [scale[index], scale[(index + 2) % 7], scale[(index + 4) % 7]];
+
+    return {
+      ...pattern,
+      root: scale[index],
+      notes,
+      symbol: keySymbol(scale[index], pattern.quality),
+    };
+  });
+}
+
+function renderMajorKeyMenu(activeKey) {
+  const menu = document.querySelector("[data-major-key-menu]");
+
+  if (!menu) {
+    return;
+  }
+
+  menu.replaceChildren();
+
+  majorKeyOrder.forEach((keyName) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.majorKey = keyName;
+    button.textContent = keyName;
+    button.setAttribute("aria-label", `Choose ${keyName} major key`);
+    button.setAttribute("aria-pressed", String(keyName === activeKey));
+    button.addEventListener("click", () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("key", keyName);
+      window.history.replaceState({}, "", url);
+      renderMajorKeyPage(keyName);
+    });
+    menu.appendChild(button);
+  });
+}
+
+function renderMajorKeyChords(chords) {
+  const container = document.querySelector("[data-major-key-chords]");
+
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren();
+
+  chords.forEach((chord) => {
+    const article = createChordCard({
+      root: chord.root,
+      quality: chord.quality,
+      roman: chord.roman,
+      notes: chord.notes,
+    });
+
+    article.dataset.preserveSpelling = "";
+    article.dataset.displayTitle = displayKeyChordName(chord);
+    article.dataset.displayNotes = chord.notes.join(" - ");
+    container.appendChild(article);
+  });
+}
+
+function renderMajorKeyProgressions(chords) {
+  const container = document.querySelector("[data-major-key-progressions]");
+
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren();
+
+  commonProgressions.forEach((progression) => {
+    const progressionChordsForKey = progression.degrees.map((degree) => chords[degree]);
+    const chordLabels = progressionChordsForKey.map((chord) => `${chord.root}${chord.suffix}`);
+    const item = document.createElement("li");
+    item.dataset.progression = progressionChordsForKey.map((chord) => chord.symbol).join(",");
+    item.dataset.displayProgression = chordLabels.join(",");
+
+    const button = document.createElement("button");
+    button.className = "play-button progression-play";
+    button.type = "button";
+    button.setAttribute("aria-label", `Play ${progression.roman} progression`);
+
+    const icon = document.createElement("span");
+    icon.className = "play-icon";
+    icon.setAttribute("aria-hidden", "true");
+    button.appendChild(icon);
+
+    const content = document.createElement("div");
+    const roman = document.createElement("span");
+    roman.textContent = progression.roman;
+
+    const chordLine = document.createElement("div");
+    chordLine.className = "progression-chords";
+    chordLine.textContent = chordLabels.join(" - ");
+
+    content.append(roman, chordLine);
+    item.append(button, content);
+    container.appendChild(item);
+  });
+
+  initializeProgressions();
+}
+
+function renderMajorKeyPage(keyName) {
+  const selectedKey = canonicalMajorKey(keyName);
+  const scale = majorKeys[selectedKey];
+  const chords = majorKeyDiatonicChords(selectedKey);
+  const title = document.querySelector("[data-selected-key-title]");
+  const scaleLine = document.querySelector("[data-major-key-scale]");
+
+  document.title = `${selectedKey} Major - Keys & Progressions`;
+
+  if (title) {
+    title.textContent = `${selectedKey} Major`;
+  }
+
+  if (scaleLine) {
+    scaleLine.textContent = `Scale: ${scale.join(" - ")}`;
+  }
+
+  renderMajorKeyMenu(selectedKey);
+  renderMajorKeyChords(chords);
+  renderMajorKeyProgressions(chords);
+  initializeChordCards();
+}
+
+function initializeMajorKeyPage() {
+  if (!document.querySelector("[data-major-key-page]")) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  renderMajorKeyPage(params.get("key") || params.get("root") || "C");
 }
 
 function createChordCard(chord, options = {}) {
@@ -1006,6 +1315,8 @@ document.addEventListener("keydown", (event) => {
 
 initializePianoSampler();
 initializeNotationToggle();
+initializeMajorChordPage();
+initializeMajorKeyPage();
 initializeDynamicMajorPage();
 initializeChordCards();
 initializeProgressions();
