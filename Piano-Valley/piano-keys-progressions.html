@@ -6,82 +6,148 @@
   <title>Keys &amp; Progressions - Chords Bible</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
-<body>
-  <button class="menu-toggle" type="button" aria-label="Open piano navigation" aria-expanded="false" aria-controls="chord-menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
+<body class="piano-app-page" data-page="piano-valley" data-theme="dark">
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="site-brand-lockup">
+        <span class="site-logo" aria-hidden="true">
+          <span></span>
+        </span>
+        <a class="site-brand" href="../index.html">Chords Bible</a>
+        <span class="site-section" aria-label="Current section">Piano Valley</span>
+      </div>
+      <div class="site-actions" aria-label="Piano tools">
+        <label class="visually-hidden" for="piano-area-menu">Piano area</label>
+        <select id="piano-area-menu" class="header-control header-select" data-header-nav aria-label="Choose Piano area">
+          <option value="index.html">Chords</option>
+          <option value="" selected>Progressions</option>
+          <option value="" disabled>Songs</option>
+          <option value="" disabled>Tools</option>
+        </select>
+        <label class="visually-hidden" for="theme-menu">Theme</label>
+        <select id="theme-menu" class="header-control header-select" aria-label="Choose theme">
+          <option value="dark" selected>Dark Theme</option>
+          <option value="holy" disabled>Holy Theme</option>
+          <option value="diabolical" disabled>Diabolical</option>
+          <option value="kawaii" disabled>Kawaii</option>
+        </select>
+        <button class="header-icon-button" type="button" aria-label="Add current key to favorites">&#9734;</button>
+      </div>
+    </header>
 
-  <aside class="sidebar" id="chord-menu" aria-label="Piano navigation">
-    <nav>
-      <h2>Chord Types</h2>
-      <ol class="menu-list">
-        <li><a href="index.html?type=Major#major-chords">Major</a></li>
-        <li><a href="index.html?type=Minor#major-chords">Minor</a></li>
-        <li><a href="index.html?type=Power#major-chords">Power</a></li>
-        <li>
-          <a href="index.html?type=Sus2#major-chords">Suspended</a>
-          <ol>
-            <li><a href="index.html?type=Sus2#major-chords">Sus2</a></li>
-            <li><a href="index.html?type=Sus4#major-chords">Sus4</a></li>
-          </ol>
-        </li>
-        <li><a href="index.html?type=Augmented#major-chords">Augmented</a></li>
-        <li><a href="index.html?type=Diminished#major-chords">Diminished</a></li>
-        <li><a href="index.html?type=maj7#major-chords">Major 7th</a></li>
-        <li><a href="index.html?type=m7#major-chords">Minor 7th</a></li>
-        <li><a href="index.html?type=7#major-chords">Dominant 7th</a></li>
-      </ol>
+    <main class="key-progressions-page" data-major-key-page>
+      <section class="hero-section key-hero-section" aria-labelledby="keys-progressions-title">
+        <h1 id="keys-progressions-title" class="visually-hidden">Keys and Progressions</h1>
+        <div class="hero-image-frame">
+          <img
+            class="hero-banner-image"
+            src="../assets/piano-valley/themes/dark/piano-dark-banner.png"
+            sizes="(max-width: 700px) 100vw, 1400px"
+            alt="Pixel-art Piano Valley scene with floating islands, robots, and a piano path."
+            width="2160"
+            height="720"
+            fetchpriority="high"
+          >
+          <img
+            class="hero-logo-overlay"
+            src="../assets/piano-valley/themes/dark/piano-dark-logo.png"
+            alt=""
+            width="1859"
+            height="550"
+            decoding="async"
+          >
+        </div>
+      </section>
 
-      <h2>Theory</h2>
-      <ol class="menu-list">
-        <li><a href="piano-keys-progressions.html" aria-current="page">Keys &amp; Progressions</a></li>
-      </ol>
-    </nav>
-  </aside>
+      <section class="selector-panel key-selector-panel" aria-labelledby="key-selector-title">
+        <h2 id="key-selector-title">Choose key</h2>
+        <p class="helper-text">Key = full musical context including scale, diatonic chords, and progressions.</p>
+        <div class="root-menu root-menu-centered" role="group" aria-label="Choose major key" data-major-key-menu></div>
+      </section>
 
-  <div class="menu-backdrop" hidden></div>
+      <section class="card key-summary-card key-summary" aria-labelledby="selected-key-title">
+        <img
+          class="key-summary-icon"
+          src="../assets/piano-valley/themes/dark/crystal-icon.png"
+          alt=""
+          width="166"
+          height="190"
+          loading="lazy"
+          decoding="async"
+        >
+        <div>
+          <p class="section-kicker">Selected key</p>
+          <h2 id="selected-key-title" data-selected-key-title>C Major</h2>
+          <p class="scale-line" data-major-key-scale>Scale: C - D - E - F - G - A - B</p>
+        </div>
+        <img
+          class="key-summary-sprite"
+          src="../assets/piano-valley/themes/dark/robot-floating.png"
+          alt=""
+          width="187"
+          height="250"
+          loading="lazy"
+          decoding="async"
+        >
+      </section>
 
-  <div class="site-header">
-    <a href="../index.html">Chords Bible</a>
+      <section class="key-chords" aria-labelledby="diatonic-chords-title">
+        <div class="section-heading-row section-heading-row-with-asset">
+          <img
+            class="section-heading-icon"
+            src="../assets/piano-valley/themes/dark/robot-keyboard.png"
+            alt=""
+            width="306"
+            height="340"
+            loading="lazy"
+            decoding="async"
+          >
+          <div>
+            <p class="section-kicker">Scale harmony</p>
+            <h2 id="diatonic-chords-title">Diatonic chords</h2>
+          </div>
+        </div>
+        <div class="grid key-chord-grid" data-major-key-chords></div>
+      </section>
+
+      <section class="progressions progressions-panel" aria-labelledby="common-progressions-title">
+        <img
+          class="progressions-panel-sprite"
+          src="../assets/piano-valley/themes/dark/robot-synth.png"
+          alt=""
+          width="334"
+          height="340"
+          loading="lazy"
+          decoding="async"
+        >
+        <div class="section-heading-row section-heading-row-with-asset">
+          <img
+            class="section-heading-icon"
+            src="../assets/piano-valley/themes/dark/crystal-icon.png"
+            alt=""
+            width="166"
+            height="190"
+            loading="lazy"
+            decoding="async"
+          >
+          <div>
+            <p class="section-kicker">Practice paths</p>
+            <h2 id="common-progressions-title">Common progressions</h2>
+          </div>
+        </div>
+        <ol data-major-key-progressions></ol>
+      </section>
+    </main>
+
+    <footer>
+      <p>Made for beginner piano practice.</p>
+    </footer>
   </div>
 
-  <header>
-    <h1>Keys &amp; Progressions</h1>
-    <p class="subtitle">Choose a key to see its major scale, diatonic chords, and common chord progressions.</p>
-  </header>
-
-  <main data-major-key-page>
-    <section aria-labelledby="key-selector-title">
-      <h2 id="key-selector-title">Choose key</h2>
-      <p class="helper-text">Key = full musical context including scale, diatonic chords, and progressions.</p>
-      <div class="root-menu root-menu-centered" role="group" aria-label="Choose major key" data-major-key-menu></div>
-    </section>
-
-    <section class="key-summary" aria-labelledby="selected-key-title">
-      <h2 id="selected-key-title" data-selected-key-title>C Major</h2>
-      <p class="scale-line" data-major-key-scale>Scale: C - D - E - F - G - A - B</p>
-    </section>
-
-    <section class="key-chords" aria-labelledby="diatonic-chords-title">
-      <h2 id="diatonic-chords-title">Diatonic chords</h2>
-      <div class="grid" data-major-key-chords></div>
-    </section>
-
-    <section class="progressions" aria-labelledby="common-progressions-title">
-      <h2 id="common-progressions-title">Common progressions</h2>
-      <ol data-major-key-progressions></ol>
-    </section>
-  </main>
-
-  <footer>
-    <p>Made for beginner piano practice.</p>
-  </footer>
-  <script src="../script.js?v=11"></script>
+  <script src="../script.js?v=12"></script>
 </body>
 </html>
