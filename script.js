@@ -1853,6 +1853,43 @@ function initializeHeaderMenus() {
   });
 }
 
+function initializeInstrumentSwitchers() {
+  document.querySelectorAll("[data-instrument-switcher]").forEach((switcher) => {
+    const toggle = switcher.querySelector("[data-instrument-toggle]");
+    const menu = switcher.querySelector("[data-instrument-menu]");
+
+    if (!toggle || !menu) {
+      return;
+    }
+
+    const setOpen = (isOpen) => {
+      toggle.setAttribute("aria-expanded", String(isOpen));
+      menu.hidden = !isOpen;
+    };
+
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setOpen(menu.hidden);
+    });
+
+    menu.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!switcher.contains(event.target)) {
+        setOpen(false);
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    });
+  });
+}
+
 function initializePianoValleyTheme() {
   const page = document.querySelector('[data-page="piano-valley"]');
   const themeMenu = page?.querySelector("#theme-menu");
@@ -2216,6 +2253,7 @@ document.addEventListener("keydown", (event) => {
 
 initializePianoSampler();
 initializeHeaderMenus();
+initializeInstrumentSwitchers();
 initializePianoValleyTheme();
 initializeNotationToggle();
 initializeMajorChordPage();

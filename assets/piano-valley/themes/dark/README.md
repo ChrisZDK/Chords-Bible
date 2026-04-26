@@ -1,4 +1,4 @@
-# Piano Valley Dark Theme Assets
+# Piano Dark Theme Assets
 
 Recommended destination in the repo:
 

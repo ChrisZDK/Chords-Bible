@@ -3,30 +3,222 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chords Bible</title>
+  <title>Piano - Chords Bible</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
-<body class="home-page">
-  <main class="home-main" aria-labelledby="home-title">
-    <h1 id="home-title">Chords Bible</h1>
-    <nav class="instrument-menu" aria-label="Choose an instrument world">
-      <a href="Piano-Valley/" data-piano-valley-link>Piano Valley</a>
-      <a href="#" aria-disabled="true">Ukulele Bay</a>
-      <a href="#" aria-disabled="true">Guitar Cliff</a>
-    </nav>
-  </main>
-  <script>
-    document.querySelector("[data-piano-valley-link]")?.addEventListener("click", (event) => {
-      if (window.location.protocol !== "file:") {
-        return;
-      }
+<body class="piano-app-page" data-page="piano-valley" data-theme="dark">
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="site-brand-lockup">
+        <span class="site-logo" aria-hidden="true">
+          <span></span>
+        </span>
+        <a class="site-brand" href="index.html">Chords Bible</a>
+        <span class="site-section" aria-label="Current section">Piano</span>
+      </div>
+      <div class="site-actions" aria-label="Piano tools">
+        <label class="visually-hidden" for="piano-area-menu">Piano area</label>
+        <select id="piano-area-menu" class="header-control header-select" data-header-nav aria-label="Choose Piano area">
+          <option value="" selected>Chords</option>
+          <option value="piano-keys-progressions.html">Progressions</option>
+          <option value="" disabled>Songs</option>
+          <option value="" disabled>Tools</option>
+        </select>
+        <label class="visually-hidden" for="theme-menu">Theme</label>
+        <select id="theme-menu" class="header-control header-select" aria-label="Choose theme">
+          <option value="dark" selected>Dark Theme</option>
+          <option value="holy" disabled>Holy Theme</option>
+          <option value="diabolical" disabled>Diabolical</option>
+          <option value="kawaii" disabled>Kawaii</option>
+        </select>
+        <button class="header-icon-button" type="button" aria-label="Add current chord to favorites">&#9734;</button>
+      </div>
+    </header>
 
-      event.preventDefault();
-      window.location.href = "Piano-Valley/index.html";
-    });
-  </script>
+    <main>
+      <section class="hero-section" aria-labelledby="piano-title">
+        <h1 id="piano-title" class="visually-hidden">Piano</h1>
+        <div class="hero-image-frame">
+          <img
+            class="hero-banner-image"
+            src="assets/piano-valley/themes/dark/piano-dark-banner.png"
+            sizes="(max-width: 700px) 100vw, 1400px"
+            alt="Pixel-art Piano scene with floating islands, robots, and a piano path."
+            width="2160"
+            height="720"
+            fetchpriority="high"
+          >
+          <span class="hero-logo-overlay" aria-hidden="true">Piano</span>
+        </div>
+      </section>
+
+      <section class="instrument-switcher-panel" aria-label="Instrument switcher">
+        <div class="instrument-switcher" data-instrument-switcher>
+          <button
+            id="instrument-switcher-button"
+            class="instrument-switcher-button"
+            type="button"
+            aria-expanded="false"
+            aria-controls="instrument-switcher-menu"
+            data-instrument-toggle
+          >
+            Change Instrument
+          </button>
+          <div
+            id="instrument-switcher-menu"
+            class="instrument-menu-popover"
+            role="menu"
+            aria-label="Choose instrument"
+            hidden
+            data-instrument-menu
+          >
+            <a href="index.html" role="menuitem" aria-current="page">Piano</a>
+            <button type="button" role="menuitem" disabled>Ukulele</button>
+            <button type="button" role="menuitem" disabled>Guitar</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="major-chords" class="chord-workspace" aria-labelledby="chord-controls-title" data-major-chord-page data-chord-quality="Major" data-fallback-root="C">
+        <div class="selector-panel">
+          <h2 id="chord-controls-title">Build a chord</h2>
+
+          <div class="selector-group root-selector">
+            <p class="selector-label">Root note</p>
+            <div class="root-menu root-menu-centered" role="group" aria-label="Choose chord root note" data-chord-root-menu>
+              <button class="is-active" type="button" data-chord-root="C" aria-pressed="true">C</button>
+              <button type="button" data-chord-root="C#" aria-pressed="false">C#/Db</button>
+              <button type="button" data-chord-root="D" aria-pressed="false">D</button>
+              <button type="button" data-chord-root="D#" aria-pressed="false">D#/Eb</button>
+              <button type="button" data-chord-root="E" aria-pressed="false">E</button>
+              <button type="button" data-chord-root="F" aria-pressed="false">F</button>
+              <button type="button" data-chord-root="F#" aria-pressed="false">F#/Gb</button>
+              <button type="button" data-chord-root="G" aria-pressed="false">G</button>
+              <button type="button" data-chord-root="G#" aria-pressed="false">G#/Ab</button>
+              <button type="button" data-chord-root="A" aria-pressed="false">A</button>
+              <button type="button" data-chord-root="A#" aria-pressed="false">A#/Bb</button>
+              <button type="button" data-chord-root="B" aria-pressed="false">B</button>
+            </div>
+          </div>
+
+          <div class="selector-group chord-type-selector">
+            <p class="selector-label">Chord type</p>
+            <nav class="category-tabs" aria-label="Chord type categories">
+              <button class="is-active" type="button" data-chord-category="basics" aria-pressed="true">Basics</button>
+              <button type="button" data-chord-category="seventh" aria-pressed="false">7th</button>
+              <button type="button" data-chord-category="extensions" aria-pressed="false">Extensions</button>
+              <button type="button" data-chord-category="altered" aria-pressed="false">Altered</button>
+              <button type="button" data-chord-category="other" aria-pressed="false">Other</button>
+            </nav>
+            <div class="type-menu" role="group" aria-label="Choose chord type" data-chord-quality-menu></div>
+          </div>
+
+          <div class="notation-toggle" role="group" aria-label="Choose note naming">
+            <button type="button" data-notation="sharp" aria-pressed="true">Sharp</button>
+            <button type="button" data-notation="flat" aria-pressed="false">Flat</button>
+          </div>
+        </div>
+
+        <section class="chord-display" data-major-chord-card data-notes="C,E,G" data-root="C" data-quality="Major">
+          <div class="chord-layout">
+            <article class="card chord-summary-card">
+              <span class="chord-emblem" aria-hidden="true">
+                <span class="chord-symbol" data-dynamic-chord-symbol>C</span>
+              </span>
+              <div class="chord-heading-row">
+                <h2 data-dynamic-chord-title>C Major</h2>
+                <span class="chord-badge" data-dynamic-chord-badge>Major</span>
+                <button class="favorite-button" type="button" aria-label="Save current chord">&#9734;</button>
+              </div>
+              <p data-dynamic-chord-description>A major triad built from a root, a major third, and a perfect fifth.</p>
+              <div class="card-actions">
+                <button type="button">Instrument</button>
+                <button type="button">Inversions</button>
+              </div>
+            </article>
+
+            <article class="card piano-card">
+              <div class="piano-card-header">
+                <button class="play-button" type="button" aria-label="Play C Major chord">
+                  <img
+                    src="assets/piano-valley/themes/dark/play-button.png"
+                    alt=""
+                    width="340"
+                    height="340"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                  <span class="play-icon" aria-hidden="true"></span>
+                </button>
+                <div>
+                  <p class="stat-label">Formula</p>
+                  <p class="formula-line" data-dynamic-chord-formula>1 &bull; 3 &bull; 5</p>
+                </div>
+              </div>
+              <div class="note-line">
+                <span class="stat-label">Notes</span>
+                <p data-dynamic-chord-notes data-dynamic-chord-notes-inline>Notes: C - E - G</p>
+              </div>
+              <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
+              <p class="keyboard-legend">Chord notes</p>
+            </article>
+          </div>
+
+          <div class="chord-details-layout">
+            <article class="card chord-info-card">
+              <div class="future-illustration-slot" aria-hidden="true">
+                <img
+                  src="assets/piano-valley/themes/dark/wizard-creature.png"
+                  alt=""
+                  width="307"
+                  height="360"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </div>
+              <div>
+                <h2 data-dynamic-chord-about-title>About C Major</h2>
+                <p data-dynamic-chord-about>C Major uses C, E, G. A major triad built from a root, a major third, and a perfect fifth.</p>
+              </div>
+            </article>
+
+            <article class="card related-chords-card">
+              <div class="related-card-title">
+                <img
+                  src="assets/piano-valley/themes/dark/crystal-icon.png"
+                  alt=""
+                  width="166"
+                  height="190"
+                  loading="lazy"
+                  decoding="async"
+                >
+                <h2>Related Chords</h2>
+              </div>
+              <ol class="related-chords-list" data-related-chords>
+                <li>
+                  <div>
+                    <span>Cmaj7 Major 7th</span>
+                    <span>1 &bull; 3 &bull; 5 &bull; 7</span>
+                  </div>
+                  <button type="button" aria-label="Open Cmaj7 Major 7th"></button>
+                </li>
+              </ol>
+              <button class="related-toggle" type="button" data-related-toggle aria-expanded="false">Show more</button>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <p>Made for beginner piano practice.</p>
+    </footer>
+  </div>
+
+  <script src="script.js?v=13"></script>
 </body>
 </html>

@@ -3,25 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="0; url=../Piano-Valley/index.html" />
-  <title>Piano Valley moved - Chords Bible</title>
+  <meta http-equiv="refresh" content="0; url=../index.html" />
+  <title>Piano moved - Chords Bible</title>
 </head>
 <body>
   <script>
-    const target = new URL("../Piano-Valley/index.html", window.location.href);
-    const params = new URLSearchParams(window.location.search);
-
-    ["root", "type"].forEach((name) => {
-      const value = params.get(name);
-
-      if (value) {
-        target.searchParams.set(name, value);
-      }
-    });
-
+    const target = new URL("../index.html", window.location.href);
+    target.search = window.location.search;
     target.hash = window.location.hash;
     window.location.replace(target);
   </script>
-  <p>This page moved to <a href="../Piano-Valley/index.html">Piano Valley</a>.</p>
+  <p>This page moved to <a href="../index.html">Piano</a>.</p>
 </body>
 </html>

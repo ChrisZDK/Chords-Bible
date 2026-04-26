@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="0; url=../Piano-Valley/piano-keys-progressions.html" />
+  <meta http-equiv="refresh" content="0; url=../piano-keys-progressions.html" />
   <title>Keys &amp; Progressions moved - Chords Bible</title>
 </head>
 <body>
   <script>
-    const target = new URL("../Piano-Valley/piano-keys-progressions.html", window.location.href);
+    const target = new URL("../piano-keys-progressions.html", window.location.href);
     const params = new URLSearchParams(window.location.search);
     const key = params.get("key") || params.get("root");
 
@@ -16,8 +16,9 @@
       target.searchParams.set("key", key);
     }
 
+    target.hash = window.location.hash;
     window.location.replace(target);
   </script>
-  <p>This page moved to <a href="../Piano-Valley/piano-keys-progressions.html">Keys &amp; Progressions</a>.</p>
+  <p>This page moved to <a href="../piano-keys-progressions.html">Keys &amp; Progressions</a>.</p>
 </body>
 </html>

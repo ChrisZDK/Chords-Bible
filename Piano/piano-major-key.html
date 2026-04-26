@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Keys &amp; Progressions - Chords Bible</title>
-  <meta http-equiv="refresh" content="0; url=../Piano-Valley/piano-keys-progressions.html" />
-  <link rel="stylesheet" href="../style.css" />
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const root = params.get("root") || params.get("key") || "C";
-    window.location.replace(`../Piano-Valley/piano-keys-progressions.html?key=${encodeURIComponent(root)}`);
-  </script>
+  <meta http-equiv="refresh" content="0; url=../piano-keys-progressions.html" />
+  <title>Keys &amp; Progressions moved - Chords Bible</title>
 </head>
 <body>
-  <main class="redirect-page">
-    <h1>Keys &amp; Progressions</h1>
-    <p>This page moved to <a href="../Piano-Valley/piano-keys-progressions.html">Keys &amp; Progressions</a>.</p>
-  </main>
+  <script>
+    const target = new URL("../piano-keys-progressions.html", window.location.href);
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get("key") || params.get("root");
+
+    if (key) {
+      target.searchParams.set("key", key);
+    }
+
+    target.hash = window.location.hash;
+    window.location.replace(target);
+  </script>
+  <p>This page moved to <a href="../piano-keys-progressions.html">Keys &amp; Progressions</a>.</p>
 </body>
 </html>
