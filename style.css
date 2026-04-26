@@ -42,7 +42,7 @@ html {
 body {
   margin: 0;
   padding-top: 80px;
-  font-family: "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Anaheim", Arial, Helvetica, sans-serif;
   color: var(--text);
   background: var(--bg);
   line-height: 1.5;
@@ -1258,7 +1258,7 @@ body.piano-app-page[data-page="piano-valley"] .site-header::after {
 
 body.piano-app-page[data-page="piano-valley"] .site-brand {
   color: var(--pv-text);
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 1.45rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -1292,7 +1292,7 @@ body.piano-app-page[data-page="piano-valley"] .notation-toggle button {
   border-radius: 3px;
   background: var(--pv-button);
   color: var(--pv-text);
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1367,7 +1367,7 @@ body.piano-app-page[data-page="piano-valley"] .keyboard-legend {
 }
 
 body.piano-app-page[data-page="piano-valley"] .hero-section h1 {
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 4.7rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -1562,7 +1562,7 @@ body.piano-app-page[data-page="piano-valley"] .chord-symbol {
     radial-gradient(circle at 45% 38%, rgba(187, 69, 255, 0.34), transparent 3rem),
     linear-gradient(180deg, #160b2a, #060713);
   color: #f5e6ff;
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 4.2rem;
   font-weight: 700;
   text-shadow: 0 0 16px var(--pv-glow-strong), 3px 3px 0 #4c1c83;
@@ -1686,7 +1686,7 @@ body.piano-app-page[data-page="piano-valley"] .repeat-icon {
 body.piano-app-page[data-page="piano-valley"] .formula-line,
 body.piano-app-page[data-page="piano-valley"] [data-dynamic-chord-notes-inline] {
   color: var(--pv-text);
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 1.18rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1864,7 +1864,7 @@ body.piano-app-page[data-page="piano-valley"] .key-summary-card h2 {
 body.piano-app-page[data-page="piano-valley"] .key-summary-card .scale-line {
   margin: 0;
   color: var(--pv-text);
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 1.12rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1982,7 +1982,7 @@ body.piano-app-page[data-page="piano-valley"] .progressions-panel .progression-c
 body.piano-app-page[data-page="piano-valley"] .progressions-panel span {
   margin: 0;
   color: var(--pv-accent);
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 1.05rem;
   letter-spacing: 0.06em;
   text-shadow: 0 0 10px var(--pv-glow);
@@ -2744,7 +2744,7 @@ body.piano-app-page[data-page="piano-valley"] .key-summary-card h2 {
 body.piano-app-page[data-page="piano-valley"] .key-summary-card .scale-line {
   margin: 0.15rem 0 0;
   color: var(--pv-text);
-  font-family: "Pontano Sans", "Inter Tight", Arial, Helvetica, sans-serif;
+  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -3074,7 +3074,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] {
   padding: 0.85rem;
   overflow-x: hidden;
   color: var(--pv-text);
-  font-family: "Inter Tight", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Anaheim", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background:
     radial-gradient(circle at 20% 0%, rgba(98, 35, 170, 0.25), transparent 30%),
     radial-gradient(circle at 80% 10%, rgba(35, 120, 210, 0.12), transparent 32%),
@@ -3197,7 +3197,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-logo span
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-brand {
   color: var(--pv-text);
-  font-family: "Press Start 2P", "Pixelify Sans", monospace;
+  font-family: "Press Start 2P", "Handjet", monospace;
   font-size: clamp(0.98rem, 1.55vw, 1.35rem);
   font-weight: 400;
   letter-spacing: 0.04em;
@@ -3208,7 +3208,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-section {
   padding-left: 1rem;
   border-left: 2px solid var(--pv-accent);
   color: var(--pv-accent);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-size: clamp(1.05rem, 1.8vw, 1.55rem);
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -3238,7 +3238,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-toggle
   background:
     linear-gradient(180deg, rgba(13, 17, 32, 0.98), rgba(5, 8, 19, 0.98));
   color: var(--pv-text);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -3257,7 +3257,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .selector-label
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .section-kicker,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .keyboard-legend,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .keyboard-shortcut {
-  font-family: "Press Start 2P", "Pixelify Sans", monospace;
+  font-family: "Press Start 2P", "Handjet", monospace;
   font-size: 0.62rem;
   font-weight: 400;
   letter-spacing: 0.06em;
@@ -3387,7 +3387,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .search-field:f
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .search-field input {
   color: var(--pv-text);
-  font-family: "Inter Tight", system-ui, sans-serif;
+  font-family: "Anaheim", system-ui, sans-serif;
   font-size: 1rem;
 }
 
@@ -3490,7 +3490,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .card h2,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .card h3,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .section-heading-row h2 {
   color: var(--pv-text);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: 0.01em;
   text-shadow: 0 0 8px rgba(167, 61, 255, 0.7);
@@ -3564,7 +3564,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-emblem .
   border: 0;
   background: transparent;
   color: #f8eaff;
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-size: clamp(3.6rem, 5.2vw, 4.8rem);
   font-weight: 700;
   line-height: 1;
@@ -3604,7 +3604,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-badge {
   border-radius: 2px;
   background: linear-gradient(180deg, #5f1cb0, #2b0b55);
   color: var(--pv-text);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -3698,7 +3698,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] [data-dynamic-c
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .scale-line,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .progression-chords {
   color: var(--pv-text);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-size: 1.15rem;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -3752,7 +3752,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-svg.is-p
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .key-label,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .black-label {
-  font-family: "Pixelify Sans", Arial, Helvetica, sans-serif;
+  font-family: "Handjet", Arial, Helvetica, sans-serif;
   font-weight: 700;
 }
 
@@ -3850,14 +3850,14 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list span:first-child {
   color: var(--pv-accent);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list span + span {
   color: var(--pv-text);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-weight: 500;
   letter-spacing: 0.12em;
 }
@@ -3994,7 +3994,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .progression-ke
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .key-chord-grid .card > p {
   color: var(--pv-text);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   letter-spacing: 0.06em;
 }
 
@@ -4051,7 +4051,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .progressions-p
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .progressions-panel span {
   color: var(--pv-accent);
-  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-family: "Handjet", system-ui, sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -4260,6 +4260,17 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-header {
   padding: 0.55rem 1rem;
   overflow: visible;
   background: transparent;
+  border: 0;
+  box-shadow: none;
+  clip-path: none;
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-header::before {
+  display: none;
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-header::after {
+  display: none;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-brand-lockup {
@@ -4335,6 +4346,14 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .search-panel {
   margin-top: -2.95rem;
   padding: 0.56rem 0.72rem 0.68rem;
   overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .search-panel::before {
+  display: none;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .search-field {
@@ -4349,6 +4368,12 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .type-menu,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .root-selector .root-menu,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .key-selector-panel .root-menu {
   gap: 0.42rem;
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs button,
