@@ -4249,7 +4249,8 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] footer {
 /* Piano Valley compact layout pass.
    Stacking order: hero artwork = 1, header/search overlays = 3, interactive controls = 4. */
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] {
-  --pv-main-action-size: clamp(6.8rem, 8.2vw, 7.8rem);
+  --pv-chord-emblem-size: clamp(4.9rem, 6.3vw, 5.775rem);
+  --pv-main-action-size: var(--pv-chord-emblem-size);
   --pv-compact-action-size: 2.45rem;
   padding: clamp(0.5rem, 0.8vw, 0.75rem);
 }
@@ -4462,13 +4463,13 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card {
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card {
-  grid-template-columns: clamp(7.2rem, 9.2vw, 8.4rem) minmax(0, 1fr);
+  grid-template-columns: var(--pv-chord-emblem-size) minmax(0, 1fr);
   align-content: center;
   gap: 0.55rem 0.9rem;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-emblem {
-  width: clamp(7rem, 9vw, 8.25rem);
+  width: var(--pv-chord-emblem-size);
   align-self: center;
 }
 
@@ -4507,7 +4508,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .card-actions b
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card {
-  grid-template-columns: clamp(6.9rem, 8.4vw, 7.8rem) minmax(0, 1fr);
+  grid-template-columns: var(--pv-chord-emblem-size) minmax(0, 1fr);
   align-content: center;
   gap: 0.45rem 0.95rem;
 }
@@ -4521,8 +4522,8 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card .pl
   grid-row: 1 / span 3;
   align-self: center;
   justify-self: center;
-  width: clamp(6.6rem, 8vw, 7.6rem);
-  height: clamp(6.6rem, 8vw, 7.6rem);
+  width: var(--pv-main-action-size);
+  height: var(--pv-main-action-size);
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card-header > div {
