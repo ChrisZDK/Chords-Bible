@@ -4397,7 +4397,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .type-menu,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .root-selector .root-menu,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .key-selector-panel .root-menu {
-  gap: 0.42rem;
+  gap: 0.36rem;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs {
@@ -4449,14 +4449,16 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .key-selector-p
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .root-selector .root-menu button {
-  flex: 0 0 5.35rem;
-  width: 5.35rem;
-  min-width: 5.35rem;
+  flex: 0 0 4.5rem;
+  width: 4.5rem;
+  min-width: 4.5rem;
+  padding-inline: 0.35rem;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .type-menu button {
-  flex: 1 1 0;
-  min-width: 5.35rem;
+  flex: 0 0 8.25rem;
+  width: 8.25rem;
+  min-width: 8.25rem;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .notation-toggle {
