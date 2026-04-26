@@ -4,164 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Minor Chords - Chords Bible</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta http-equiv="refresh" content="0; url=piano-major.html?type=Minor" />
   <link rel="stylesheet" href="../style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const target = new URL("piano-major.html", window.location.href);
+    const root = params.get("root");
+
+    if (root) {
+      target.searchParams.set("root", root);
+    }
+
+    target.searchParams.set("type", "Minor");
+    window.location.replace(target.toString());
+  </script>
 </head>
 <body>
-  <button class="menu-toggle" type="button" aria-label="Open chord type menu" aria-expanded="false" aria-controls="chord-menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-
-  <aside class="sidebar" id="chord-menu" aria-label="Piano navigation">
-    <nav>
-      <h2>Chord Types</h2>
-      <ol class="menu-list">
-        <li><a href="piano-major.html#major-chords">Major</a></li>
-        <li><a href="piano-minor.html">Minor</a></li>
-        <li><a href="piano-major.html#power-chords">Power</a></li>
-        <li>
-          <a href="piano-major.html#suspended-chords">Suspended</a>
-          <ol>
-            <li><a href="piano-major.html#sus2-chords">Sus2</a></li>
-            <li><a href="piano-major.html#sus4-chords">Sus4</a></li>
-          </ol>
-        </li>
-        <li><a href="piano-major.html#augmented-chords">Augmented</a></li>
-        <li><a href="piano-major.html#diminished-chords">Diminished</a></li>
-        <li><a href="piano-major.html#major-7th-chords">Major 7th</a></li>
-        <li><a href="piano-major.html#minor-7th-chords">Minor 7th</a></li>
-        <li><a href="piano-major.html#dominant-7th-chords">Dominant 7th</a></li>
-        <li><a href="piano-major.html#minor-major-7th-chords">Minor Major 7th</a></li>
-        <li><a href="piano-major.html#half-diminished-chords">Half-Diminished</a></li>
-        <li><a href="piano-major.html#diminished-7th-chords">Diminished 7th</a></li>
-        <li>
-          <a href="piano-major.html#add-chords">Add</a>
-          <ol>
-            <li><a href="piano-major.html#add9-chords">Add9</a></li>
-            <li><a href="piano-major.html#add11-chords">Add11</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="piano-major.html#sixth-chords">6th</a>
-          <ol>
-            <li><a href="piano-major.html#major-6th-chords">Major 6th</a></li>
-            <li><a href="piano-major.html#minor-6th-chords">Minor 6th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="piano-major.html#ninth-chords">9th</a>
-          <ol>
-            <li><a href="piano-major.html#major-9th-chords">Major 9th</a></li>
-            <li><a href="piano-major.html#minor-9th-chords">Minor 9th</a></li>
-            <li><a href="piano-major.html#dominant-9th-chords">Dominant 9th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="piano-major.html#eleventh-chords">11th</a>
-          <ol>
-            <li><a href="piano-major.html#major-11th-chords">Major 11th</a></li>
-            <li><a href="piano-major.html#minor-11th-chords">Minor 11th</a></li>
-            <li><a href="piano-major.html#dominant-11th-chords">Dominant 11th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="piano-major.html#thirteenth-chords">13th</a>
-          <ol>
-            <li><a href="piano-major.html#major-13th-chords">Major 13th</a></li>
-            <li><a href="piano-major.html#minor-13th-chords">Minor 13th</a></li>
-            <li><a href="piano-major.html#dominant-13th-chords">Dominant 13th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="piano-major.html#altered-chords">Altered</a>
-          <ol>
-            <li><a href="piano-major.html#seven-flat-five-chords">7b5</a></li>
-            <li><a href="piano-major.html#seven-sharp-five-chords">7#5</a></li>
-            <li><a href="piano-major.html#seven-flat-nine-chords">7b9</a></li>
-            <li><a href="piano-major.html#seven-sharp-nine-chords">7#9</a></li>
-            <li><a href="piano-major.html#seven-sharp-eleven-chords">7#11</a></li>
-            <li><a href="piano-major.html#seven-flat-thirteen-chords">7b13</a></li>
-          </ol>
-        </li>
-        <li><a href="piano-major.html#extended-altered-chords">Extended Altered</a></li>
-        <li><a href="piano-major.html#slash-chords">Slash</a></li>
-        <li><a href="piano-major.html#inverted-chords">Inverted</a></li>
-        <li><a href="piano-major.html#quartal-chords">Quartal</a></li>
-        <li><a href="piano-major.html#polychords">Polychords</a></li>
-        <li><a href="piano-major.html#hybrid-chords">Hybrid</a></li>
-        <li><a href="piano-major.html#cluster-chords">Cluster</a></li>
-      </ol>
-
-      <h2>Theory</h2>
-      <ol class="menu-list">
-        <li><a href="piano-keys-progressions.html">Keys &amp; Progressions</a></li>
-      </ol>
-    </nav>
-  </aside>
-
-  <div class="menu-backdrop" hidden></div>
-
-  <div class="site-header">
-    <a href="../index.html">Chords Bible</a>
-  </div>
-
-  <header>
+  <main class="redirect-page">
     <h1>Minor Chords</h1>
-    <p class="subtitle">A minor chord is built from a root, a minor third, and a perfect fifth.</p>
-    <p class="formula-line">Root + Minor 3rd + Perfect 5th</p>
-    <div class="notation-toggle" role="group" aria-label="Choose note naming">
-      <button type="button" data-notation="sharp" aria-pressed="true">Sharp</button>
-      <button type="button" data-notation="flat" aria-pressed="false">Flat</button>
-    </div>
-  </header>
-
-  <main>
-    <section aria-labelledby="minor-chords" data-dynamic-chord-page data-chord-quality="Minor" data-fallback-root="C">
-      <h2 id="minor-chords">Choose root note</h2>
-      <p class="helper-text">Root note = starting note of the chord.</p>
-      <div class="root-menu root-menu-centered" role="group" aria-label="Choose minor chord root note" data-chord-root-menu>
-        <button type="button" data-chord-root="C" aria-pressed="true">C</button>
-        <button type="button" data-chord-root="C#" aria-pressed="false">C#/Db</button>
-        <button type="button" data-chord-root="D" aria-pressed="false">D</button>
-        <button type="button" data-chord-root="D#" aria-pressed="false">D#/Eb</button>
-        <button type="button" data-chord-root="E" aria-pressed="false">E</button>
-        <button type="button" data-chord-root="F" aria-pressed="false">F</button>
-        <button type="button" data-chord-root="F#" aria-pressed="false">F#/Gb</button>
-        <button type="button" data-chord-root="G" aria-pressed="false">G</button>
-        <button type="button" data-chord-root="G#" aria-pressed="false">G#/Ab</button>
-        <button type="button" data-chord-root="A" aria-pressed="false">A</button>
-        <button type="button" data-chord-root="A#" aria-pressed="false">A#/Bb</button>
-        <button type="button" data-chord-root="B" aria-pressed="false">B</button>
-      </div>
-
-      <article class="card dynamic-card" data-dynamic-chord-card data-notes="C,Eb,G" data-root="C" data-quality="Minor">
-        <div class="card-title">
-          <button class="play-button" type="button" aria-label="Play C Minor chord"><span class="play-icon" aria-hidden="true"></span></button>
-          <h3>C Minor</h3>
-        </div>
-        <div class="keyboard" role="img" aria-label="Piano keys for C Minor chord"></div>
-        <p>Notes: C - Eb - G</p>
-      </article>
-    </section>
-
-    <section class="tips" aria-labelledby="tips-title">
-      <h2 id="tips-title">Quick Tips</h2>
-      <ul>
-        <li>A minor chord answers: which minor triad is built on this root note?</li>
-        <li>Keys and progressions live on the dedicated Theory page.</li>
-        <li>Practice each chord with both left and right hands.</li>
-      </ul>
-    </section>
+    <p>This page moved to <a href="piano-major.html?type=Minor">Piano Valley Minor Chords</a>.</p>
   </main>
-
-  <footer>
-    <p>Made for beginner piano practice.</p>
-  </footer>
-  <script src="../script.js?v=9"></script>
 </body>
 </html>

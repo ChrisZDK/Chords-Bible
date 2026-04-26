@@ -41,7 +41,7 @@ const chordQualityCatalog = {
     intervals: [0, 4, 7],
     formula: ["1", "3", "5"],
     description: "A major triad built from a root, a major third, and a perfect fifth.",
-    related: ["maj7", "Sus4"],
+    related: ["maj7", "7", "Sus2", "Sus4", "Augmented"],
   },
   Minor: {
     label: "Minor",
@@ -51,7 +51,7 @@ const chordQualityCatalog = {
     intervals: [0, 3, 7],
     formula: ["1", "b3", "5"],
     description: "A minor triad built from a root, a minor third, and a perfect fifth.",
-    related: ["m7", "Major"],
+    related: ["m7", "Diminished", "Sus2", "Power", "Major"],
   },
   Power: {
     label: "Power",
@@ -61,7 +61,7 @@ const chordQualityCatalog = {
     intervals: [0, 7],
     formula: ["1", "5"],
     description: "A compact fifth chord using the root and perfect fifth.",
-    related: ["Major", "Minor"],
+    related: ["Major", "Minor", "Sus2", "Sus4", "7"],
   },
   Sus2: {
     label: "Sus2",
@@ -71,7 +71,7 @@ const chordQualityCatalog = {
     intervals: [0, 2, 7],
     formula: ["1", "2", "5"],
     description: "A suspended chord replacing the third with a major second.",
-    related: ["Sus4", "Major"],
+    related: ["Sus4", "Major", "Minor", "Power", "maj7"],
   },
   Sus4: {
     label: "Sus4",
@@ -81,7 +81,7 @@ const chordQualityCatalog = {
     intervals: [0, 5, 7],
     formula: ["1", "4", "5"],
     description: "A suspended chord replacing the third with a perfect fourth.",
-    related: ["Sus2", "Major"],
+    related: ["Sus2", "Major", "Minor", "Power", "7"],
   },
   Augmented: {
     label: "Augmented",
@@ -91,7 +91,7 @@ const chordQualityCatalog = {
     intervals: [0, 4, 8],
     formula: ["1", "3", "#5"],
     description: "An augmented triad with a raised fifth for a bright, unstable sound.",
-    related: ["Major", "7"],
+    related: ["Major", "7", "maj7", "Power", "Sus4"],
   },
   Diminished: {
     label: "Diminished",
@@ -101,7 +101,7 @@ const chordQualityCatalog = {
     intervals: [0, 3, 6],
     formula: ["1", "b3", "b5"],
     description: "A diminished triad built from stacked minor thirds.",
-    related: ["Minor", "m7"],
+    related: ["Minor", "m7", "Power", "Sus2", "7"],
   },
   maj7: {
     label: "maj7",
@@ -111,7 +111,7 @@ const chordQualityCatalog = {
     intervals: [0, 4, 7, 11],
     formula: ["1", "3", "5", "7"],
     description: "A major seventh chord adding the major seventh above a major triad.",
-    related: ["Major", "7"],
+    related: ["Major", "7", "Augmented", "Sus4", "m7"],
   },
   m7: {
     label: "m7",
@@ -121,7 +121,7 @@ const chordQualityCatalog = {
     intervals: [0, 3, 7, 10],
     formula: ["1", "b3", "5", "b7"],
     description: "A minor seventh chord adding a minor seventh above a minor triad.",
-    related: ["Minor", "7"],
+    related: ["Minor", "Diminished", "7", "maj7", "Power"],
   },
   7: {
     label: "7",
@@ -131,7 +131,7 @@ const chordQualityCatalog = {
     intervals: [0, 4, 7, 10],
     formula: ["1", "3", "5", "b7"],
     description: "A dominant seventh chord adding a minor seventh above a major triad.",
-    related: ["Major", "maj7"],
+    related: ["Major", "maj7", "m7", "Augmented", "Diminished"],
   },
 };
 const chordQualityAliases = Object.fromEntries(
@@ -719,9 +719,9 @@ function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true) 
   }
 
   schedulePlayback(() => renderChordCardKeyboard(card, notes, true), startDelay);
-  schedulePlayback(() => renderChordCardKeyboard(card), startDelay + chordDuration);
 
   if (!includeNoteSequence) {
+    schedulePlayback(() => renderChordCardKeyboard(card), startDelay + chordDuration);
     return;
   }
 
@@ -1060,9 +1060,9 @@ function createRepeatButton(label) {
 
 function ensureChordRepeatButton(card) {
   const playButton = card.querySelector(".play-button");
-  const titleRow = card.querySelector(".card-title");
+  const controls = card.querySelector(".card-title, .piano-card-header");
 
-  if (!playButton || !titleRow) {
+  if (!playButton || !controls) {
     return null;
   }
 
@@ -1326,6 +1326,7 @@ function setDynamicChordRoot(root, page = dynamicChordPageForElement()) {
     return;
   }
 
+  stopActiveLoop();
   const quality = getChordPageQuality(page);
   const chord = getChordForRoot(root, quality);
   card.dataset.root = chord.root;
@@ -1487,6 +1488,19 @@ function initializeNotationToggle() {
       preferredNotation = button.dataset.notation === "flat" ? "flat" : "sharp";
       storeNotation(preferredNotation);
       updateNotation();
+    });
+  });
+}
+
+function initializeHeaderMenus() {
+  document.querySelectorAll("[data-header-nav]").forEach((select) => {
+    select.addEventListener("change", () => {
+      if (!select.value) {
+        select.selectedIndex = 0;
+        return;
+      }
+
+      window.location.href = select.value;
     });
   });
 }
@@ -1812,6 +1826,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 initializePianoSampler();
+initializeHeaderMenus();
 initializeNotationToggle();
 initializeMajorChordPage();
 initializeMajorKeyPage();

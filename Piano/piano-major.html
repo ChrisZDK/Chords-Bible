@@ -11,108 +11,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
 <body class="piano-app-page">
-  <button class="menu-toggle" type="button" aria-label="Open chord type menu" aria-expanded="false" aria-controls="chord-menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-
-  <aside class="sidebar" id="chord-menu" aria-label="Piano navigation">
-    <nav>
-      <h2>Chord Types</h2>
-      <ol class="menu-list">
-        <li><a href="#major-chords">Major</a></li>
-        <li><a href="piano-minor.html">Minor</a></li>
-        <li><a href="#power-chords">Power</a></li>
-        <li>
-          <a href="#suspended-chords">Suspended</a>
-          <ol>
-            <li><a href="#sus2-chords">Sus2</a></li>
-            <li><a href="#sus4-chords">Sus4</a></li>
-          </ol>
-        </li>
-        <li><a href="#augmented-chords">Augmented</a></li>
-        <li><a href="#diminished-chords">Diminished</a></li>
-        <li><a href="#major-7th-chords">Major 7th</a></li>
-        <li><a href="#minor-7th-chords">Minor 7th</a></li>
-        <li><a href="#dominant-7th-chords">Dominant 7th</a></li>
-        <li><a href="#minor-major-7th-chords">Minor Major 7th</a></li>
-        <li><a href="#half-diminished-chords">Half-Diminished</a></li>
-        <li><a href="#diminished-7th-chords">Diminished 7th</a></li>
-        <li>
-          <a href="#add-chords">Add</a>
-          <ol>
-            <li><a href="#add9-chords">Add9</a></li>
-            <li><a href="#add11-chords">Add11</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="#sixth-chords">6th</a>
-          <ol>
-            <li><a href="#major-6th-chords">Major 6th</a></li>
-            <li><a href="#minor-6th-chords">Minor 6th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="#ninth-chords">9th</a>
-          <ol>
-            <li><a href="#major-9th-chords">Major 9th</a></li>
-            <li><a href="#minor-9th-chords">Minor 9th</a></li>
-            <li><a href="#dominant-9th-chords">Dominant 9th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="#eleventh-chords">11th</a>
-          <ol>
-            <li><a href="#major-11th-chords">Major 11th</a></li>
-            <li><a href="#minor-11th-chords">Minor 11th</a></li>
-            <li><a href="#dominant-11th-chords">Dominant 11th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="#thirteenth-chords">13th</a>
-          <ol>
-            <li><a href="#major-13th-chords">Major 13th</a></li>
-            <li><a href="#minor-13th-chords">Minor 13th</a></li>
-            <li><a href="#dominant-13th-chords">Dominant 13th</a></li>
-          </ol>
-        </li>
-        <li>
-          <a href="#altered-chords">Altered</a>
-          <ol>
-            <li><a href="#seven-flat-five-chords">7b5</a></li>
-            <li><a href="#seven-sharp-five-chords">7#5</a></li>
-            <li><a href="#seven-flat-nine-chords">7b9</a></li>
-            <li><a href="#seven-sharp-nine-chords">7#9</a></li>
-            <li><a href="#seven-sharp-eleven-chords">7#11</a></li>
-            <li><a href="#seven-flat-thirteen-chords">7b13</a></li>
-          </ol>
-        </li>
-        <li><a href="#extended-altered-chords">Extended Altered</a></li>
-        <li><a href="#slash-chords">Slash</a></li>
-        <li><a href="#inverted-chords">Inverted</a></li>
-        <li><a href="#quartal-chords">Quartal</a></li>
-        <li><a href="#polychords">Polychords</a></li>
-        <li><a href="#hybrid-chords">Hybrid</a></li>
-        <li><a href="#cluster-chords">Cluster</a></li>
-      </ol>
-
-      <h2>Theory</h2>
-      <ol class="menu-list">
-        <li><a href="piano-keys-progressions.html">Keys &amp; Progressions</a></li>
-      </ol>
-    </nav>
-  </aside>
-
-  <div class="menu-backdrop" hidden></div>
-
   <div class="app-shell">
     <header class="site-header">
       <a class="site-brand" href="../index.html">Chords Bible</a>
       <span class="site-section" aria-label="Current section">Piano</span>
       <div class="site-actions" aria-label="Piano tools">
-        <button class="header-control" type="button">Chords</button>
-        <button class="header-control" type="button" aria-pressed="false">Theme</button>
+        <label class="visually-hidden" for="piano-area-menu">Piano area</label>
+        <select id="piano-area-menu" class="header-control header-select" data-header-nav aria-label="Choose Piano area">
+          <option value="" selected>Chords</option>
+          <option value="piano-keys-progressions.html">Progressions</option>
+          <option value="" disabled>Songs</option>
+          <option value="" disabled>Tools</option>
+        </select>
+        <label class="visually-hidden" for="theme-menu">Theme</label>
+        <select id="theme-menu" class="header-control header-select" aria-label="Choose theme">
+          <option value="dark" selected>Dark Theme</option>
+          <option value="holy" disabled>Holy Theme</option>
+          <option value="diabolical" disabled>Diabolical</option>
+          <option value="kawaii" disabled>Kawaii</option>
+        </select>
         <button class="header-icon-button" type="button" aria-label="Add current chord to favorites">☆</button>
       </div>
     </header>
