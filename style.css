@@ -1070,6 +1070,11 @@ body.piano-app-page {
   font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
 }
 
+.related-toggle {
+  width: 100%;
+  margin-top: 0.85rem;
+}
+
 .piano-app-page footer {
   padding: 0 0 1rem;
 }

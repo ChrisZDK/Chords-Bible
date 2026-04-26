@@ -1129,9 +1129,17 @@ function renderRelatedChords(card, root, quality) {
     ...priority,
     ...Object.keys(chordQualityCatalog).filter((relatedQuality) => relatedQuality !== currentQuality),
   ].filter((relatedQuality, index, qualities) => qualities.indexOf(relatedQuality) === index);
+  const relatedStateKey = `${root}:${currentQuality}`;
+  const isSameRelatedChord = card.dataset.relatedStateKey === relatedStateKey;
+  const isExpanded = isSameRelatedChord && card.dataset.relatedExpanded === "true";
+  const visibleRelatedQualities = isExpanded ? relatedQualities : relatedQualities.slice(0, 3);
+  const toggleButton = card.querySelector("[data-related-toggle]");
+
+  card.dataset.relatedStateKey = relatedStateKey;
+  card.dataset.relatedExpanded = String(isExpanded);
   list.replaceChildren();
 
-  relatedQualities.forEach((relatedQuality) => {
+  visibleRelatedQualities.forEach((relatedQuality) => {
     const info = chordQualityInfo(relatedQuality);
     const item = document.createElement("li");
     const content = document.createElement("div");
@@ -1159,6 +1167,23 @@ function renderRelatedChords(card, root, quality) {
     item.append(content, button);
     list.appendChild(item);
   });
+
+  if (!toggleButton) {
+    return;
+  }
+
+  const canExpand = relatedQualities.length > 3;
+  toggleButton.hidden = !canExpand;
+  toggleButton.textContent = isExpanded ? "Show less" : "Show more";
+  toggleButton.setAttribute("aria-expanded", String(isExpanded));
+
+  if (!toggleButton.dataset.relatedToggleReady) {
+    toggleButton.addEventListener("click", () => {
+      card.dataset.relatedExpanded = card.dataset.relatedExpanded === "true" ? "false" : "true";
+      renderRelatedChords(card, card.dataset.root, card.dataset.quality);
+    });
+    toggleButton.dataset.relatedToggleReady = "true";
+  }
 }
 
 function updateChordCardText(card) {
