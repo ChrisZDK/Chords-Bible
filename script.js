@@ -115,7 +115,7 @@ const keyModeConfigs = {
     titleQuality: "Major",
     subtitle: "Major scale and diatonic triads",
     fallbackRoot: "C",
-    page: "piano-major.html",
+    page: "piano-major-key.html",
     scaleIntervals: majorScaleIntervals,
     chordPattern: keyChordPattern,
     progressions: progressionSets,
