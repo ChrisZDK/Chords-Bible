@@ -1123,7 +1123,12 @@ function renderRelatedChords(card, root, quality) {
     return;
   }
 
-  const relatedQualities = chordQualityInfo(quality).related || [];
+  const currentQuality = normalizeChordQuality(quality);
+  const priority = chordQualityInfo(currentQuality).related || [];
+  const relatedQualities = [
+    ...priority,
+    ...Object.keys(chordQualityCatalog).filter((relatedQuality) => relatedQuality !== currentQuality),
+  ].filter((relatedQuality, index, qualities) => qualities.indexOf(relatedQuality) === index);
   list.replaceChildren();
 
   relatedQualities.forEach((relatedQuality) => {
