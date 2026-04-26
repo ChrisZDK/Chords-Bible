@@ -193,8 +193,13 @@ let activePlaybackOutput;
 let pianoSampler;
 let pianoReady = false;
 let activeTimers = [];
+let activeLoop = null;
 let preferredNotation = getStoredNotation();
 const startDelay = 0.5;
+const chordDuration = 1.45;
+const chordNoteStartOffset = 1.63;
+const chordNoteSpacing = 0.62;
+const chordNoteDuration = 0.95;
 const progressionChordSpacing = 1.35;
 const progressionChordDuration = 1.45;
 const pianoSampleUrls = {
@@ -259,10 +264,16 @@ function getAudioContext() {
   return audioContext;
 }
 
-function startNewPlayback() {
+function startNewPlayback({ keepLoop = false } = {}) {
   getAudioContext();
+
+  if (!keepLoop) {
+    stopActiveLoop();
+  }
+
   activeTimers.forEach((timerId) => window.clearTimeout(timerId));
   activeTimers = [];
+  resetChordPlaybackKeyboards();
   resetProgressionAnimations();
 
   if (pianoSampler) {
@@ -286,6 +297,17 @@ function startNewPlayback() {
 function schedulePlayback(callback, delaySeconds) {
   const timerId = window.setTimeout(callback, delaySeconds * 1000);
   activeTimers.push(timerId);
+}
+
+function stopActiveLoop() {
+  if (!activeLoop) {
+    return;
+  }
+
+  window.clearTimeout(activeLoop.timerId);
+  activeLoop.button?.setAttribute("aria-pressed", "false");
+  activeLoop.button?.classList.remove("is-looping");
+  activeLoop = null;
 }
 
 function normalizeNote(note) {
@@ -508,7 +530,7 @@ function chordNoteNames(notes) {
   });
 }
 
-function createKeyboard(notes, preserveLabels = false) {
+function createKeyboard(notes, preserveLabels = false, isPlaying = false) {
   const activeNotes = new Set(notes.map(normalizeNote));
   const activeLabels = new Map(
     preserveLabels
@@ -516,7 +538,7 @@ function createKeyboard(notes, preserveLabels = false) {
       : []
   );
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("class", "piano-svg");
+  svg.setAttribute("class", `piano-svg${isPlaying ? " is-playing" : ""}`);
   svg.setAttribute("viewBox", "0 0 294 132");
   svg.setAttribute("aria-hidden", "true");
 
@@ -559,31 +581,80 @@ function createKeyboard(notes, preserveLabels = false) {
   return svg;
 }
 
-function playChord(notes) {
-  const playbackOutput = startNewPlayback();
+function chordCardNotes(card) {
+  return card.dataset.notes.split(",");
+}
+
+function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying = false) {
+  const keyboard = card.querySelector(".keyboard");
+
+  if (!keyboard) {
+    return;
+  }
+
+  keyboard.replaceChildren(createKeyboard(notes, card.hasAttribute("data-preserve-spelling"), isPlaying));
+}
+
+function resetChordPlaybackKeyboards() {
+  document.querySelectorAll(".card[data-notes]").forEach((card) => {
+    renderChordCardKeyboard(card);
+  });
+}
+
+function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true) {
+  if (!card) {
+    return;
+  }
+
+  schedulePlayback(() => renderChordCardKeyboard(card, notes, true), startDelay);
+  schedulePlayback(() => renderChordCardKeyboard(card), startDelay + chordDuration);
+
+  if (!includeNoteSequence) {
+    return;
+  }
+
+  notes.forEach((note, index) => {
+    const noteStart = startDelay + chordNoteStartOffset + index * chordNoteSpacing;
+    schedulePlayback(() => renderChordCardKeyboard(card, [note], true), noteStart);
+  });
+
+  schedulePlayback(() => renderChordCardKeyboard(card), chordPlaybackDuration(notes.length));
+}
+
+function chordPlaybackDuration(noteCount = 3, includeNoteSequence = true) {
+  if (!includeNoteSequence) {
+    return startDelay + chordDuration + 0.35;
+  }
+
+  return startDelay + chordNoteStartOffset + Math.max(noteCount - 1, 0) * chordNoteSpacing + chordNoteDuration + 0.1;
+}
+
+function playChord(notes, card, { includeNoteSequence = true, keepLoop = false } = {}) {
+  const playbackOutput = startNewPlayback({ keepLoop });
   const noteNames = chordNoteNames(notes);
+  scheduleChordKeyboardPlayback(card, notes, includeNoteSequence);
 
   if (pianoReady) {
     Tone.start();
 
     schedulePlayback(() => {
-      pianoSampler.triggerAttackRelease(noteNames, 1.45, undefined, 0.75);
+      pianoSampler.triggerAttackRelease(noteNames, chordDuration, undefined, 0.75);
     }, startDelay);
 
-    noteNames.forEach((noteName, index) => {
-      schedulePlayback(() => {
-        pianoSampler.triggerAttackRelease(noteName, 0.95, undefined, 0.78);
-      }, startDelay + 1.63 + index * 0.62);
-    });
+    if (includeNoteSequence) {
+      noteNames.forEach((noteName, index) => {
+        schedulePlayback(() => {
+          pianoSampler.triggerAttackRelease(noteName, chordNoteDuration, undefined, 0.78);
+        }, startDelay + chordNoteStartOffset + index * chordNoteSpacing);
+      });
+    }
 
     return;
   }
 
   const now = audioContext.currentTime + startDelay;
   const frequencies = chordFrequencies(notes);
-  const chordDuration = 1.45;
-  const noteStart = now + chordDuration + 0.18;
-  const noteSpacing = 0.62;
+  const noteStart = audioContext.currentTime + startDelay + chordNoteStartOffset;
   const output = audioContext.createGain();
 
   output.gain.setValueAtTime(0.0001, now);
@@ -601,9 +672,39 @@ function playChord(notes) {
     oscillator.stop(now + chordDuration + 0.08);
   });
 
-  frequencies.forEach((frequency, index) => {
-    playSynthNote(frequency, noteStart + index * noteSpacing, 0.95, playbackOutput);
-  });
+  if (includeNoteSequence) {
+    frequencies.forEach((frequency, index) => {
+      playSynthNote(frequency, noteStart + index * chordNoteSpacing, chordNoteDuration, playbackOutput);
+    });
+  }
+}
+
+function setLoopButtonState(button, isLooping) {
+  button?.setAttribute("aria-pressed", String(isLooping));
+  button?.classList.toggle("is-looping", isLooping);
+}
+
+function startChordLoop(notes, card, button) {
+  if (activeLoop?.button === button) {
+    stopActiveLoop();
+    startNewPlayback();
+    return;
+  }
+
+  stopActiveLoop();
+  activeLoop = { button, timerId: null };
+  setLoopButtonState(button, true);
+
+  const runLoop = () => {
+    if (activeLoop?.button !== button) {
+      return;
+    }
+
+    playChord(notes, card, { includeNoteSequence: false, keepLoop: true });
+    activeLoop.timerId = window.setTimeout(runLoop, chordPlaybackDuration(notes.length, false) * 1000);
+  };
+
+  runLoop();
 }
 
 function chordNoteNamesFromSymbol(symbol) {
@@ -681,7 +782,7 @@ function resetProgressionAnimations() {
 
 function ensureProgressionAnimation(item, chordSymbols) {
   let animation = item.querySelector("[data-progression-animation]");
-  const content = item.querySelector(".progression-play + div") || item;
+  const content = item.querySelector(".progression-content") || item.querySelector(":scope > div") || item;
 
   if (!animation) {
     animation = document.createElement("div");
@@ -714,7 +815,7 @@ function updateProgressionAnimation(animation) {
   setProgressionAnimationChord(animation, Number(animation.dataset.activeIndex) || 0);
 }
 
-function setProgressionAnimationChord(animation, index) {
+function setProgressionAnimationChord(animation, index, { isPlaying = false } = {}) {
   const symbols = animation.dataset.symbols?.split(",").filter(Boolean) || [];
   const symbol = symbols[index] || symbols[0];
   const step = animation.querySelector(".progression-step");
@@ -732,7 +833,8 @@ function setProgressionAnimationChord(animation, index) {
   label.textContent = displaySymbols[index] || displayChordSymbol(symbol);
   keyboard.className = "progression-keyboard";
   keyboard.setAttribute("aria-hidden", "true");
-  keyboard.replaceChildren(createKeyboard(notes));
+  keyboard.replaceChildren(createKeyboard(notes, false, isPlaying));
+  animation.classList.toggle("is-active", isPlaying);
 }
 
 function updateProgressionAnimationLabels() {
@@ -749,9 +851,14 @@ function scheduleProgressionAnimation(item, chordSymbols) {
 
   chordSymbols.forEach((_, index) => {
     schedulePlayback(() => {
-      animation.classList.add("is-active");
-      setProgressionAnimationChord(animation, index);
+      setProgressionAnimationChord(animation, index, { isPlaying: true });
     }, startDelay + index * progressionChordSpacing);
+
+    schedulePlayback(() => {
+      if (Number(animation.dataset.activeIndex) === index) {
+        setProgressionAnimationChord(animation, index);
+      }
+    }, startDelay + index * progressionChordSpacing + progressionChordDuration);
   });
 
   schedulePlayback(() => {
@@ -761,8 +868,12 @@ function scheduleProgressionAnimation(item, chordSymbols) {
   }, startDelay + chordSymbols.length * progressionChordSpacing + 0.2);
 }
 
-function playProgression(chordSymbols, item) {
-  const playbackOutput = startNewPlayback();
+function progressionPlaybackDuration(chordSymbols) {
+  return startDelay + Math.max(chordSymbols.length - 1, 0) * progressionChordSpacing + progressionChordDuration + 0.35;
+}
+
+function playProgression(chordSymbols, item, { keepLoop = false } = {}) {
+  const playbackOutput = startNewPlayback({ keepLoop });
   scheduleProgressionAnimation(item, chordSymbols);
 
   if (pianoReady) {
@@ -774,7 +885,7 @@ function playProgression(chordSymbols, item) {
       }, startDelay + index * progressionChordSpacing);
     });
 
-    return;
+    return progressionPlaybackDuration(chordSymbols);
   }
 
   const now = audioContext.currentTime + startDelay;
@@ -794,6 +905,92 @@ function playProgression(chordSymbols, item) {
       playSynthNote(frequency, startTime, progressionChordDuration, output);
     });
   });
+  return progressionPlaybackDuration(chordSymbols);
+}
+
+function startProgressionLoop(chordSymbols, item, button) {
+  if (activeLoop?.button === button) {
+    stopActiveLoop();
+    startNewPlayback();
+    return;
+  }
+
+  stopActiveLoop();
+  activeLoop = { button, timerId: null };
+  setLoopButtonState(button, true);
+
+  const runLoop = () => {
+    if (activeLoop?.button !== button) {
+      return;
+    }
+
+    const duration = playProgression(chordSymbols, item, { keepLoop: true });
+    activeLoop.timerId = window.setTimeout(runLoop, duration * 1000);
+  };
+
+  runLoop();
+}
+
+function createRepeatButton(label) {
+  const button = document.createElement("button");
+  button.className = "repeat-button";
+  button.type = "button";
+  button.setAttribute("aria-label", label);
+  button.setAttribute("aria-pressed", "false");
+
+  const icon = document.createElement("span");
+  icon.className = "repeat-icon";
+  icon.setAttribute("aria-hidden", "true");
+  button.appendChild(icon);
+
+  return button;
+}
+
+function ensureChordRepeatButton(card) {
+  const playButton = card.querySelector(".play-button");
+  const titleRow = card.querySelector(".card-title");
+
+  if (!playButton || !titleRow) {
+    return null;
+  }
+
+  let button = card.querySelector(".chord-repeat");
+
+  if (!button) {
+    button = createRepeatButton("Loop chord");
+    button.classList.add("chord-repeat");
+    playButton.after(button);
+  }
+
+  if (!button.dataset.loopReady) {
+    button.addEventListener("click", () => startChordLoop(chordCardNotes(card), card, button));
+    button.dataset.loopReady = "true";
+  }
+
+  return button;
+}
+
+function ensureProgressionRepeatButton(item, chordSymbols) {
+  const playButton = item.querySelector(".progression-play");
+
+  if (!playButton) {
+    return null;
+  }
+
+  let button = item.querySelector(".progression-repeat");
+
+  if (!button) {
+    button = createRepeatButton("Loop progression");
+    button.classList.add("progression-repeat");
+    playButton.after(button);
+  }
+
+  if (!button.dataset.loopReady) {
+    button.addEventListener("click", () => startProgressionLoop(chordSymbols, item, button));
+    button.dataset.loopReady = "true";
+  }
+
+  return button;
 }
 
 function updateChordCardText(card) {
@@ -802,6 +999,7 @@ function updateChordCardText(card) {
   const noteText = card.querySelector("[data-dynamic-chord-notes]") || card.querySelector("p");
   const keyboard = card.querySelector(".keyboard");
   const button = card.querySelector(".play-button");
+  const loopButton = ensureChordRepeatButton(card);
   const displayedChordName = card.hasAttribute("data-preserve-spelling")
     ? card.dataset.displayTitle
     : card.dataset.root && card.dataset.quality
@@ -823,13 +1021,17 @@ function updateChordCardText(card) {
     button.setAttribute("aria-label", `Play ${displayedChordName} chord`);
   }
 
+  if (loopButton && card.dataset.root && card.dataset.quality) {
+    loopButton.setAttribute("aria-label", `Loop ${displayedChordName} chord`);
+  }
+
   if (card.closest("[data-dynamic-chord-page], [data-major-chord-page]") && card.dataset.root && card.dataset.quality) {
     document.title = `${displayedChordName} - Chords Bible`;
   }
 
   if (keyboard) {
     keyboard.setAttribute("aria-label", `Piano keys for ${displayedChordName}`);
-    keyboard.replaceChildren(createKeyboard(notes, card.hasAttribute("data-preserve-spelling")));
+    renderChordCardKeyboard(card, notes);
   }
 }
 
@@ -843,7 +1045,7 @@ function initializeChordCard(card) {
   }
 
   if (button && !card.dataset.playReady) {
-    button.addEventListener("click", () => playChord(card.dataset.notes.split(",")));
+    button.addEventListener("click", () => playChord(chordCardNotes(card), card));
     card.dataset.playReady = "true";
   }
 
@@ -858,7 +1060,12 @@ function initializeProgressions() {
   document.querySelectorAll(".progressions li[data-progression]").forEach((item) => {
     const button = item.querySelector(".progression-play");
     const chordSymbols = item.dataset.progression.split(",");
+    const loopButton = ensureProgressionRepeatButton(item, chordSymbols);
     ensureProgressionAnimation(item, chordSymbols);
+
+    if (loopButton) {
+      loopButton.setAttribute("aria-label", `Loop ${item.dataset.roman || "progression"} progression`);
+    }
 
     if (button && !item.dataset.playReady) {
       button.addEventListener("click", () => playProgression(chordSymbols, item));
@@ -1141,6 +1348,7 @@ function renderMajorKeyProgressions(chords) {
     const item = document.createElement("li");
     item.dataset.progression = progressionChordsForKey.map((chord) => chord.symbol).join(",");
     item.dataset.displayProgression = chordLabels.join(",");
+    item.dataset.roman = progression.roman;
 
     const button = document.createElement("button");
     button.className = "play-button progression-play";
@@ -1153,6 +1361,7 @@ function renderMajorKeyProgressions(chords) {
     button.appendChild(icon);
 
     const content = document.createElement("div");
+    content.className = "progression-content";
     const roman = document.createElement("span");
     roman.textContent = progression.roman;
 
@@ -1284,6 +1493,7 @@ function renderProgressionList(container, progressions, rootValue, chords) {
     button.appendChild(icon);
 
     const content = document.createElement("div");
+    content.className = "progression-content";
     const roman = document.createElement("span");
     roman.textContent = progression.roman;
 

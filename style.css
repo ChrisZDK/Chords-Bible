@@ -5,6 +5,7 @@
   --muted: #fff;
   --accent: #fff;
   --highlight: #49dcfa;
+  --play-highlight: #FA8045;
   --scrollbar-thumb: #008b8b;
   --scrollbar-thumb-hover: #00a6a6;
 }
@@ -369,7 +370,8 @@ h2 {
   margin-bottom: 0.7rem;
 }
 
-.play-button {
+.play-button,
+.repeat-button {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -383,12 +385,20 @@ h2 {
 }
 
 .play-button:hover,
-.play-button:focus-visible {
+.play-button:focus-visible,
+.repeat-button:hover,
+.repeat-button:focus-visible {
   background: var(--highlight);
   border-color: var(--highlight);
 }
 
-.play-button:focus-visible {
+.repeat-button.is-looping {
+  background: var(--play-highlight);
+  border-color: var(--play-highlight);
+}
+
+.play-button:focus-visible,
+.repeat-button:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;
 }
@@ -400,6 +410,19 @@ h2 {
   border-top: 0.42rem solid transparent;
   border-bottom: 0.42rem solid transparent;
   border-left: 0.66rem solid #000;
+}
+
+.repeat-icon {
+  display: grid;
+  place-items: center;
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.repeat-icon::before {
+  content: "\21bb";
 }
 
 .card h3 {
@@ -470,6 +493,11 @@ h2 {
   stroke: #000;
 }
 
+.piano-svg.is-playing .key-active.white-key,
+.piano-svg.is-playing .key-active.black-key {
+  fill: var(--play-highlight);
+}
+
 .key-label {
   fill: #000;
   font-size: 10px;
@@ -525,7 +553,8 @@ h2 {
   min-width: 0;
 }
 
-.progression-play {
+.progression-play,
+.progression-repeat {
   width: 2rem;
   height: 2rem;
 }
@@ -534,6 +563,10 @@ h2 {
   border-top-width: 0.36rem;
   border-bottom-width: 0.36rem;
   border-left-width: 0.58rem;
+}
+
+.progression-repeat .repeat-icon {
+  font-size: 1rem;
 }
 
 .progressions span {
@@ -580,9 +613,9 @@ h2 {
 }
 
 .progression-animation.is-active .progression-step {
-  border-color: var(--highlight);
-  box-shadow: 0 0 0 2px rgba(73, 220, 250, 0.28);
-  color: var(--highlight);
+  border-color: var(--play-highlight);
+  box-shadow: 0 0 0 2px rgba(250, 128, 69, 0.28);
+  color: var(--play-highlight);
   transform: translateY(-2px);
 }
 
