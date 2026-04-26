@@ -4259,6 +4259,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-header {
   height: clamp(3.5rem, 4.4vw, 4.25rem);
   padding: 0.55rem 1rem;
   overflow: visible;
+  background: transparent;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .site-brand-lockup {
