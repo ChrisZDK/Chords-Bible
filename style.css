@@ -4575,6 +4575,11 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .type-menu butt
   min-width: 6.25rem;
 }
 
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .type-menu button.is-active {
+  border-color: rgb(85 0 197 / 68%);
+  background: linear-gradient(180deg, #50188f 0%, #20043b 100%);
+}
+
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .notation-toggle {
   justify-self: end;
   margin-top: 0.1rem;
