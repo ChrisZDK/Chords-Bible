@@ -3327,6 +3327,27 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .hero-image-fra
   object-position: center;
 }
 
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-banner-image {
+  position: relative;
+  z-index: 1;
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-logo-overlay {
+  position: absolute;
+  top: clamp(1rem, 3.4vw, 3rem);
+  left: clamp(1.25rem, 9.2vw, 10.5rem);
+  z-index: 2;
+  width: clamp(17rem, 32vw, 36rem);
+  max-width: 43%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  filter:
+    drop-shadow(0 0 7px rgba(244, 236, 255, 0.28))
+    drop-shadow(0 0 16px rgba(167, 61, 255, 0.42));
+  pointer-events: none;
+}
+
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] main {
   gap: 0.75rem;
 }
@@ -4070,6 +4091,13 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] footer {
     object-position: 42% center;
   }
 
+  body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-logo-overlay {
+    top: clamp(0.9rem, 4vw, 2.1rem);
+    left: clamp(1rem, 5.4vw, 3.8rem);
+    width: clamp(13.5rem, 42vw, 25rem);
+    max-width: 52%;
+  }
+
   body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-layout,
   body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout,
   body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .key-summary-card {
@@ -4137,6 +4165,13 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] footer {
 
   body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame img {
     object-position: 33% center;
+  }
+
+  body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-logo-overlay {
+    top: clamp(0.7rem, 5vw, 1.15rem);
+    left: clamp(0.75rem, 4vw, 1.35rem);
+    width: clamp(11rem, 60vw, 18rem);
+    max-width: 68%;
   }
 
   body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .search-field {
