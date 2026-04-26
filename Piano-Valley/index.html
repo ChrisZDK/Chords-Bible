@@ -63,20 +63,13 @@
         </div>
       </section>
 
-      <section class="search-panel" aria-label="Chord search and filters">
+      <section class="search-panel" aria-label="Chord search">
         <div class="search-field">
           <label class="visually-hidden" for="chord-search">Search for a chord</label>
           <input id="chord-search" type="search" placeholder="Search for a chord..." data-chord-search>
           <span class="keyboard-shortcut" aria-hidden="true">⌘ K</span>
         </div>
 
-        <nav class="category-tabs" aria-label="Chord categories">
-          <button class="is-active" type="button" aria-pressed="true">Basics</button>
-          <button type="button" aria-pressed="false">7th</button>
-          <button type="button" aria-pressed="false">Extensions</button>
-          <button type="button" aria-pressed="false">Altered</button>
-          <button type="button" aria-pressed="false">Other</button>
-        </nav>
       </section>
 
       <section id="major-chords" class="chord-workspace" aria-labelledby="chord-controls-title" data-major-chord-page data-chord-quality="Major" data-fallback-root="C">
@@ -103,18 +96,14 @@
 
           <div class="selector-group chord-type-selector">
             <p class="selector-label">Chord type</p>
-            <div class="type-menu" role="group" aria-label="Choose chord type">
-              <button class="is-active" type="button" data-chord-quality-option="Major" aria-pressed="true">Major</button>
-              <button type="button" data-chord-quality-option="Minor" aria-pressed="false">Minor</button>
-              <button type="button" data-chord-quality-option="Power" aria-pressed="false">Power</button>
-              <button type="button" data-chord-quality-option="Sus2" aria-pressed="false">Sus2</button>
-              <button type="button" data-chord-quality-option="Sus4" aria-pressed="false">Sus4</button>
-              <button type="button" data-chord-quality-option="Augmented" aria-pressed="false">Augmented</button>
-              <button type="button" data-chord-quality-option="Diminished" aria-pressed="false">Diminished</button>
-              <button type="button" data-chord-quality-option="maj7" aria-pressed="false">maj7</button>
-              <button type="button" data-chord-quality-option="m7" aria-pressed="false">m7</button>
-              <button type="button" data-chord-quality-option="7" aria-pressed="false">7</button>
-            </div>
+            <nav class="category-tabs" aria-label="Chord type categories">
+              <button class="is-active" type="button" data-chord-category="basics" aria-pressed="true">Basics</button>
+              <button type="button" data-chord-category="seventh" aria-pressed="false">7th</button>
+              <button type="button" data-chord-category="extensions" aria-pressed="false">Extensions</button>
+              <button type="button" data-chord-category="altered" aria-pressed="false">Altered</button>
+              <button type="button" data-chord-category="other" aria-pressed="false">Other</button>
+            </nav>
+            <div class="type-menu" role="group" aria-label="Choose chord type" data-chord-quality-menu></div>
           </div>
 
           <div class="notation-toggle" role="group" aria-label="Choose note naming">

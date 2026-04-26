@@ -133,10 +133,234 @@ const chordQualityCatalog = {
     description: "A dominant seventh chord adding a minor seventh above a major triad.",
     related: ["Major", "maj7", "m7", "Augmented", "Diminished"],
   },
+  dim7: {
+    label: "dim7",
+    title: "Diminished 7th",
+    badge: "dim7",
+    suffix: "dim7",
+    intervals: [0, 3, 6, 9],
+    formula: ["1", "b3", "b5", "bb7"],
+    description: "A tense diminished seventh chord built from stacked minor thirds.",
+    related: ["Diminished", "m7b5", "m7", "7", "Minor"],
+  },
+  m7b5: {
+    label: "m7b5",
+    title: "Half-diminished 7th",
+    badge: "m7b5",
+    suffix: "m7b5",
+    intervals: [0, 3, 6, 10],
+    formula: ["1", "b3", "b5", "b7"],
+    description: "A half-diminished seventh chord with a minor third, flat fifth, and minor seventh.",
+    related: ["Diminished", "dim7", "m7", "Minor", "7b5"],
+  },
+  mMaj7: {
+    label: "mMaj7",
+    title: "Minor Major 7th",
+    badge: "mMaj7",
+    suffix: "mMaj7",
+    intervals: [0, 3, 7, 11],
+    formula: ["1", "b3", "5", "7"],
+    description: "A minor triad with a major seventh for a dramatic color.",
+    related: ["Minor", "m7", "maj7", "m9", "Diminished"],
+  },
+  aug7: {
+    label: "aug7",
+    title: "Augmented 7th",
+    badge: "aug7",
+    suffix: "aug7",
+    intervals: [0, 4, 8, 10],
+    formula: ["1", "3", "#5", "b7"],
+    description: "An augmented dominant seventh chord with a raised fifth.",
+    related: ["Augmented", "7#5", "7", "maj7", "9"],
+  },
+  6: {
+    label: "6",
+    title: "Major 6th",
+    badge: "6",
+    suffix: "6",
+    intervals: [0, 4, 7, 9],
+    formula: ["1", "3", "5", "6"],
+    description: "A major triad with an added sixth for a warm, open sound.",
+    related: ["Major", "maj7", "9", "add9", "m6"],
+  },
+  m6: {
+    label: "m6",
+    title: "Minor 6th",
+    badge: "m6",
+    suffix: "m6",
+    intervals: [0, 3, 7, 9],
+    formula: ["1", "b3", "5", "6"],
+    description: "A minor triad with an added sixth for a smooth minor color.",
+    related: ["Minor", "m7", "m9", "madd9", "6"],
+  },
+  9: {
+    label: "9",
+    title: "Dominant 9th",
+    badge: "9",
+    suffix: "9",
+    intervals: [0, 4, 7, 10, 14],
+    formula: ["1", "3", "5", "b7", "9"],
+    description: "A dominant seventh chord extended with a ninth.",
+    related: ["7", "13", "7b9", "7#9", "add9"],
+  },
+  maj9: {
+    label: "maj9",
+    title: "Major 9th",
+    badge: "maj9",
+    suffix: "maj9",
+    intervals: [0, 4, 7, 11, 14],
+    formula: ["1", "3", "5", "7", "9"],
+    description: "A major seventh chord extended with a ninth.",
+    related: ["maj7", "9", "13", "add9", "Major"],
+  },
+  m9: {
+    label: "m9",
+    title: "Minor 9th",
+    badge: "m9",
+    suffix: "m9",
+    intervals: [0, 3, 7, 10, 14],
+    formula: ["1", "b3", "5", "b7", "9"],
+    description: "A minor seventh chord extended with a ninth.",
+    related: ["m7", "Minor", "m6", "madd9", "mMaj7"],
+  },
+  11: {
+    label: "11",
+    title: "Dominant 11th",
+    badge: "11",
+    suffix: "11",
+    intervals: [0, 4, 7, 10, 14, 17],
+    formula: ["1", "3", "5", "b7", "9", "11"],
+    description: "A dominant ninth chord extended with an eleventh.",
+    related: ["9", "13", "Sus4", "9#11", "7"],
+  },
+  13: {
+    label: "13",
+    title: "Dominant 13th",
+    badge: "13",
+    suffix: "13",
+    intervals: [0, 4, 7, 10, 14, 17, 21],
+    formula: ["1", "3", "5", "b7", "9", "11", "13"],
+    description: "A dominant chord extended through the thirteenth.",
+    related: ["9", "11", "13b9", "7", "6"],
+  },
+  "7b5": {
+    label: "7b5",
+    title: "Dominant 7 Flat 5",
+    badge: "7b5",
+    suffix: "7b5",
+    intervals: [0, 4, 6, 10],
+    formula: ["1", "3", "b5", "b7"],
+    description: "A dominant seventh chord with a lowered fifth.",
+    related: ["7", "m7b5", "7#5", "9#11", "Diminished"],
+  },
+  "7#5": {
+    label: "7#5",
+    title: "Dominant 7 Sharp 5",
+    badge: "7#5",
+    suffix: "7#5",
+    intervals: [0, 4, 8, 10],
+    formula: ["1", "3", "#5", "b7"],
+    description: "A dominant seventh chord with a raised fifth.",
+    related: ["7", "aug7", "Augmented", "7b5", "7#9"],
+  },
+  "7b9": {
+    label: "7b9",
+    title: "Dominant 7 Flat 9",
+    badge: "7b9",
+    suffix: "7b9",
+    intervals: [0, 4, 7, 10, 13],
+    formula: ["1", "3", "5", "b7", "b9"],
+    description: "A dominant seventh chord with a lowered ninth.",
+    related: ["7", "9", "7#9", "13b9", "Diminished"],
+  },
+  "7#9": {
+    label: "7#9",
+    title: "Dominant 7 Sharp 9",
+    badge: "7#9",
+    suffix: "7#9",
+    intervals: [0, 4, 7, 10, 15],
+    formula: ["1", "3", "5", "b7", "#9"],
+    description: "A dominant seventh chord with a raised ninth.",
+    related: ["7", "9", "7b9", "7#5", "13b9"],
+  },
+  "9#11": {
+    label: "9#11",
+    title: "Dominant 9 Sharp 11",
+    badge: "9#11",
+    suffix: "9#11",
+    intervals: [0, 4, 7, 10, 14, 18],
+    formula: ["1", "3", "5", "b7", "9", "#11"],
+    description: "A dominant ninth chord with a raised eleventh.",
+    related: ["9", "11", "7b5", "13", "7"],
+  },
+  "13b9": {
+    label: "13b9",
+    title: "Dominant 13 Flat 9",
+    badge: "13b9",
+    suffix: "13b9",
+    intervals: [0, 4, 7, 10, 13, 21],
+    formula: ["1", "3", "5", "b7", "b9", "13"],
+    description: "A dominant thirteenth chord with a lowered ninth.",
+    related: ["13", "7b9", "9", "7#9", "7"],
+  },
+  add9: {
+    label: "add9",
+    title: "Add 9",
+    badge: "add9",
+    suffix: "add9",
+    intervals: [0, 4, 7, 14],
+    formula: ["1", "3", "5", "9"],
+    description: "A major triad with an added ninth and no seventh.",
+    related: ["Major", "9", "maj9", "6", "sus4add9"],
+  },
+  madd9: {
+    label: "madd9",
+    title: "Minor Add 9",
+    badge: "madd9",
+    suffix: "madd9",
+    intervals: [0, 3, 7, 14],
+    formula: ["1", "b3", "5", "9"],
+    description: "A minor triad with an added ninth and no seventh.",
+    related: ["Minor", "m9", "m6", "add9", "m7"],
+  },
+  sus4add9: {
+    label: "sus4add9",
+    title: "Sus4 Add 9",
+    badge: "sus4add9",
+    suffix: "sus4add9",
+    intervals: [0, 5, 7, 14],
+    formula: ["1", "4", "5", "9"],
+    description: "A suspended fourth chord with an added ninth.",
+    related: ["Sus4", "Sus2", "add9", "11", "Major"],
+  },
 };
-const chordQualityAliases = Object.fromEntries(
-  Object.keys(chordQualityCatalog).map((quality) => [quality.toLowerCase(), quality])
-);
+const chordQualityCategories = {
+  basics: {
+    label: "Basics",
+    qualities: ["Major", "Minor", "Power", "Sus2", "Sus4", "Augmented", "Diminished"],
+  },
+  seventh: {
+    label: "7th",
+    qualities: ["7", "maj7", "m7", "dim7", "m7b5", "mMaj7", "aug7"],
+  },
+  extensions: {
+    label: "Extensions",
+    qualities: ["6", "m6", "9", "maj9", "m9", "11", "13"],
+  },
+  altered: {
+    label: "Altered",
+    qualities: ["7b5", "7#5", "7b9", "7#9", "9#11", "13b9"],
+  },
+  other: {
+    label: "Other",
+    qualities: ["add9", "madd9", "sus4add9"],
+  },
+};
+const defaultChordCategory = "basics";
+const chordQualityAliases = {
+  ...Object.fromEntries(Object.keys(chordQualityCatalog).map((quality) => [quality.toLowerCase(), quality])),
+  5: "Power",
+};
 const majorChordsByRoot = Object.fromEntries(
   rootSelectorNotes.map((root) => {
     const rootValue = noteValues[root];
@@ -474,6 +698,19 @@ function normalizeChordQuality(quality) {
   const key = String(quality || "Major").trim();
 
   return chordQualityCatalog[key] ? key : chordQualityAliases[key.toLowerCase()] || "Major";
+}
+
+function chordCategoryForQuality(quality) {
+  const normalizedQuality = normalizeChordQuality(quality);
+  const category = Object.entries(chordQualityCategories).find(([, config]) =>
+    config.qualities.includes(normalizedQuality)
+  );
+
+  return category?.[0] || defaultChordCategory;
+}
+
+function normalizeChordCategory(category) {
+  return chordQualityCategories[category] ? category : defaultChordCategory;
 }
 
 function chordQualityInfo(quality) {
@@ -1320,6 +1557,64 @@ function getDynamicChordCard(page = dynamicChordPageForElement()) {
   return page?.querySelector("[data-dynamic-chord-card], [data-major-chord-card]");
 }
 
+function getChordPageCategory(page) {
+  return normalizeChordCategory(page?.dataset.chordCategory || chordCategoryForQuality(getChordPageQuality(page)));
+}
+
+function updateChordCategoryButtons(page = dynamicChordPageForElement()) {
+  if (!page) {
+    return;
+  }
+
+  const activeCategory = getChordPageCategory(page);
+
+  page.querySelectorAll("[data-chord-category]").forEach((button) => {
+    const category = normalizeChordCategory(button.dataset.chordCategory);
+    const isActive = category === activeCategory;
+
+    button.dataset.chordCategory = category;
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+  });
+}
+
+function renderChordTypeOptions(page = dynamicChordPageForElement()) {
+  const menu = page?.querySelector("[data-chord-quality-menu]");
+
+  if (!menu) {
+    return;
+  }
+
+  const activeCategory = getChordPageCategory(page);
+
+  if (menu.dataset.renderedChordCategory === activeCategory && menu.children.length) {
+    return;
+  }
+
+  menu.dataset.renderedChordCategory = activeCategory;
+  menu.replaceChildren();
+
+  chordQualityCategories[activeCategory].qualities.forEach((quality) => {
+    const info = chordQualityInfo(quality);
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.dataset.chordQualityOption = normalizeChordQuality(quality);
+    button.setAttribute("aria-pressed", "false");
+    button.textContent = info.label;
+    button.addEventListener("click", () => {
+      const nextQuality = normalizeChordQuality(button.dataset.chordQualityOption);
+      const url = new URL(window.location.href);
+
+      url.searchParams.set("type", nextQuality);
+      window.history.replaceState({}, "", url);
+      setDynamicChordQuality(nextQuality, page);
+    });
+
+    menu.appendChild(button);
+  });
+}
+
 function updateChordRootButtons() {
   document.querySelectorAll("[data-chord-root]").forEach((button) => {
     const root = button.dataset.chordRoot;
@@ -1338,6 +1633,7 @@ function updateChordTypeButtons(page = dynamicChordPageForElement()) {
     return;
   }
 
+  renderChordTypeOptions(page);
   const activeQuality = getChordPageQuality(page);
 
   page.querySelectorAll("[data-chord-quality-option]").forEach((button) => {
@@ -1348,6 +1644,8 @@ function updateChordTypeButtons(page = dynamicChordPageForElement()) {
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
   });
+
+  updateChordCategoryButtons(page);
 }
 
 function setDynamicChordRoot(root, page = dynamicChordPageForElement()) {
@@ -1380,6 +1678,25 @@ function setMajorChordRoot(root) {
   setDynamicChordRoot(root);
 }
 
+function setDynamicChordCategory(category, page = dynamicChordPageForElement()) {
+  if (!page) {
+    return;
+  }
+
+  const normalizedCategory = normalizeChordCategory(category);
+  const categoryQualities = chordQualityCategories[normalizedCategory].qualities;
+  const currentQuality = getChordPageQuality(page);
+  const nextQuality = categoryQualities.includes(currentQuality) ? currentQuality : categoryQualities[0];
+  const url = new URL(window.location.href);
+
+  page.dataset.chordCategory = normalizedCategory;
+  renderChordTypeOptions(page);
+  updateChordCategoryButtons(page);
+  url.searchParams.set("type", nextQuality);
+  window.history.replaceState({}, "", url);
+  setDynamicChordQuality(nextQuality, page);
+}
+
 function setDynamicChordQuality(quality, page = dynamicChordPageForElement()) {
   const card = getDynamicChordCard(page);
   const normalizedQuality = normalizeChordQuality(quality);
@@ -1389,7 +1706,10 @@ function setDynamicChordQuality(quality, page = dynamicChordPageForElement()) {
     return;
   }
 
+  page.dataset.chordCategory = chordCategoryForQuality(normalizedQuality);
   page.dataset.chordQuality = normalizedQuality;
+  renderChordTypeOptions(page);
+  updateChordCategoryButtons(page);
   setDynamicChordRoot(root, page);
 }
 
@@ -1404,12 +1724,13 @@ function initializeMajorChordPage() {
   const fallbackRoot = page.dataset.fallbackRoot || "C";
   const root = params.get("root") || fallbackRoot;
   const initialRoot = Number.isInteger(getRootValue(root)) ? root : fallbackRoot;
-  const hasChordTypeSelector = Boolean(page.querySelector("[data-chord-quality-option]"));
+  const hasChordTypeSelector = Boolean(page.querySelector("[data-chord-quality-menu]"));
   const initialQuality = normalizeChordQuality(
     (hasChordTypeSelector ? params.get("type") : null) || page.dataset.chordQuality || "Major"
   );
 
   page.dataset.chordQuality = initialQuality;
+  page.dataset.chordCategory = chordCategoryForQuality(initialQuality);
 
   page.querySelectorAll("[data-chord-root]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1421,18 +1742,14 @@ function initializeMajorChordPage() {
     });
   });
 
-  page.querySelectorAll("[data-chord-quality-option]").forEach((button) => {
+  page.querySelectorAll("[data-chord-category]").forEach((button) => {
     button.addEventListener("click", () => {
-      const nextQuality = normalizeChordQuality(button.dataset.chordQualityOption);
-      const url = new URL(window.location.href);
-
-      url.searchParams.set("type", nextQuality);
-      window.history.replaceState({}, "", url);
-      setDynamicChordQuality(nextQuality, page);
+      setDynamicChordCategory(button.dataset.chordCategory, page);
     });
   });
 
   updateChordRootButtons();
+  renderChordTypeOptions(page);
   updateChordTypeButtons(page);
   setDynamicChordRoot(initialRoot, page);
 }

@@ -1481,6 +1481,20 @@ body.piano-app-page[data-page="piano-valley"] .root-selector .root-menu {
   gap: 0.55rem;
 }
 
+body.piano-app-page[data-page="piano-valley"] .chord-type-selector .category-tabs {
+  max-width: 100%;
+  padding-bottom: 0.1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+  scrollbar-width: thin;
+}
+
+body.piano-app-page[data-page="piano-valley"] .chord-type-selector .category-tabs button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 body.piano-app-page[data-page="piano-valley"] .category-tabs button:hover,
 body.piano-app-page[data-page="piano-valley"] .type-menu button:hover,
 body.piano-app-page[data-page="piano-valley"] .root-menu button:hover,
@@ -4392,6 +4406,10 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs 
   box-shadow: none;
 }
 
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-type-selector .category-tabs {
+  margin-bottom: 0.08rem;
+}
+
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs button,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .type-menu button,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .root-selector .root-menu button,
@@ -4405,6 +4423,8 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs button {
+  font-family: "Handjet", Arial, Helvetica, sans-serif;
+  font-size: 1rem;
   min-width: 6.25rem;
 }
 
@@ -4424,12 +4444,14 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .selector-group
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .root-selector .root-menu,
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .key-selector-panel .root-menu {
+  justify-content: flex-start;
   margin: 0;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .root-selector .root-menu button {
-  flex: 1 1 0;
-  min-width: 4.85rem;
+  flex: 0 0 5.35rem;
+  width: 5.35rem;
+  min-width: 5.35rem;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .type-menu button {
@@ -4729,7 +4751,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .progression-ch
     grid-column: 1;
   }
 
-  body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .category-tabs {
+  body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .search-panel > .category-tabs {
     grid-column: 1 / -1;
   }
 }
