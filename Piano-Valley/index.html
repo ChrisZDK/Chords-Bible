@@ -13,8 +13,13 @@
 <body class="piano-app-page" data-page="piano-valley" data-theme="dark">
   <div class="app-shell">
     <header class="site-header">
-      <a class="site-brand" href="../index.html">Chords Bible</a>
-      <span class="site-section" aria-label="Current section">Piano Valley</span>
+      <div class="site-brand-lockup">
+        <span class="site-logo" aria-hidden="true">
+          <span></span>
+        </span>
+        <a class="site-brand" href="../index.html">Chords Bible</a>
+        <span class="site-section" aria-label="Current section">Piano Valley</span>
+      </div>
       <div class="site-actions" aria-label="Piano tools">
         <label class="visually-hidden" for="piano-area-menu">Piano area</label>
         <select id="piano-area-menu" class="header-control header-select" data-header-nav aria-label="Choose Piano area">
@@ -30,25 +35,29 @@
           <option value="diabolical" disabled>Diabolical</option>
           <option value="kawaii" disabled>Kawaii</option>
         </select>
-        <button class="header-icon-button" type="button" aria-label="Add current chord to favorites">☆</button>
+        <button class="header-icon-button" type="button" aria-label="Add current chord to favorites">&#9734;</button>
       </div>
     </header>
 
     <main>
       <section class="hero-section" aria-labelledby="piano-valley-title">
-        <div class="hero-copy">
-          <p class="section-kicker">Chords Bible Piano</p>
-          <h1 id="piano-valley-title">Piano Valley</h1>
-          <p class="subtitle">Explore chord shapes, formulas, and piano notes from one focused workspace.</p>
+        <h1 id="piano-valley-title" class="visually-hidden">Piano Valley</h1>
+        <div class="hero-image-frame">
+          <img
+            src="../assets/piano-valley/themes/dark/hero-dark.webp"
+            alt="Pixel-art Piano Valley scene with floating islands, robots, and a piano path."
+            width="1800"
+            height="600"
+            fetchpriority="high"
+          >
         </div>
-        <div class="hero-visual-slot" aria-hidden="true"></div>
       </section>
 
       <section class="search-panel" aria-label="Chord search and filters">
         <div class="search-field">
           <label class="visually-hidden" for="chord-search">Search for a chord</label>
           <input id="chord-search" type="search" placeholder="Search for a chord..." data-chord-search>
-          <span class="keyboard-shortcut" aria-hidden="true">⌘ K</span>
+          <span class="keyboard-shortcut" aria-hidden="true">Ctrl K</span>
         </div>
 
         <nav class="category-tabs" aria-label="Chord categories">
@@ -107,11 +116,21 @@
         <section class="chord-display" data-major-chord-card data-notes="C,E,G" data-root="C" data-quality="Major">
           <div class="chord-layout">
             <article class="card chord-summary-card">
-              <span class="chord-symbol" data-dynamic-chord-symbol>C</span>
+              <span class="chord-emblem" aria-hidden="true">
+                <img
+                  src="../assets/piano-valley/themes/dark/chord-emblem-c.png"
+                  alt=""
+                  width="420"
+                  height="420"
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="chord-symbol" data-dynamic-chord-symbol>C</span>
+              </span>
               <div class="chord-heading-row">
                 <h2 data-dynamic-chord-title>C Major</h2>
                 <span class="chord-badge" data-dynamic-chord-badge>Major</span>
-                <button class="favorite-button" type="button" aria-label="Save current chord">☆</button>
+                <button class="favorite-button" type="button" aria-label="Save current chord">&#9734;</button>
               </div>
               <p data-dynamic-chord-description>A major triad built from a root, a major third, and a perfect fifth.</p>
               <div class="card-actions">
@@ -122,10 +141,20 @@
 
             <article class="card piano-card">
               <div class="piano-card-header">
-                <button class="play-button" type="button" aria-label="Play C Major chord"><span class="play-icon" aria-hidden="true"></span></button>
+                <button class="play-button" type="button" aria-label="Play C Major chord">
+                  <img
+                    src="../assets/piano-valley/themes/dark/play-button.png"
+                    alt=""
+                    width="340"
+                    height="340"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                  <span class="play-icon" aria-hidden="true"></span>
+                </button>
                 <div>
                   <p class="stat-label">Formula</p>
-                  <p class="formula-line" data-dynamic-chord-formula>1 • 3 • 5</p>
+                  <p class="formula-line" data-dynamic-chord-formula>1 &bull; 3 &bull; 5</p>
                 </div>
               </div>
               <div class="note-line">
@@ -139,7 +168,16 @@
 
           <div class="chord-details-layout">
             <article class="card chord-info-card">
-              <div class="future-illustration-slot" aria-hidden="true"></div>
+              <div class="future-illustration-slot" aria-hidden="true">
+                <img
+                  src="../assets/piano-valley/themes/dark/wizard-creature.png"
+                  alt=""
+                  width="307"
+                  height="360"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </div>
               <div>
                 <h2 data-dynamic-chord-about-title>About C Major</h2>
                 <p data-dynamic-chord-about>C Major uses C, E, G. A major triad built from a root, a major third, and a perfect fifth.</p>
@@ -147,12 +185,22 @@
             </article>
 
             <article class="card related-chords-card">
-              <h2>Related chords</h2>
+              <div class="related-card-title">
+                <img
+                  src="../assets/piano-valley/themes/dark/crystal-icon.png"
+                  alt=""
+                  width="166"
+                  height="190"
+                  loading="lazy"
+                  decoding="async"
+                >
+                <h2>Related Chords</h2>
+              </div>
               <ol class="related-chords-list" data-related-chords>
                 <li>
                   <div>
                     <span>Cmaj7 Major 7th</span>
-                    <span>1 • 3 • 5 • 7</span>
+                    <span>1 &bull; 3 &bull; 5 &bull; 7</span>
                   </div>
                   <button type="button">Open</button>
                 </li>
@@ -169,6 +217,6 @@
     </footer>
   </div>
 
-  <script src="../script.js?v=11"></script>
+  <script src="../script.js?v=12"></script>
 </body>
 </html>
