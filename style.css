@@ -117,6 +117,10 @@ body.menu-open {
   color: var(--highlight);
 }
 
+.sidebar .menu-list + h2 {
+  margin-top: 1.2rem;
+}
+
 .menu-list,
 .menu-list ol {
   margin: 0;
@@ -235,6 +239,18 @@ h1 {
   color: var(--muted);
 }
 
+.formula-line,
+.helper-text {
+  margin: 0.5rem 0 0;
+  color: var(--highlight);
+  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-size: 1.05rem;
+}
+
+.helper-text {
+  color: var(--muted);
+}
+
 .notation-toggle {
   display: inline-flex;
   gap: 0.25rem;
@@ -310,8 +326,23 @@ h2 {
   text-decoration: none;
 }
 
+.root-menu button {
+  min-width: 3.25rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+}
+
 .root-menu a:hover,
-.root-menu a:focus-visible {
+.root-menu a:focus-visible,
+.root-menu button:hover,
+.root-menu button:focus-visible,
+.root-menu button[aria-pressed="true"] {
   border-color: var(--highlight);
   background: var(--highlight);
   color: #000;
@@ -393,6 +424,10 @@ h2 {
 
 .key-chords {
   margin-top: 2.5rem;
+}
+
+.key-summary {
+  text-align: center;
 }
 
 .progression-columns {
@@ -624,4 +659,15 @@ footer {
   text-align: center;
   padding: 1.2rem 0 2rem;
   font-size: 0.95rem;
+}
+
+.redirect-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  text-align: center;
+}
+
+.redirect-page a {
+  color: var(--highlight);
 }
