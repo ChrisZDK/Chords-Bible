@@ -32,6 +32,111 @@ const enharmonicRootLabels = {
   "G#": "G#/Ab",
   "A#": "A#/Bb",
 };
+const chordQualityCatalog = {
+  Major: {
+    label: "Major",
+    title: "Major",
+    badge: "Major",
+    suffix: "",
+    intervals: [0, 4, 7],
+    formula: ["1", "3", "5"],
+    description: "A major triad built from a root, a major third, and a perfect fifth.",
+    related: ["maj7", "Sus4"],
+  },
+  Minor: {
+    label: "Minor",
+    title: "Minor",
+    badge: "Minor",
+    suffix: "m",
+    intervals: [0, 3, 7],
+    formula: ["1", "b3", "5"],
+    description: "A minor triad built from a root, a minor third, and a perfect fifth.",
+    related: ["m7", "Major"],
+  },
+  Power: {
+    label: "Power",
+    title: "Power",
+    badge: "5",
+    suffix: "5",
+    intervals: [0, 7],
+    formula: ["1", "5"],
+    description: "A compact fifth chord using the root and perfect fifth.",
+    related: ["Major", "Minor"],
+  },
+  Sus2: {
+    label: "Sus2",
+    title: "Suspended 2nd",
+    badge: "sus2",
+    suffix: "sus2",
+    intervals: [0, 2, 7],
+    formula: ["1", "2", "5"],
+    description: "A suspended chord replacing the third with a major second.",
+    related: ["Sus4", "Major"],
+  },
+  Sus4: {
+    label: "Sus4",
+    title: "Suspended 4th",
+    badge: "sus4",
+    suffix: "sus4",
+    intervals: [0, 5, 7],
+    formula: ["1", "4", "5"],
+    description: "A suspended chord replacing the third with a perfect fourth.",
+    related: ["Sus2", "Major"],
+  },
+  Augmented: {
+    label: "Augmented",
+    title: "Augmented",
+    badge: "aug",
+    suffix: "aug",
+    intervals: [0, 4, 8],
+    formula: ["1", "3", "#5"],
+    description: "An augmented triad with a raised fifth for a bright, unstable sound.",
+    related: ["Major", "7"],
+  },
+  Diminished: {
+    label: "Diminished",
+    title: "Diminished",
+    badge: "dim",
+    suffix: "dim",
+    intervals: [0, 3, 6],
+    formula: ["1", "b3", "b5"],
+    description: "A diminished triad built from stacked minor thirds.",
+    related: ["Minor", "m7"],
+  },
+  maj7: {
+    label: "maj7",
+    title: "Major 7th",
+    badge: "maj7",
+    suffix: "maj7",
+    intervals: [0, 4, 7, 11],
+    formula: ["1", "3", "5", "7"],
+    description: "A major seventh chord adding the major seventh above a major triad.",
+    related: ["Major", "7"],
+  },
+  m7: {
+    label: "m7",
+    title: "Minor 7th",
+    badge: "m7",
+    suffix: "m7",
+    intervals: [0, 3, 7, 10],
+    formula: ["1", "b3", "5", "b7"],
+    description: "A minor seventh chord adding a minor seventh above a minor triad.",
+    related: ["Minor", "7"],
+  },
+  7: {
+    label: "7",
+    title: "Dominant 7th",
+    badge: "7",
+    suffix: "7",
+    intervals: [0, 4, 7, 10],
+    formula: ["1", "3", "5", "b7"],
+    description: "A dominant seventh chord adding a minor seventh above a major triad.",
+    related: ["Major", "maj7"],
+  },
+};
+const chordQualityAliases = Object.fromEntries(
+  Object.keys(chordQualityCatalog).map((quality) => [quality.toLowerCase(), quality])
+);
 const majorChordsByRoot = Object.fromEntries(
   rootSelectorNotes.map((root) => {
     const rootValue = noteValues[root];
@@ -353,7 +458,7 @@ function getRootValue(root) {
 }
 
 function chordName(root, quality) {
-  return `${displayNoteName(root)} ${quality}`;
+  return `${displayNoteName(root)} ${chordQualityInfo(quality).title}`;
 }
 
 function rootSelectorLabel(root) {
@@ -364,19 +469,30 @@ function selectedChordRootName(root) {
   return noteNameForValue(noteValues[root]);
 }
 
+function normalizeChordQuality(quality) {
+  const key = String(quality || "Major").trim();
+
+  return chordQualityCatalog[key] ? key : chordQualityAliases[key.toLowerCase()] || "Major";
+}
+
+function chordQualityInfo(quality) {
+  return chordQualityCatalog[normalizeChordQuality(quality)];
+}
+
 function chordIntervalsForQuality(quality) {
-  return quality === "Minor" ? [0, 3, 7] : [0, 4, 7];
+  return chordQualityInfo(quality).intervals;
 }
 
 function getChordForRoot(root, quality = "Major") {
   const normalizedRoot = sharpNames[normalizeValue(noteValues[root] ?? 0)];
   const rootValue = noteValues[normalizedRoot];
   const displayRoot = selectedChordRootName(normalizedRoot);
+  const normalizedQuality = normalizeChordQuality(quality);
 
   return {
     root: displayRoot,
-    quality,
-    notes: chordNotesFromRoot(rootValue, chordIntervalsForQuality(quality)),
+    quality: normalizedQuality,
+    notes: chordNotesFromRoot(rootValue, chordIntervalsForQuality(normalizedQuality)),
   };
 }
 
@@ -401,7 +517,7 @@ function getKeyConfig() {
 }
 
 function chordTitleForCard(card) {
-  const name = chordName(card.dataset.root, card.dataset.quality);
+  const name = chordName(card.dataset.root, normalizeChordQuality(card.dataset.quality));
   return card.dataset.roman ? `${card.dataset.roman} ${name}` : name;
 }
 
@@ -432,19 +548,15 @@ function chordNotesFromRoot(rootValue, intervals) {
 }
 
 function qualitySuffix(quality) {
-  if (quality === "Minor") {
-    return "m";
-  }
-
-  if (quality === "Diminished") {
-    return "dim";
-  }
-
-  return "";
+  return chordQualityInfo(quality).suffix;
 }
 
 function chordSymbol(root, quality) {
   return `${normalizeNote(root)}${qualitySuffix(quality)}`;
+}
+
+function displayChordSymbolForRoot(root, quality) {
+  return `${displayNoteName(root)}${qualitySuffix(quality)}`;
 }
 
 function displayChordSymbol(symbol) {
@@ -596,7 +708,7 @@ function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying =
 }
 
 function resetChordPlaybackKeyboards() {
-  document.querySelectorAll(".card[data-notes]").forEach((card) => {
+  document.querySelectorAll(".card[data-notes], [data-dynamic-chord-card][data-notes], [data-major-chord-card][data-notes]").forEach((card) => {
     renderChordCardKeyboard(card);
   });
 }
@@ -993,9 +1105,62 @@ function ensureProgressionRepeatButton(item, chordSymbols) {
   return button;
 }
 
+function displayChordNotesInline(notes, separator = " - ") {
+  return notes.map(displayNoteName).join(separator);
+}
+
+function chordAboutText(chordNameText, notes, quality) {
+  const info = chordQualityInfo(quality);
+  const noteList = displayChordNotesInline(notes, ", ");
+
+  return `${chordNameText} uses ${noteList}. ${info.description}`;
+}
+
+function renderRelatedChords(card, root, quality) {
+  const list = card.querySelector("[data-related-chords]");
+
+  if (!list) {
+    return;
+  }
+
+  const relatedQualities = chordQualityInfo(quality).related || [];
+  list.replaceChildren();
+
+  relatedQualities.forEach((relatedQuality) => {
+    const info = chordQualityInfo(relatedQuality);
+    const item = document.createElement("li");
+    const content = document.createElement("div");
+    const title = document.createElement("span");
+    const formula = document.createElement("span");
+    const button = document.createElement("button");
+
+    title.textContent = chordName(root, relatedQuality);
+    formula.textContent = info.formula.join(" \u2022 ");
+    button.type = "button";
+    button.textContent = "Open";
+    button.dataset.relatedChordType = relatedQuality;
+    button.setAttribute("aria-label", `Open ${title.textContent}`);
+    button.addEventListener("click", () => {
+      const page = dynamicChordPageForElement(card);
+      const url = new URL(window.location.href);
+
+      url.searchParams.set("root", selectedChordRootName(root));
+      url.searchParams.set("type", relatedQuality);
+      window.history.replaceState({}, "", url);
+      setDynamicChordQuality(relatedQuality, page);
+    });
+
+    content.append(title, formula);
+    item.append(content, button);
+    list.appendChild(item);
+  });
+}
+
 function updateChordCardText(card) {
   const notes = card.dataset.notes.split(",");
-  const title = card.querySelector("h2, h3");
+  const quality = normalizeChordQuality(card.dataset.quality);
+  const info = chordQualityInfo(quality);
+  const title = card.querySelector("[data-dynamic-chord-title]") || card.querySelector("h2, h3");
   const noteText = card.querySelector("[data-dynamic-chord-notes]") || card.querySelector("p");
   const keyboard = card.querySelector(".keyboard");
   const button = card.querySelector(".play-button");
@@ -1008,12 +1173,45 @@ function updateChordCardText(card) {
   const displayedNotes = card.hasAttribute("data-preserve-spelling")
     ? card.dataset.displayNotes
     : displayNotes(notes);
+  const displayedNotesInline = card.hasAttribute("data-preserve-spelling")
+    ? card.dataset.displayNotes
+    : displayChordNotesInline(notes, " \u2022 ");
+  const formulaText = info.formula.join(" \u2022 ");
+  const symbolText = card.dataset.root ? displayChordSymbolForRoot(card.dataset.root, quality) : "";
 
   if (title && card.dataset.root && card.dataset.quality) {
     title.textContent = displayedChordName;
   }
 
-  if (noteText) {
+  card.querySelectorAll("[data-dynamic-chord-symbol]").forEach((element) => {
+    element.textContent = symbolText;
+  });
+
+  card.querySelectorAll("[data-dynamic-chord-badge]").forEach((element) => {
+    element.textContent = info.badge;
+  });
+
+  card.querySelectorAll("[data-dynamic-chord-description]").forEach((element) => {
+    element.textContent = info.description;
+  });
+
+  card.querySelectorAll("[data-dynamic-chord-formula]").forEach((element) => {
+    element.textContent = formulaText;
+  });
+
+  card.querySelectorAll("[data-dynamic-chord-notes-inline]").forEach((element) => {
+    element.textContent = displayedNotesInline;
+  });
+
+  card.querySelectorAll("[data-dynamic-chord-about-title]").forEach((element) => {
+    element.textContent = `About ${displayedChordName}`;
+  });
+
+  card.querySelectorAll("[data-dynamic-chord-about]").forEach((element) => {
+    element.textContent = chordAboutText(displayedChordName, notes, quality);
+  });
+
+  if (noteText && !noteText.hasAttribute("data-dynamic-chord-notes-inline")) {
     noteText.textContent = `${card.hasAttribute("data-dynamic-major-card") ? "Chord" : "Notes"}: ${displayedNotes}`;
   }
 
@@ -1032,6 +1230,10 @@ function updateChordCardText(card) {
   if (keyboard) {
     keyboard.setAttribute("aria-label", `Piano keys for ${displayedChordName}`);
     renderChordCardKeyboard(card, notes);
+  }
+
+  if (card.dataset.root) {
+    renderRelatedChords(card, card.dataset.root, quality);
   }
 }
 
@@ -1053,7 +1255,7 @@ function initializeChordCard(card) {
 }
 
 function initializeChordCards() {
-  document.querySelectorAll(".card[data-notes]").forEach(initializeChordCard);
+  document.querySelectorAll(".card[data-notes], [data-dynamic-chord-card][data-notes], [data-major-chord-card][data-notes]").forEach(initializeChordCard);
 }
 
 function initializeProgressions() {
@@ -1080,7 +1282,7 @@ function dynamicChordPageForElement(element = document) {
 }
 
 function getChordPageQuality(page) {
-  return page?.dataset.chordQuality || "Major";
+  return normalizeChordQuality(page?.dataset.chordQuality || "Major");
 }
 
 function getDynamicChordCard(page = dynamicChordPageForElement()) {
@@ -1100,6 +1302,23 @@ function updateChordRootButtons() {
   });
 }
 
+function updateChordTypeButtons(page = dynamicChordPageForElement()) {
+  if (!page) {
+    return;
+  }
+
+  const activeQuality = getChordPageQuality(page);
+
+  page.querySelectorAll("[data-chord-quality-option]").forEach((button) => {
+    const quality = normalizeChordQuality(button.dataset.chordQualityOption);
+    const isActive = quality === activeQuality;
+
+    button.dataset.chordQualityOption = quality;
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+  });
+}
+
 function setDynamicChordRoot(root, page = dynamicChordPageForElement()) {
   const card = getDynamicChordCard(page);
 
@@ -1112,18 +1331,34 @@ function setDynamicChordRoot(root, page = dynamicChordPageForElement()) {
   card.dataset.root = chord.root;
   card.dataset.quality = chord.quality;
   card.dataset.notes = chord.notes.join(",");
-  document.title = `${chord.root} ${quality} - Chords Bible`;
+  page.dataset.chordQuality = chord.quality;
+  document.title = `${chordName(chord.root, chord.quality)} - Chords Bible`;
 
   page.querySelectorAll("[data-chord-root]").forEach((button) => {
     const isActive = normalizeValue(noteValues[button.dataset.chordRoot]) === normalizeValue(noteValues[root]);
     button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
   });
 
+  updateChordTypeButtons(page);
   updateChordCardText(card);
 }
 
 function setMajorChordRoot(root) {
   setDynamicChordRoot(root);
+}
+
+function setDynamicChordQuality(quality, page = dynamicChordPageForElement()) {
+  const card = getDynamicChordCard(page);
+  const normalizedQuality = normalizeChordQuality(quality);
+  const root = card?.dataset.root || page?.dataset.fallbackRoot || "C";
+
+  if (!page) {
+    return;
+  }
+
+  page.dataset.chordQuality = normalizedQuality;
+  setDynamicChordRoot(root, page);
 }
 
 function initializeMajorChordPage() {
@@ -1137,6 +1372,12 @@ function initializeMajorChordPage() {
   const fallbackRoot = page.dataset.fallbackRoot || "C";
   const root = params.get("root") || fallbackRoot;
   const initialRoot = Number.isInteger(getRootValue(root)) ? root : fallbackRoot;
+  const hasChordTypeSelector = Boolean(page.querySelector("[data-chord-quality-option]"));
+  const initialQuality = normalizeChordQuality(
+    (hasChordTypeSelector ? params.get("type") : null) || page.dataset.chordQuality || "Major"
+  );
+
+  page.dataset.chordQuality = initialQuality;
 
   page.querySelectorAll("[data-chord-root]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1148,7 +1389,19 @@ function initializeMajorChordPage() {
     });
   });
 
+  page.querySelectorAll("[data-chord-quality-option]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextQuality = normalizeChordQuality(button.dataset.chordQualityOption);
+      const url = new URL(window.location.href);
+
+      url.searchParams.set("type", nextQuality);
+      window.history.replaceState({}, "", url);
+      setDynamicChordQuality(nextQuality, page);
+    });
+  });
+
   updateChordRootButtons();
+  updateChordTypeButtons(page);
   setDynamicChordRoot(initialRoot, page);
 }
 
@@ -1220,7 +1473,9 @@ function updateNotation() {
   updateNotationButtons();
   updateRootMenu();
   updateChordRootButtons();
+  updateChordTypeButtons();
   document.querySelectorAll(".card[data-notes]").forEach(updateChordCardText);
+  document.querySelectorAll("[data-dynamic-chord-card][data-notes], [data-major-chord-card][data-notes]").forEach(updateChordCardText);
   updateDynamicKeyText();
   updateProgressionLabels();
   updateProgressionAnimationLabels();

@@ -694,6 +694,461 @@ footer {
   font-size: 0.95rem;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body.piano-app-page {
+  padding: 1rem;
+}
+
+.piano-app-page .menu-toggle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: #000;
+  cursor: pointer;
+}
+
+.piano-app-page .menu-toggle span {
+  display: block;
+  width: 1.15rem;
+  height: 2px;
+  margin: 2px 0;
+  background: #fff;
+}
+
+.piano-app-page .sidebar {
+  transform: translateX(-100%);
+  transition: transform 180ms ease;
+}
+
+.piano-app-page.menu-open .sidebar {
+  transform: translateX(0);
+}
+
+.app-shell {
+  display: grid;
+  gap: 1rem;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.piano-app-page .site-header {
+  position: static;
+  inset: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: space-between;
+  min-height: auto;
+  height: auto;
+  padding: 1rem 1.25rem 1rem 4rem;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.site-brand {
+  font-weight: 700;
+}
+
+.site-section {
+  padding-left: 0.85rem;
+  border-left: 1px solid #fff;
+  color: var(--muted);
+  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+}
+
+.site-actions,
+.card-actions,
+.piano-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.header-control,
+.header-icon-button,
+.card-actions button,
+.type-menu button,
+.category-tabs button,
+.related-chords-card button {
+  min-height: 2.4rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.header-icon-button,
+.favorite-button {
+  width: 2.4rem;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.piano-app-page header,
+.piano-app-page main,
+.piano-app-page footer {
+  width: 100%;
+  margin: 0;
+}
+
+.piano-app-page main {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr);
+  gap: 1rem;
+  align-items: stretch;
+  min-height: 15rem;
+  padding: 2rem;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.hero-copy {
+  align-self: center;
+}
+
+.section-kicker,
+.selector-label,
+.stat-label,
+.keyboard-legend {
+  margin: 0 0 0.35rem;
+  color: var(--highlight);
+  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+}
+
+.hero-section h1 {
+  font-size: clamp(3rem, 7vw, 5.4rem);
+}
+
+.hero-visual-slot,
+.future-illustration-slot {
+  min-height: 100%;
+  border: 1px dashed #666;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.search-panel,
+.selector-panel,
+.chord-display {
+  display: grid;
+  gap: 1rem;
+}
+
+.search-panel,
+.selector-panel {
+  padding: 1rem;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #fff;
+  border-radius: 8px;
+}
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.search-field input:focus {
+  outline: 0;
+}
+
+.keyboard-shortcut {
+  flex: 0 0 auto;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid #777;
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.category-tabs,
+.type-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.category-tabs button:hover,
+.category-tabs button:focus-visible,
+.category-tabs button.is-active,
+.type-menu button:hover,
+.type-menu button:focus-visible,
+.type-menu button.is-active,
+.header-control:hover,
+.header-control:focus-visible,
+.header-icon-button:hover,
+.header-icon-button:focus-visible,
+.card-actions button:hover,
+.card-actions button:focus-visible,
+.related-chords-card button:hover,
+.related-chords-card button:focus-visible {
+  border-color: var(--highlight);
+  background: var(--highlight);
+  color: #000;
+  outline: 0;
+}
+
+.selector-panel h2 {
+  margin: 0;
+}
+
+.selector-group {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.root-selector .root-menu {
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.root-selector .root-menu button.is-active {
+  border-color: var(--highlight);
+  background: var(--highlight);
+  color: #000;
+}
+
+.chord-type-selector {
+  margin-top: 0.25rem;
+}
+
+.chord-layout,
+.chord-details-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 1rem;
+}
+
+.chord-summary-card,
+.piano-card,
+.chord-info-card,
+.related-chords-card {
+  min-width: 0;
+}
+
+.chord-summary-card {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.chord-symbol {
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  aspect-ratio: 1;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  color: var(--highlight);
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.chord-heading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.chord-heading-row h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.chord-badge {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  color: var(--highlight);
+}
+
+.favorite-button {
+  margin-left: auto;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.piano-card {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.piano-card-header {
+  justify-content: space-between;
+}
+
+.piano-card .formula-line {
+  margin: 0;
+}
+
+.note-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.note-line p,
+.keyboard-legend {
+  margin: 0;
+}
+
+.keyboard-legend {
+  color: var(--muted);
+  text-align: center;
+}
+
+.chord-info-card {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.future-illustration-slot {
+  min-height: 5rem;
+}
+
+.related-chords-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related-chords-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.related-chords-list li:last-child {
+  border-bottom: 0;
+}
+
+.related-chords-list div,
+.related-chords-list span {
+  display: block;
+}
+
+.related-chords-list span + span {
+  color: var(--muted);
+  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+}
+
+.piano-app-page footer {
+  padding: 0 0 1rem;
+}
+
+@media (min-width: 1100px) {
+  .piano-app-page .site-header,
+  .piano-app-page header,
+  .piano-app-page main,
+  .piano-app-page footer {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 820px) {
+  body.piano-app-page {
+    padding: 0.75rem;
+  }
+
+  .piano-app-page .site-header {
+    padding-left: 4rem;
+  }
+
+  .hero-section,
+  .chord-layout,
+  .chord-details-layout,
+  .chord-info-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-visual-slot {
+    min-height: 7rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .piano-app-page .site-header,
+  .search-panel,
+  .selector-panel,
+  .hero-section {
+    padding: 0.85rem;
+  }
+
+  .site-actions,
+  .category-tabs,
+  .type-menu,
+  .root-selector .root-menu {
+    width: 100%;
+  }
+
+  .category-tabs button,
+  .type-menu button,
+  .root-selector .root-menu button {
+    flex: 1 1 auto;
+  }
+
+  .chord-symbol {
+    width: 4.5rem;
+    font-size: 2.5rem;
+  }
+}
+
 .redirect-page {
   display: grid;
   min-height: 100vh;
