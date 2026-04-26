@@ -342,16 +342,24 @@ function selectedChordRootName(root) {
   return noteNameForValue(noteValues[root]);
 }
 
-function getMajorChordForRoot(root) {
+function chordIntervalsForQuality(quality) {
+  return quality === "Minor" ? [0, 3, 7] : [0, 4, 7];
+}
+
+function getChordForRoot(root, quality = "Major") {
   const normalizedRoot = sharpNames[normalizeValue(noteValues[root] ?? 0)];
-  const chord = majorChordsByRoot[normalizedRoot] || majorChordsByRoot.C;
-  const displayRoot = selectedChordRootName(chord.root);
+  const rootValue = noteValues[normalizedRoot];
+  const displayRoot = selectedChordRootName(normalizedRoot);
 
   return {
     root: displayRoot,
-    quality: chord.quality,
-    notes: chord.notes,
+    quality,
+    notes: chordNotesFromRoot(rootValue, chordIntervalsForQuality(quality)),
   };
+}
+
+function getMajorChordForRoot(root) {
+  return getChordForRoot(root, "Major");
 }
 
 function keySymbol(root, quality) {
@@ -815,6 +823,10 @@ function updateChordCardText(card) {
     button.setAttribute("aria-label", `Play ${displayedChordName} chord`);
   }
 
+  if (card.closest("[data-dynamic-chord-page], [data-major-chord-page]") && card.dataset.root && card.dataset.quality) {
+    document.title = `${displayedChordName} - Chords Bible`;
+  }
+
   if (keyboard) {
     keyboard.setAttribute("aria-label", `Piano keys for ${displayedChordName}`);
     keyboard.replaceChildren(createKeyboard(notes, card.hasAttribute("data-preserve-spelling")));
@@ -855,31 +867,47 @@ function initializeProgressions() {
   });
 }
 
+function dynamicChordPageForElement(element = document) {
+  return element.closest?.("[data-dynamic-chord-page], [data-major-chord-page]") ||
+    document.querySelector("[data-dynamic-chord-page], [data-major-chord-page]");
+}
+
+function getChordPageQuality(page) {
+  return page?.dataset.chordQuality || "Major";
+}
+
+function getDynamicChordCard(page = dynamicChordPageForElement()) {
+  return page?.querySelector("[data-dynamic-chord-card], [data-major-chord-card]");
+}
+
 function updateChordRootButtons() {
   document.querySelectorAll("[data-chord-root]").forEach((button) => {
     const root = button.dataset.chordRoot;
     const displayRoot = selectedChordRootName(root);
     const label = rootSelectorLabel(root);
+    const page = dynamicChordPageForElement(button);
+    const quality = getChordPageQuality(page).toLowerCase();
 
     button.textContent = label;
-    button.setAttribute("aria-label", `Choose ${displayRoot} major chord root`);
+    button.setAttribute("aria-label", `Choose ${displayRoot} ${quality} chord root`);
   });
 }
 
-function setMajorChordRoot(root) {
-  const card = document.querySelector("[data-major-chord-card]");
+function setDynamicChordRoot(root, page = dynamicChordPageForElement()) {
+  const card = getDynamicChordCard(page);
 
   if (!card) {
     return;
   }
 
-  const chord = getMajorChordForRoot(root);
+  const quality = getChordPageQuality(page);
+  const chord = getChordForRoot(root, quality);
   card.dataset.root = chord.root;
   card.dataset.quality = chord.quality;
   card.dataset.notes = chord.notes.join(",");
-  document.title = `${chord.root} Major - Chords Bible`;
+  document.title = `${chord.root} ${quality} - Chords Bible`;
 
-  document.querySelectorAll("[data-chord-root]").forEach((button) => {
+  page.querySelectorAll("[data-chord-root]").forEach((button) => {
     const isActive = normalizeValue(noteValues[button.dataset.chordRoot]) === normalizeValue(noteValues[root]);
     button.setAttribute("aria-pressed", String(isActive));
   });
@@ -887,16 +915,21 @@ function setMajorChordRoot(root) {
   updateChordCardText(card);
 }
 
+function setMajorChordRoot(root) {
+  setDynamicChordRoot(root);
+}
+
 function initializeMajorChordPage() {
-  const page = document.querySelector("[data-major-chord-page]");
+  const page = document.querySelector("[data-dynamic-chord-page], [data-major-chord-page]");
 
   if (!page) {
     return;
   }
 
   const params = new URLSearchParams(window.location.search);
-  const root = params.get("root") || "C";
-  const initialRoot = Number.isInteger(getRootValue(root)) ? root : "C";
+  const fallbackRoot = page.dataset.fallbackRoot || "C";
+  const root = params.get("root") || fallbackRoot;
+  const initialRoot = Number.isInteger(getRootValue(root)) ? root : fallbackRoot;
 
   page.querySelectorAll("[data-chord-root]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -904,12 +937,12 @@ function initializeMajorChordPage() {
       const url = new URL(window.location.href);
       url.searchParams.set("root", selectedChordRootName(nextRoot));
       window.history.replaceState({}, "", url);
-      setMajorChordRoot(nextRoot);
+      setDynamicChordRoot(nextRoot, page);
     });
   });
 
   updateChordRootButtons();
-  setMajorChordRoot(initialRoot);
+  setDynamicChordRoot(initialRoot, page);
 }
 
 function updateRootMenu() {
