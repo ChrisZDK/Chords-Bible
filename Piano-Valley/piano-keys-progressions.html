@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keys &amp; Progressions - Chords Bible</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
+</head>
+<body>
+  <button class="menu-toggle" type="button" aria-label="Open piano navigation" aria-expanded="false" aria-controls="chord-menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <aside class="sidebar" id="chord-menu" aria-label="Piano navigation">
+    <nav>
+      <h2>Chord Types</h2>
+      <ol class="menu-list">
+        <li><a href="index.html?type=Major#major-chords">Major</a></li>
+        <li><a href="index.html?type=Minor#major-chords">Minor</a></li>
+        <li><a href="index.html?type=Power#major-chords">Power</a></li>
+        <li>
+          <a href="index.html?type=Sus2#major-chords">Suspended</a>
+          <ol>
+            <li><a href="index.html?type=Sus2#major-chords">Sus2</a></li>
+            <li><a href="index.html?type=Sus4#major-chords">Sus4</a></li>
+          </ol>
+        </li>
+        <li><a href="index.html?type=Augmented#major-chords">Augmented</a></li>
+        <li><a href="index.html?type=Diminished#major-chords">Diminished</a></li>
+        <li><a href="index.html?type=maj7#major-chords">Major 7th</a></li>
+        <li><a href="index.html?type=m7#major-chords">Minor 7th</a></li>
+        <li><a href="index.html?type=7#major-chords">Dominant 7th</a></li>
+      </ol>
+
+      <h2>Theory</h2>
+      <ol class="menu-list">
+        <li><a href="piano-keys-progressions.html" aria-current="page">Keys &amp; Progressions</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <div class="menu-backdrop" hidden></div>
+
+  <div class="site-header">
+    <a href="../index.html">Chords Bible</a>
+  </div>
+
+  <header>
+    <h1>Keys &amp; Progressions</h1>
+    <p class="subtitle">Choose a key to see its major scale, diatonic chords, and common chord progressions.</p>
+  </header>
+
+  <main data-major-key-page>
+    <section aria-labelledby="key-selector-title">
+      <h2 id="key-selector-title">Choose key</h2>
+      <p class="helper-text">Key = full musical context including scale, diatonic chords, and progressions.</p>
+      <div class="root-menu root-menu-centered" role="group" aria-label="Choose major key" data-major-key-menu></div>
+    </section>
+
+    <section class="key-summary" aria-labelledby="selected-key-title">
+      <h2 id="selected-key-title" data-selected-key-title>C Major</h2>
+      <p class="scale-line" data-major-key-scale>Scale: C - D - E - F - G - A - B</p>
+    </section>
+
+    <section class="key-chords" aria-labelledby="diatonic-chords-title">
+      <h2 id="diatonic-chords-title">Diatonic chords</h2>
+      <div class="grid" data-major-key-chords></div>
+    </section>
+
+    <section class="progressions" aria-labelledby="common-progressions-title">
+      <h2 id="common-progressions-title">Common progressions</h2>
+      <ol data-major-key-progressions></ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made for beginner piano practice.</p>
+  </footer>
+  <script src="../script.js?v=11"></script>
+</body>
+</html>

@@ -13,10 +13,20 @@
   <main class="home-main" aria-labelledby="home-title">
     <h1 id="home-title">Chords Bible</h1>
     <nav class="instrument-menu" aria-label="Choose an instrument world">
-      <a href="Piano/piano-major.html">Piano Valley</a>
+      <a href="Piano-Valley/" data-piano-valley-link>Piano Valley</a>
       <a href="#" aria-disabled="true">Ukulele Bay</a>
       <a href="#" aria-disabled="true">Guitar Cliff</a>
     </nav>
   </main>
+  <script>
+    document.querySelector("[data-piano-valley-link]")?.addEventListener("click", (event) => {
+      if (window.location.protocol !== "file:") {
+        return;
+      }
+
+      event.preventDefault();
+      window.location.href = "Piano-Valley/index.html";
+    });
+  </script>
 </body>
 </html>
