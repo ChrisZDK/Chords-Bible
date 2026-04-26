@@ -6,7 +6,7 @@
   <title>Piano Valley - Chords Bible</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;700&family=Pontano+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700&family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
@@ -45,6 +45,8 @@
         <div class="hero-image-frame">
           <img
             src="../assets/piano-valley/themes/dark/hero-dark.webp"
+            srcset="../assets/piano-valley/themes/dark/hero-dark-1200.webp 1200w, ../assets/piano-valley/themes/dark/hero-dark.webp 2160w"
+            sizes="(max-width: 700px) 100vw, 1400px"
             alt="Pixel-art Piano Valley scene with floating islands, robots, and a piano path."
             width="1800"
             height="600"
@@ -57,7 +59,7 @@
         <div class="search-field">
           <label class="visually-hidden" for="chord-search">Search for a chord</label>
           <input id="chord-search" type="search" placeholder="Search for a chord..." data-chord-search>
-          <span class="keyboard-shortcut" aria-hidden="true">Ctrl K</span>
+          <span class="keyboard-shortcut" aria-hidden="true">⌘ K</span>
         </div>
 
         <nav class="category-tabs" aria-label="Chord categories">
