@@ -1198,7 +1198,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"]::before {
 body.piano-app-page[data-page="piano-valley"] .app-shell {
   position: relative;
   gap: 1rem;
-  width: min(1220px, 100%);
+  width: min(1200px, 100%);
 }
 
 body.piano-app-page[data-page="piano-valley"] .app-shell::before {
@@ -2202,7 +2202,7 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] {
 
 body.piano-app-page[data-page="piano-valley"] .app-shell {
   gap: 0.75rem;
-  width: min(1460px, 100%);
+  width: min(1200px, 100%);
 }
 
 body.piano-app-page[data-page="piano-valley"] .app-shell::before {
