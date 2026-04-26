@@ -124,7 +124,7 @@ const keyModeConfigs = {
     titleQuality: "Minor",
     subtitle: "Natural minor scale and diatonic triads",
     fallbackRoot: "A",
-    page: "minor.html",
+    page: "minor-key.html",
     scaleIntervals: minorScaleIntervals,
     chordPattern: minorKeyChordPattern,
     progressions: minorProgressionSets,
@@ -139,7 +139,7 @@ let pianoReady = false;
 let activeTimers = [];
 let preferredNotation = getStoredNotation();
 const startDelay = 0.5;
-const progressionChordSpacing = 1.05;
+const progressionChordSpacing = 1.35;
 const progressionChordDuration = 1.45;
 const pianoSampleUrls = {
   A0: "A0.mp3",
@@ -643,6 +643,65 @@ function updateProgressionAnimationLabels() {
   document.querySelectorAll("[data-progression-animation]").forEach(updateProgressionAnimation);
 }
 
+function createMagnifierIcon() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", "11");
+  circle.setAttribute("cy", "11");
+  circle.setAttribute("r", "7");
+
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", "16.5");
+  line.setAttribute("y1", "16.5");
+  line.setAttribute("x2", "21");
+  line.setAttribute("y2", "21");
+
+  svg.append(circle, line);
+
+  return svg;
+}
+
+function ensureProgressionDetailsToggle(item) {
+  const songs = item.querySelector(".progression-songs");
+
+  if (!songs) {
+    return;
+  }
+
+  let button = item.querySelector(".progression-details-toggle");
+
+  if (!button) {
+    button = document.createElement("button");
+    button.className = "progression-details-toggle";
+    button.type = "button";
+    button.appendChild(createMagnifierIcon());
+    item.appendChild(button);
+  }
+
+  if (!songs.id) {
+    songs.id = `progression-songs-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  if (!item.dataset.detailsReady) {
+    songs.hidden = true;
+    button.setAttribute("aria-controls", songs.id);
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", "Show song examples");
+
+    button.addEventListener("click", () => {
+      const isExpanded = item.classList.toggle("is-expanded");
+      songs.hidden = !isExpanded;
+      button.setAttribute("aria-expanded", String(isExpanded));
+      button.setAttribute("aria-label", `${isExpanded ? "Hide" : "Show"} song examples`);
+    });
+
+    item.dataset.detailsReady = "true";
+  }
+}
+
 function scheduleProgressionAnimation(item, chordSymbols) {
   if (!item) {
     return;
@@ -751,6 +810,7 @@ function initializeProgressions() {
   document.querySelectorAll(".progressions li[data-progression]").forEach((item) => {
     const button = item.querySelector(".progression-play");
     const chordSymbols = item.dataset.progression.split(",");
+    ensureProgressionDetailsToggle(item);
     ensureProgressionAnimation(item, chordSymbols);
 
     if (button && !item.dataset.playReady) {

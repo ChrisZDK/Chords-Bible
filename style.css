@@ -346,9 +346,7 @@ h2 {
 
 .progression-columns {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
-  align-items: start;
 }
 
 .progression-chords {
@@ -426,13 +424,19 @@ h2 {
 }
 
 .progressions ol > li {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
   min-height: 5rem;
-  padding: 0.85rem;
+  padding: 0.85rem 3.15rem 0.85rem 0.85rem;
   border: 1px solid #fff;
   border-radius: 8px;
+}
+
+.progressions ol > li > div {
+  flex: 1;
+  min-width: 0;
 }
 
 .progression-play {
@@ -455,7 +459,7 @@ h2 {
 
 .progression-animation {
   margin: 0.6rem 0 0;
-  width: min(9rem, 100%);
+  width: min(18rem, 100%);
 }
 
 .progression-step {
@@ -496,13 +500,50 @@ h2 {
   transform: translateY(-2px);
 }
 
+.progression-details-toggle {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.progression-details-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.progression-details-toggle:hover,
+.progression-details-toggle:focus-visible,
+.progression-details-toggle[aria-expanded="true"] {
+  border-color: var(--highlight);
+  background: var(--highlight);
+  color: #000;
+  outline: 0;
+}
+
 .progression-songs {
   display: grid;
   gap: 0.18rem;
-  margin: 0.55rem 0 0;
+  margin: 0.85rem 0 0;
   padding-left: 1.1rem;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.progression-songs[hidden] {
+  display: none;
 }
 
 .progression-songs li {
