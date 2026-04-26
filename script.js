@@ -1151,7 +1151,7 @@ function renderRelatedChords(card, root, quality) {
     title.textContent = chordName(root, relatedQuality);
     formula.textContent = info.formula.join(" \u2022 ");
     button.type = "button";
-    button.textContent = "Open";
+    button.textContent = "";
     button.dataset.relatedChordType = relatedQuality;
     button.setAttribute("aria-label", `Open ${title.textContent}`);
     button.addEventListener("click", () => {

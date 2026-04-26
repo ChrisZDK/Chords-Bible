@@ -3863,6 +3863,9 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list li button {
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 2.55rem;
   min-width: 2.55rem;
   padding: 0;
@@ -3871,11 +3874,23 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list li button::before {
-  content: ">";
-  color: var(--pv-text);
-  font-family: "Press Start 2P", monospace;
-  font-size: 0.78rem;
-  text-shadow: 0 0 8px var(--pv-glow);
+  content: "";
+  width: 0.78rem;
+  height: 0.78rem;
+  border: 2px solid var(--pv-text);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--pv-glow);
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list li button::after {
+  content: "";
+  position: absolute;
+  width: 0.42rem;
+  height: 2px;
+  background: var(--pv-text);
+  transform: translate(0.48rem, 0.48rem) rotate(45deg);
+  transform-origin: left center;
+  box-shadow: 0 0 8px var(--pv-glow);
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-toggle {
