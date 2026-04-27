@@ -138,21 +138,32 @@
                 </div>
               </article>
 
-              <article class="card chord-info-card">
-                <div class="future-illustration-slot" aria-hidden="true">
+              <article class="card related-chords-card">
+                <div class="related-card-title">
                   <img
-                    src="assets/piano-valley/themes/dark/wizard-creature.png"
+                    src="assets/piano-valley/themes/dark/crystal-icon.png"
                     alt=""
-                    width="307"
-                    height="360"
+                    width="166"
+                    height="190"
                     loading="lazy"
                     decoding="async"
                   >
+                  <h2>Related Chords</h2>
+                  <div class="related-carousel-controls" aria-label="Related chord pages">
+                    <button class="related-carousel-button" type="button" data-related-prev aria-label="Previous related chords">&lt;</button>
+                    <span class="related-page-counter" data-related-page-counter aria-live="polite">1/1</span>
+                    <button class="related-carousel-button" type="button" data-related-next aria-label="Next related chords">&gt;</button>
+                  </div>
                 </div>
-                <div>
-                  <h2 data-dynamic-chord-about-title>About C Major</h2>
-                  <p data-dynamic-chord-about>C Major uses C, E, G. A major triad built from a root, a major third, and a perfect fifth.</p>
-                </div>
+                <ol class="related-chords-list" data-related-chords>
+                  <li>
+                    <div>
+                      <span>Cmaj7 Major 7th</span>
+                      <span>1 &bull; 3 &bull; 5 &bull; 7</span>
+                    </div>
+                    <button type="button" aria-label="Open Cmaj7 Major 7th"></button>
+                  </li>
+                </ol>
               </article>
             </div>
 
@@ -186,28 +197,21 @@
           </div>
 
           <div class="chord-details-layout">
-            <article class="card related-chords-card">
-              <div class="related-card-title">
+            <article class="card chord-info-card">
+              <div class="future-illustration-slot" aria-hidden="true">
                 <img
-                  src="assets/piano-valley/themes/dark/crystal-icon.png"
+                  src="assets/piano-valley/themes/dark/wizard-creature.png"
                   alt=""
-                  width="166"
-                  height="190"
+                  width="307"
+                  height="360"
                   loading="lazy"
                   decoding="async"
                 >
-                <h2>Related Chords</h2>
               </div>
-              <ol class="related-chords-list" data-related-chords>
-                <li>
-                  <div>
-                    <span>Cmaj7 Major 7th</span>
-                    <span>1 &bull; 3 &bull; 5 &bull; 7</span>
-                  </div>
-                  <button type="button" aria-label="Open Cmaj7 Major 7th"></button>
-                </li>
-              </ol>
-              <button class="related-toggle" type="button" data-related-toggle aria-expanded="false">Show more</button>
+              <div>
+                <h2 data-dynamic-chord-about-title>About C Major</h2>
+                <p data-dynamic-chord-about>C Major uses C, E, G. A major triad built from a root, a major third, and a perfect fifth.</p>
+              </div>
             </article>
           </div>
         </section>

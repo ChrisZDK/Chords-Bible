@@ -1356,7 +1356,7 @@ function chordAboutText(chordNameText, notes, quality) {
 
 function renderRelatedChords(card, root, quality) {
   const list = card.querySelector("[data-related-chords]");
-  const collapsedRelatedChordCount = 6;
+  const relatedChordsPerPage = 6;
 
   if (!list) {
     return;
@@ -1370,12 +1370,19 @@ function renderRelatedChords(card, root, quality) {
   ].filter((relatedQuality, index, qualities) => qualities.indexOf(relatedQuality) === index);
   const relatedStateKey = `${root}:${currentQuality}`;
   const isSameRelatedChord = card.dataset.relatedStateKey === relatedStateKey;
-  const isExpanded = isSameRelatedChord && card.dataset.relatedExpanded === "true";
-  const visibleRelatedQualities = isExpanded ? relatedQualities : relatedQualities.slice(0, collapsedRelatedChordCount);
-  const toggleButton = card.querySelector("[data-related-toggle]");
+  const pageCount = Math.max(Math.ceil(relatedQualities.length / relatedChordsPerPage), 1);
+  const requestedPage = isSameRelatedChord ? Number.parseInt(card.dataset.relatedPage || "0", 10) : 0;
+  const relatedPage = Math.min(Math.max(Number.isNaN(requestedPage) ? 0 : requestedPage, 0), pageCount - 1);
+  const visibleRelatedQualities = relatedQualities.slice(
+    relatedPage * relatedChordsPerPage,
+    relatedPage * relatedChordsPerPage + relatedChordsPerPage
+  );
+  const previousButton = card.querySelector("[data-related-prev]");
+  const nextButton = card.querySelector("[data-related-next]");
+  const pageCounter = card.querySelector("[data-related-page-counter]");
 
   card.dataset.relatedStateKey = relatedStateKey;
-  card.dataset.relatedExpanded = String(isExpanded);
+  card.dataset.relatedPage = String(relatedPage);
   list.replaceChildren();
 
   visibleRelatedQualities.forEach((relatedQuality) => {
@@ -1407,21 +1414,36 @@ function renderRelatedChords(card, root, quality) {
     list.appendChild(item);
   });
 
-  if (!toggleButton) {
-    return;
+  if (pageCounter) {
+    pageCounter.textContent = `${relatedPage + 1}/${pageCount}`;
   }
 
-  const canExpand = relatedQualities.length > collapsedRelatedChordCount;
-  toggleButton.hidden = !canExpand;
-  toggleButton.textContent = isExpanded ? "Show less" : "Show more";
-  toggleButton.setAttribute("aria-expanded", String(isExpanded));
+  if (previousButton) {
+    previousButton.disabled = pageCount <= 1 || relatedPage === 0;
+    previousButton.hidden = pageCount <= 1;
 
-  if (!toggleButton.dataset.relatedToggleReady) {
-    toggleButton.addEventListener("click", () => {
-      card.dataset.relatedExpanded = card.dataset.relatedExpanded === "true" ? "false" : "true";
-      renderRelatedChords(card, card.dataset.root, card.dataset.quality);
-    });
-    toggleButton.dataset.relatedToggleReady = "true";
+    if (!previousButton.dataset.relatedCarouselReady) {
+      previousButton.addEventListener("click", () => {
+        const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
+        card.dataset.relatedPage = String(Math.max((Number.isNaN(currentPage) ? 0 : currentPage) - 1, 0));
+        renderRelatedChords(card, card.dataset.root, card.dataset.quality);
+      });
+      previousButton.dataset.relatedCarouselReady = "true";
+    }
+  }
+
+  if (nextButton) {
+    nextButton.disabled = pageCount <= 1 || relatedPage >= pageCount - 1;
+    nextButton.hidden = pageCount <= 1;
+
+    if (!nextButton.dataset.relatedCarouselReady) {
+      nextButton.addEventListener("click", () => {
+        const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
+        card.dataset.relatedPage = String(Math.min((Number.isNaN(currentPage) ? 0 : currentPage) + 1, pageCount - 1));
+        renderRelatedChords(card, card.dataset.root, card.dataset.quality);
+      });
+      nextButton.dataset.relatedCarouselReady = "true";
+    }
   }
 }
 
