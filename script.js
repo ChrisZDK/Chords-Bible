@@ -1059,7 +1059,9 @@ function chordNoteNames(notes) {
   });
 }
 
-function createKeyboard(notes, preserveLabels = false, isPlaying = false) {
+function createKeyboard(notes, preserveLabels = false, isPlaying = false, octaveCount = 1) {
+  const visibleOctaves = octaveCount === 2 ? 2 : 1;
+  const octaveWidth = 294;
   const activeNotes = new Set(notes.map(normalizeNote));
   const activeLabels = new Map(
     preserveLabels
@@ -1068,43 +1070,48 @@ function createKeyboard(notes, preserveLabels = false, isPlaying = false) {
   );
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("class", `piano-svg${isPlaying ? " is-playing" : ""}`);
-  svg.setAttribute("viewBox", "0 0 294 132");
+  svg.setAttribute("viewBox", `0 0 ${octaveWidth * visibleOctaves} 132`);
   svg.setAttribute("aria-hidden", "true");
+  svg.dataset.octaves = String(visibleOctaves);
 
-  whiteKeys.forEach((note, index) => {
-    const x = index * 42;
-    const key = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    key.setAttribute("class", `white-key${activeNotes.has(note) ? " key-active" : ""}`);
-    key.setAttribute("x", x);
-    key.setAttribute("y", 0);
-    key.setAttribute("width", 42);
-    key.setAttribute("height", 128);
-    svg.appendChild(key);
+  Array.from({ length: visibleOctaves }).forEach((_, octaveIndex) => {
+    const offset = octaveIndex * octaveWidth;
 
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("class", "key-label");
-    label.setAttribute("x", x + 21);
-    label.setAttribute("y", 118);
-    label.textContent = activeLabels.get(noteValues[note]) || note;
-    svg.appendChild(label);
-  });
+    whiteKeys.forEach((note, index) => {
+      const x = offset + index * 42;
+      const key = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      key.setAttribute("class", `white-key${activeNotes.has(note) ? " key-active" : ""}`);
+      key.setAttribute("x", x);
+      key.setAttribute("y", 0);
+      key.setAttribute("width", 42);
+      key.setAttribute("height", 128);
+      svg.appendChild(key);
 
-  blackKeys.forEach(({ note, x }) => {
-    const key = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    key.setAttribute("class", `black-key${activeNotes.has(note) ? " key-active" : ""}`);
-    key.setAttribute("x", x);
-    key.setAttribute("y", 0);
-    key.setAttribute("width", 28);
-    key.setAttribute("height", 82);
-    key.setAttribute("rx", 2);
-    svg.appendChild(key);
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("class", "key-label");
+      label.setAttribute("x", x + 21);
+      label.setAttribute("y", 118);
+      label.textContent = activeLabels.get(noteValues[note]) || note;
+      svg.appendChild(label);
+    });
 
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("class", "black-label");
-    text.setAttribute("x", x + 14);
-    text.setAttribute("y", 72);
-    text.textContent = activeLabels.get(noteValues[note]) || displayNoteName(note);
-    svg.appendChild(text);
+    blackKeys.forEach(({ note, x }) => {
+      const key = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      key.setAttribute("class", `black-key${activeNotes.has(note) ? " key-active" : ""}`);
+      key.setAttribute("x", offset + x);
+      key.setAttribute("y", 0);
+      key.setAttribute("width", 28);
+      key.setAttribute("height", 82);
+      key.setAttribute("rx", 2);
+      svg.appendChild(key);
+
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("class", "black-label");
+      text.setAttribute("x", offset + x + 14);
+      text.setAttribute("y", 72);
+      text.textContent = activeLabels.get(noteValues[note]) || displayNoteName(note);
+      svg.appendChild(text);
+    });
   });
 
   return svg;
@@ -1114,6 +1121,10 @@ function chordCardNotes(card) {
   return card.dataset.notes.split(",");
 }
 
+function chordCardOctaveCount(card) {
+  return card.querySelector("[data-octave-toggle]") && card.dataset.octaves === "2" ? 2 : 1;
+}
+
 function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying = false) {
   const keyboard = card.querySelector(".keyboard");
 
@@ -1121,7 +1132,7 @@ function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying =
     return;
   }
 
-  keyboard.replaceChildren(createKeyboard(notes, card.hasAttribute("data-preserve-spelling"), isPlaying));
+  keyboard.replaceChildren(createKeyboard(notes, card.hasAttribute("data-preserve-spelling"), isPlaying, chordCardOctaveCount(card)));
 }
 
 function resetChordPlaybackKeyboards() {
@@ -1890,6 +1901,36 @@ function initializeChordCard(card) {
   updateChordCardText(card);
 }
 
+function setPianoOctaveMode(card, button, octaveCount) {
+  const visibleOctaves = octaveCount === 2 ? 2 : 1;
+
+  card.dataset.octaves = String(visibleOctaves);
+  card.classList.toggle("is-two-octaves", visibleOctaves === 2);
+  button.textContent = visibleOctaves === 2 ? "-" : "+";
+  button.setAttribute("aria-pressed", String(visibleOctaves === 2));
+  button.setAttribute(
+    "aria-label",
+    visibleOctaves === 2 ? "Show one octave piano" : "Show two octave piano"
+  );
+  renderChordCardKeyboard(card);
+}
+
+function initializePianoOctaveToggle() {
+  document.querySelectorAll("[data-octave-toggle]").forEach((button) => {
+    const card = button.closest("[data-dynamic-chord-card], [data-major-chord-card]");
+
+    if (!card || button.dataset.octaveToggleReady) {
+      return;
+    }
+
+    setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 2 : 1);
+    button.addEventListener("click", () => {
+      setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 1 : 2);
+    });
+    button.dataset.octaveToggleReady = "true";
+  });
+}
+
 function initializeChordCards() {
   document.querySelectorAll(".card[data-notes], [data-dynamic-chord-card][data-notes], [data-major-chord-card][data-notes]").forEach(initializeChordCard);
 }
@@ -2628,6 +2669,7 @@ initializeNotationToggle();
 initializeMajorChordPage();
 initializeMajorKeyPage();
 initializeDynamicMajorPage();
+initializePianoOctaveToggle();
 initializeChordCards();
 initializeProgressions();
 updateNotation();
