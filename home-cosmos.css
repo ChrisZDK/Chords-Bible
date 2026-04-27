@@ -1,0 +1,107 @@
+body.home-dashboard-page {
+  isolation: isolate;
+  background: #000;
+}
+
+body.home-dashboard-page .home-cosmos {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 28%, rgba(14, 37, 76, 0.74) 0%, rgba(4, 10, 29, 0.78) 34%, transparent 68%),
+    radial-gradient(circle at 18% 18%, rgba(63, 78, 169, 0.22), transparent 26rem),
+    radial-gradient(circle at 82% 10%, rgba(84, 54, 150, 0.16), transparent 24rem),
+    radial-gradient(circle at 52% 108%, rgba(8, 21, 55, 0.84), transparent 32rem),
+    linear-gradient(180deg, #000 0%, #020411 38%, #030919 64%, #000 100%);
+}
+
+body.home-dashboard-page .home-cosmos::before,
+body.home-dashboard-page .home-cosmos::after {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  transform: translate3d(0, 0, 0);
+  transform-origin: 50% 48%;
+  will-change: opacity, transform;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+body.home-dashboard-page .home-cosmos::before {
+  opacity: 0.68;
+  background-image:
+    radial-gradient(circle at 4% 21%, rgba(255, 255, 255, 0.7) 0 0.9px, transparent 1.9px),
+    radial-gradient(circle at 9% 73%, rgba(145, 188, 255, 0.62) 0 1px, transparent 2px),
+    radial-gradient(circle at 15% 36%, rgba(255, 255, 255, 0.82) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.58) 0 0.85px, transparent 1.8px),
+    radial-gradient(circle at 29% 88%, rgba(158, 203, 255, 0.6) 0 1px, transparent 2px),
+    radial-gradient(circle at 34% 44%, rgba(255, 255, 255, 0.76) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 41% 18%, rgba(255, 255, 255, 0.58) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 46% 67%, rgba(169, 196, 255, 0.64) 0 1px, transparent 2px),
+    radial-gradient(circle at 53% 31%, rgba(255, 255, 255, 0.74) 0 1px, transparent 2px),
+    radial-gradient(circle at 58% 82%, rgba(255, 255, 255, 0.54) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 64% 9%, rgba(157, 204, 255, 0.66) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 71% 56%, rgba(255, 255, 255, 0.8) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 77% 27%, rgba(255, 255, 255, 0.56) 0 0.9px, transparent 1.9px),
+    radial-gradient(circle at 83% 77%, rgba(152, 192, 255, 0.62) 0 1px, transparent 2px),
+    radial-gradient(circle at 91% 42%, rgba(255, 255, 255, 0.78) 0 1px, transparent 2px),
+    radial-gradient(circle at 96% 64%, rgba(255, 255, 255, 0.56) 0 0.9px, transparent 1.9px);
+  animation: home-cosmos-orbit-soft 64s ease-in-out infinite;
+}
+
+body.home-dashboard-page .home-cosmos::after {
+  opacity: 0.5;
+  background-image:
+    radial-gradient(circle at 6% 54%, rgba(255, 255, 255, 0.96) 0 1.4px, transparent 2.7px),
+    radial-gradient(circle at 13% 16%, rgba(170, 207, 255, 0.78) 0 1.2px, transparent 2.5px),
+    radial-gradient(circle at 24% 69%, rgba(255, 255, 255, 0.92) 0 1.4px, transparent 2.8px),
+    radial-gradient(circle at 37% 23%, rgba(128, 175, 255, 0.74) 0 1.25px, transparent 2.6px),
+    radial-gradient(circle at 49% 91%, rgba(255, 255, 255, 0.88) 0 1.35px, transparent 2.8px),
+    radial-gradient(circle at 62% 38%, rgba(255, 255, 255, 0.96) 0 1.4px, transparent 2.7px),
+    radial-gradient(circle at 73% 14%, rgba(157, 196, 255, 0.76) 0 1.25px, transparent 2.6px),
+    radial-gradient(circle at 81% 86%, rgba(255, 255, 255, 0.86) 0 1.35px, transparent 2.7px),
+    radial-gradient(circle at 93% 51%, rgba(184, 213, 255, 0.78) 0 1.25px, transparent 2.6px);
+  animation: home-cosmos-orbit-bright 48s ease-in-out infinite;
+}
+
+body.home-dashboard-page .app-shell {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes home-cosmos-orbit-soft {
+  0%,
+  100% {
+    opacity: 0.58;
+    transform: translate3d(-0.15rem, 0.1rem, 0) rotate(-0.45deg) scale(1.01);
+  }
+
+  50% {
+    opacity: 0.76;
+    transform: translate3d(0.35rem, -0.28rem, 0) rotate(0.55deg) scale(1.018);
+  }
+}
+
+@keyframes home-cosmos-orbit-bright {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: translate3d(0.2rem, -0.18rem, 0) rotate(0.5deg) scale(1.012);
+  }
+
+  45% {
+    opacity: 0.62;
+    transform: translate3d(-0.32rem, 0.24rem, 0) rotate(-0.65deg) scale(1.022);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.home-dashboard-page .home-cosmos::before,
+  body.home-dashboard-page .home-cosmos::after {
+    animation: none;
+    transform: none;
+  }
+}
