@@ -6016,4 +6016,6 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .root-menu
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .category-tabs button,
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .type-menu button {
   font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
 }
