@@ -707,7 +707,7 @@ function openSoundSelector(selector) {
     const rect = button?.getBoundingClientRect();
 
     if (rect) {
-      const menuWidth = Math.max(rect.width, 156);
+      const menuWidth = rect.width;
       const menuLeft = Math.min(Math.max(rect.left, 12), Math.max(window.innerWidth - menuWidth - 12, 12));
       const menuBottom = Math.max(window.innerHeight - rect.top + 6, 12);
 
