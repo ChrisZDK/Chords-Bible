@@ -1356,7 +1356,7 @@ function chordAboutText(chordNameText, notes, quality) {
 
 function renderRelatedChords(card, root, quality) {
   const list = card.querySelector("[data-related-chords]");
-  const relatedChordsPerPage = document.body.classList.contains("home-dashboard-page") ? 4 : 6;
+  const relatedChordsPerPage = 6;
 
   if (!list) {
     return;

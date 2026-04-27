@@ -5562,6 +5562,11 @@ body.home-dashboard-page *::after {
   box-sizing: border-box;
 }
 
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-display {
+  margin-bottom: 0;
+}
+
 @media (min-width: 981px) {
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] {
     --home-dashboard-gap: clamp(0.32rem, 0.55vw, 0.48rem);
@@ -5768,7 +5773,8 @@ body.home-dashboard-page *::after {
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-display {
     grid-template-rows: minmax(0, 1fr) auto;
-    gap: 0.38rem;
+    align-content: stretch;
+    gap: 0.3rem;
     min-height: 0;
     overflow: hidden;
   }
@@ -5777,6 +5783,7 @@ body.home-dashboard-page *::after {
     grid-template-columns: minmax(17rem, 0.43fr) minmax(0, 0.57fr);
     gap: 0.55rem;
     min-height: 0;
+    height: 100%;
     overflow: hidden;
   }
 
@@ -5785,6 +5792,7 @@ body.home-dashboard-page *::after {
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout {
+    align-self: end;
     margin-top: 0;
   }
 
@@ -5841,7 +5849,9 @@ body.home-dashboard-page *::after {
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card {
-    gap: 0.28rem;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 0.32rem;
+    min-height: clamp(18rem, 41svh, 23rem);
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card-header {
@@ -5885,11 +5895,14 @@ body.home-dashboard-page *::after {
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card .keyboard {
+    display: grid;
+    align-items: center;
     padding: 0.32rem;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card .piano-svg {
-    max-height: clamp(6.1rem, 14svh, 7.4rem);
+    height: auto;
+    max-height: clamp(8.4rem, 23svh, 11.25rem);
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column .related-chords-card {
