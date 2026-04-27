@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=21" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
 <body class="piano-app-page" data-page="piano-valley" data-theme="dark">
@@ -18,9 +18,14 @@
           <span></span>
         </span>
         <a class="site-brand" href="index.html">Chords Bible</a>
-        <span class="site-section" aria-label="Current section">Piano</span>
       </div>
       <div class="site-actions" aria-label="Piano tools">
+        <label class="visually-hidden" for="instrument-family-menu">Instrument family</label>
+        <select id="instrument-family-menu" class="header-control header-select instrument-family-select" aria-label="Choose instrument family">
+          <option value="keyboards" selected>KEYBOARD</option>
+          <option value="guitars">GUITAR</option>
+          <option value="ukulele">UKULELE</option>
+        </select>
         <label class="visually-hidden" for="piano-area-menu">Piano area</label>
         <select id="piano-area-menu" class="header-control header-select" data-header-nav aria-label="Choose Piano area">
           <option value="index.html">Chords</option>

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20" />
+  <link rel="stylesheet" href="style.css?v=21" />
   <link rel="stylesheet" href="home-cosmos.css?v=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
@@ -20,9 +20,14 @@
           <span></span>
         </span>
         <a class="site-brand" href="index.html">Chords Bible</a>
-        <span class="site-section" aria-label="Current section">Piano</span>
       </div>
       <div class="site-actions" aria-label="Piano tools">
+        <label class="visually-hidden" for="instrument-family-menu">Instrument family</label>
+        <select id="instrument-family-menu" class="header-control header-select instrument-family-select" aria-label="Choose instrument family">
+          <option value="keyboards" selected>KEYBOARD</option>
+          <option value="guitars">GUITAR</option>
+          <option value="ukulele">UKULELE</option>
+        </select>
         <label class="visually-hidden" for="piano-area-menu">Piano area</label>
         <select id="piano-area-menu" class="header-control header-select" data-header-nav aria-label="Choose Piano area">
           <option value="" selected>Chords</option>
@@ -54,33 +59,6 @@
             height="800"
             fetchpriority="high"
           >
-        </div>
-      </section>
-
-      <section class="instrument-switcher-panel" aria-label="Instrument switcher">
-        <div class="instrument-switcher" data-instrument-switcher>
-          <button
-            id="instrument-switcher-button"
-            class="instrument-switcher-button"
-            type="button"
-            aria-expanded="false"
-            aria-controls="instrument-switcher-menu"
-            data-instrument-toggle
-          >
-            Change Instrument
-          </button>
-          <div
-            id="instrument-switcher-menu"
-            class="instrument-menu-popover"
-            role="menu"
-            aria-label="Choose instrument"
-            hidden
-            data-instrument-menu
-          >
-            <a href="index.html" role="menuitem" aria-current="page">Piano</a>
-            <button type="button" role="menuitem" disabled>Ukulele</button>
-            <button type="button" role="menuitem" disabled>Guitar</button>
-          </div>
         </div>
       </section>
 
