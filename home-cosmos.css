@@ -8,6 +8,7 @@ body.home-dashboard-page .home-cosmos {
   inset: 0;
   z-index: 0;
   overflow: hidden;
+  isolation: isolate;
   pointer-events: none;
   background:
     radial-gradient(circle at 3% 8%, rgba(255, 255, 255, 0.46) 0 0.75px, transparent 1.6px),
@@ -42,7 +43,7 @@ body.home-dashboard-page[data-theme="dark"] .home-cosmos {
   background-image: url("assets/piano-valley/themes/dark/theme-dark-banner-bg.png");
   background-position: center top;
   background-repeat: no-repeat;
-  background-size: 100% auto;
+  background-size: min(100vw, 1440px) auto;
 }
 
 body.home-dashboard-page .home-cosmos::before,
@@ -52,11 +53,70 @@ body.home-dashboard-page .home-cosmos::after {
   inset: -18%;
   transform: translate3d(0, 0, 0);
   transform-origin: 50% 48%;
-  will-change: opacity, transform;
+  z-index: 1;
+  will-change: filter, opacity, transform;
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: 100% 100%;
   mix-blend-mode: screen;
+}
+
+body.home-dashboard-page .home-cosmos::after {
+  z-index: 3;
+}
+
+body.home-dashboard-page .home-cosmos-stars,
+body.home-dashboard-page .home-cosmos-stars::before,
+body.home-dashboard-page .home-cosmos-stars::after {
+  position: absolute;
+  inset: -8%;
+  z-index: 2;
+  pointer-events: none;
+  background-repeat: repeat;
+  mix-blend-mode: screen;
+  will-change: filter, opacity, transform;
+}
+
+body.home-dashboard-page .home-cosmos-stars {
+  opacity: 0.58;
+  background-image:
+    radial-gradient(circle at 12px 18px, rgba(255, 255, 255, 0.7) 0 0.75px, transparent 1.8px),
+    radial-gradient(circle at 78px 44px, rgba(190, 220, 255, 0.52) 0 0.65px, transparent 1.55px),
+    radial-gradient(circle at 132px 98px, rgba(188, 122, 255, 0.44) 0 0.7px, transparent 1.7px),
+    radial-gradient(circle at 196px 26px, rgba(255, 228, 178, 0.5) 0 0.7px, transparent 1.7px),
+    radial-gradient(circle at 248px 132px, rgba(123, 202, 255, 0.45) 0 0.75px, transparent 1.8px),
+    radial-gradient(circle at 310px 66px, rgba(255, 149, 220, 0.42) 0 0.7px, transparent 1.7px);
+  background-size: 150px 118px, 182px 146px, 214px 172px, 266px 206px, 318px 244px, 374px 286px;
+  animation: home-cosmos-stardust-a 18s ease-in-out infinite;
+}
+
+body.home-dashboard-page .home-cosmos-stars::before,
+body.home-dashboard-page .home-cosmos-stars::after {
+  content: "";
+}
+
+body.home-dashboard-page .home-cosmos-stars::before {
+  opacity: 0.54;
+  background-image:
+    radial-gradient(circle at 24px 32px, rgba(255, 255, 255, 0.74) 0 0.65px, transparent 1.55px),
+    radial-gradient(circle at 92px 86px, rgba(174, 209, 255, 0.5) 0 0.7px, transparent 1.65px),
+    radial-gradient(circle at 154px 18px, rgba(255, 241, 196, 0.48) 0 0.72px, transparent 1.7px),
+    radial-gradient(circle at 214px 124px, rgba(188, 122, 255, 0.46) 0 0.68px, transparent 1.6px),
+    radial-gradient(circle at 298px 52px, rgba(123, 202, 255, 0.48) 0 0.72px, transparent 1.7px),
+    radial-gradient(circle at 346px 168px, rgba(255, 255, 255, 0.56) 0 0.75px, transparent 1.8px);
+  background-size: 132px 104px, 174px 136px, 226px 178px, 286px 220px, 342px 260px, 410px 310px;
+  animation: home-cosmos-stardust-b 23s ease-in-out infinite;
+}
+
+body.home-dashboard-page .home-cosmos-stars::after {
+  opacity: 0.4;
+  background-image:
+    radial-gradient(circle at 36px 20px, rgba(255, 255, 255, 0.88) 0 0.9px, rgba(123, 202, 255, 0.26) 1px 1.9px, transparent 3px),
+    radial-gradient(circle at 116px 112px, rgba(255, 228, 178, 0.7) 0 0.85px, rgba(255, 149, 220, 0.24) 1px 1.8px, transparent 2.9px),
+    radial-gradient(circle at 204px 54px, rgba(190, 220, 255, 0.72) 0 0.9px, rgba(188, 122, 255, 0.24) 1px 1.9px, transparent 3px),
+    radial-gradient(circle at 318px 148px, rgba(255, 255, 255, 0.82) 0 0.9px, rgba(123, 202, 255, 0.22) 1px 1.8px, transparent 2.9px);
+  background-size: 210px 168px, 292px 226px, 372px 284px, 486px 358px;
+  animation: home-cosmos-stardust-c 29s ease-in-out infinite;
 }
 
 body.home-dashboard-page .home-cosmos::before {
@@ -183,11 +243,13 @@ body.home-dashboard-page .app-shell {
   0%,
   100% {
     opacity: 0.58;
+    filter: brightness(0.92);
     transform: translate3d(-0.55rem, 0.42rem, 0) rotate(-1.2deg) scale(1.012);
   }
 
   50% {
     opacity: 0.76;
+    filter: brightness(1.2);
     transform: translate3d(0.85rem, -0.62rem, 0) rotate(1.35deg) scale(1.026);
   }
 }
@@ -196,18 +258,68 @@ body.home-dashboard-page .app-shell {
   0%,
   100% {
     opacity: 0.42;
+    filter: brightness(0.95);
     transform: translate3d(0.62rem, -0.48rem, 0) rotate(1.55deg) scale(1.018);
   }
 
   45% {
     opacity: 0.62;
+    filter: brightness(1.28);
     transform: translate3d(-0.82rem, 0.64rem, 0) rotate(-1.75deg) scale(1.032);
+  }
+}
+
+@keyframes home-cosmos-stardust-a {
+  0%,
+  100% {
+    opacity: 0.44;
+    filter: brightness(0.9);
+    transform: translate3d(-0.25rem, 0.12rem, 0) scale(1);
+  }
+
+  50% {
+    opacity: 0.72;
+    filter: brightness(1.35);
+    transform: translate3d(0.35rem, -0.18rem, 0) scale(1.01);
+  }
+}
+
+@keyframes home-cosmos-stardust-b {
+  0%,
+  100% {
+    opacity: 0.36;
+    filter: brightness(0.88);
+    transform: translate3d(0.28rem, -0.16rem, 0) scale(1.004);
+  }
+
+  55% {
+    opacity: 0.64;
+    filter: brightness(1.3);
+    transform: translate3d(-0.32rem, 0.2rem, 0) scale(1.014);
+  }
+}
+
+@keyframes home-cosmos-stardust-c {
+  0%,
+  100% {
+    opacity: 0.3;
+    filter: brightness(0.9);
+    transform: translate3d(-0.18rem, -0.1rem, 0) scale(1.006);
+  }
+
+  48% {
+    opacity: 0.56;
+    filter: brightness(1.42);
+    transform: translate3d(0.22rem, 0.16rem, 0) scale(1.018);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   body.home-dashboard-page .home-cosmos::before,
-  body.home-dashboard-page .home-cosmos::after {
+  body.home-dashboard-page .home-cosmos::after,
+  body.home-dashboard-page .home-cosmos-stars,
+  body.home-dashboard-page .home-cosmos-stars::before,
+  body.home-dashboard-page .home-cosmos-stars::after {
     animation: none;
     transform: none;
   }
@@ -216,6 +328,6 @@ body.home-dashboard-page .app-shell {
 @media (max-width: 700px) {
   body.home-dashboard-page[data-theme="dark"] .home-cosmos {
     background-position: center top;
-    background-size: 100% auto;
+    background-size: min(100vw, 1440px) auto;
   }
 }
