@@ -37,6 +37,14 @@ body.home-dashboard-page .home-cosmos {
     linear-gradient(180deg, #000 0%, #020411 38%, #030919 64%, #000 100%);
 }
 
+body.home-dashboard-page[data-theme="dark"] .home-cosmos {
+  background-color: #000;
+  background-image: url("assets/piano-valley/themes/dark/theme-dark-banner-bg.png");
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+
 body.home-dashboard-page .home-cosmos::before,
 body.home-dashboard-page .home-cosmos::after {
   content: "";
@@ -48,6 +56,7 @@ body.home-dashboard-page .home-cosmos::after {
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  mix-blend-mode: screen;
 }
 
 body.home-dashboard-page .home-cosmos::before {
@@ -98,7 +107,25 @@ body.home-dashboard-page .home-cosmos::before {
     radial-gradient(circle at 76% 69%, rgba(166, 205, 255, 0.5) 0 0.85px, transparent 1.8px),
     radial-gradient(circle at 90% 8%, rgba(255, 255, 255, 0.46) 0 0.75px, transparent 1.7px),
     radial-gradient(circle at 94% 92%, rgba(172, 208, 255, 0.48) 0 0.8px, transparent 1.8px),
-    radial-gradient(circle at 99% 49%, rgba(255, 255, 255, 0.5) 0 0.8px, transparent 1.8px);
+    radial-gradient(circle at 99% 49%, rgba(255, 255, 255, 0.5) 0 0.8px, transparent 1.8px),
+    radial-gradient(circle at 5% 11%, rgba(255, 247, 210, 0.64) 0 0.9px, transparent 2px),
+    radial-gradient(circle at 11% 67%, rgba(190, 220, 255, 0.56) 0 0.85px, transparent 1.9px),
+    radial-gradient(circle at 18% 25%, rgba(255, 255, 255, 0.58) 0 0.8px, transparent 1.8px),
+    radial-gradient(circle at 24% 52%, rgba(188, 122, 255, 0.54) 0 0.85px, transparent 1.9px),
+    radial-gradient(circle at 30% 15%, rgba(255, 255, 255, 0.6) 0 0.9px, transparent 2px),
+    radial-gradient(circle at 40% 63%, rgba(173, 211, 255, 0.52) 0 0.8px, transparent 1.8px),
+    radial-gradient(circle at 49% 24%, rgba(255, 228, 178, 0.58) 0 0.85px, transparent 1.9px),
+    radial-gradient(circle at 57% 92%, rgba(255, 255, 255, 0.54) 0 0.8px, transparent 1.8px),
+    radial-gradient(circle at 63% 13%, rgba(190, 220, 255, 0.56) 0 0.85px, transparent 1.9px),
+    radial-gradient(circle at 72% 43%, rgba(255, 255, 255, 0.58) 0 0.9px, transparent 2px),
+    radial-gradient(circle at 79% 96%, rgba(188, 122, 255, 0.52) 0 0.8px, transparent 1.8px),
+    radial-gradient(circle at 84% 38%, rgba(255, 247, 210, 0.58) 0 0.85px, transparent 1.9px),
+    radial-gradient(circle at 89% 58%, rgba(255, 255, 255, 0.56) 0 0.8px, transparent 1.8px),
+    radial-gradient(circle at 93% 3%, rgba(190, 220, 255, 0.54) 0 0.85px, transparent 1.9px),
+    radial-gradient(circle at 97% 86%, rgba(255, 228, 178, 0.56) 0 0.9px, transparent 2px),
+    radial-gradient(circle at 52% 5%, rgba(255, 255, 255, 0.52) 0 0.75px, transparent 1.7px),
+    radial-gradient(circle at 67% 67%, rgba(188, 122, 255, 0.5) 0 0.8px, transparent 1.8px),
+    radial-gradient(circle at 35% 94%, rgba(190, 220, 255, 0.52) 0 0.85px, transparent 1.9px);
   animation: home-cosmos-orbit-soft 34s ease-in-out infinite;
 }
 
@@ -131,7 +158,19 @@ body.home-dashboard-page .home-cosmos::after {
     radial-gradient(circle at 47% 39%, rgba(255, 255, 255, 0.82) 0 1.2px, transparent 2.5px),
     radial-gradient(circle at 69% 24%, rgba(184, 213, 255, 0.74) 0 1.15px, transparent 2.4px),
     radial-gradient(circle at 87% 71%, rgba(255, 255, 255, 0.84) 0 1.25px, transparent 2.6px),
-    radial-gradient(circle at 95% 19%, rgba(170, 207, 255, 0.76) 0 1.1px, transparent 2.4px);
+    radial-gradient(circle at 95% 19%, rgba(170, 207, 255, 0.76) 0 1.1px, transparent 2.4px),
+    radial-gradient(circle at 8% 5%, rgba(255, 241, 196, 0.94) 0 1.25px, rgba(255, 149, 220, 0.42) 1.35px 2.2px, transparent 3.4px),
+    radial-gradient(circle at 12% 79%, rgba(255, 255, 255, 0.88) 0 1.15px, rgba(123, 202, 255, 0.38) 1.25px 2.1px, transparent 3.2px),
+    radial-gradient(circle at 23% 31%, rgba(255, 255, 255, 0.9) 0 1.2px, rgba(188, 122, 255, 0.42) 1.3px 2.1px, transparent 3.3px),
+    radial-gradient(circle at 38% 9%, rgba(255, 241, 196, 0.88) 0 1.2px, rgba(255, 149, 220, 0.34) 1.3px 2px, transparent 3.2px),
+    radial-gradient(circle at 44% 73%, rgba(255, 255, 255, 0.9) 0 1.15px, rgba(123, 202, 255, 0.38) 1.25px 2.1px, transparent 3.2px),
+    radial-gradient(circle at 55% 18%, rgba(255, 255, 255, 0.92) 0 1.3px, rgba(188, 122, 255, 0.42) 1.4px 2.25px, transparent 3.4px),
+    radial-gradient(circle at 60% 54%, rgba(255, 241, 196, 0.88) 0 1.2px, rgba(255, 149, 220, 0.36) 1.3px 2.05px, transparent 3.25px),
+    radial-gradient(circle at 74% 7%, rgba(255, 255, 255, 0.9) 0 1.15px, rgba(123, 202, 255, 0.38) 1.25px 2.1px, transparent 3.2px),
+    radial-gradient(circle at 82% 48%, rgba(255, 255, 255, 0.92) 0 1.25px, rgba(188, 122, 255, 0.42) 1.35px 2.2px, transparent 3.35px),
+    radial-gradient(circle at 91% 88%, rgba(255, 241, 196, 0.88) 0 1.2px, rgba(255, 149, 220, 0.36) 1.3px 2.05px, transparent 3.25px),
+    radial-gradient(circle at 99% 37%, rgba(255, 255, 255, 0.9) 0 1.15px, rgba(123, 202, 255, 0.38) 1.25px 2.1px, transparent 3.2px),
+    radial-gradient(circle at 67% 92%, rgba(255, 255, 255, 0.88) 0 1.2px, rgba(188, 122, 255, 0.4) 1.3px 2.15px, transparent 3.3px);
   animation: home-cosmos-orbit-bright 26s ease-in-out infinite;
 }
 
@@ -171,5 +210,12 @@ body.home-dashboard-page .app-shell {
   body.home-dashboard-page .home-cosmos::after {
     animation: none;
     transform: none;
+  }
+}
+
+@media (max-width: 700px) {
+  body.home-dashboard-page[data-theme="dark"] .home-cosmos {
+    background-position: center top;
+    background-size: 100% auto;
   }
 }
