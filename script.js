@@ -1834,14 +1834,6 @@ function updateChordCardText(card) {
     element.textContent = symbolText;
   });
 
-  card.querySelectorAll("[data-dynamic-chord-badge]").forEach((element) => {
-    element.textContent = info.badge;
-  });
-
-  card.querySelectorAll("[data-dynamic-chord-description]").forEach((element) => {
-    element.textContent = info.description;
-  });
-
   card.querySelectorAll("[data-dynamic-chord-formula]").forEach((element) => {
     element.textContent = formulaText;
   });
