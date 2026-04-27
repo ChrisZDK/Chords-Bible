@@ -1859,7 +1859,7 @@ function updateChordCardText(card) {
   }
 
   if (card.closest("[data-dynamic-chord-page], [data-major-chord-page]") && card.dataset.root && card.dataset.quality) {
-    document.title = `${displayedChordName} - Chords Bible`;
+    document.title = `${displayedChordName} - Chordyssey`;
   }
 
   if (keyboard) {
@@ -2059,7 +2059,7 @@ function setDynamicChordRoot(root, page = dynamicChordPageForElement()) {
   card.dataset.quality = chord.quality;
   card.dataset.notes = chord.notes.join(",");
   page.dataset.chordQuality = chord.quality;
-  document.title = `${chordName(chord.root, chord.quality)} - Chords Bible`;
+  document.title = `${chordName(chord.root, chord.quality)} - Chordyssey`;
 
   page.querySelectorAll("[data-chord-root]").forEach((button) => {
     const isActive = normalizeValue(noteValues[button.dataset.chordRoot]) === normalizeValue(noteValues[root]);
