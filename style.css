@@ -6480,19 +6480,51 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-
   animation: none;
 }
 
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel:hover {
-  border-color: transparent;
-  background:
-    linear-gradient(180deg, rgba(15, 20, 39, 0.96), rgba(4, 7, 16, 0.98)) padding-box,
-    linear-gradient(120deg, #ff68c8 0%, #ff2bd6 18%, #a73dff 38%, #15104f 58%, #2b0a58 78%, #7c2eff 100%) border-box;
-  background-position: 0 0, 0% 50%;
-  background-size: 100% 100%, 260% 260%;
-  animation: selector-panel-border-flow 10.8s linear infinite;
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--selector-panel-border-angle, 0deg),
+    #ff68c8 0deg,
+    #ff2bd6 52deg,
+    #a73dff 104deg,
+    #15104f 156deg,
+    #2b0a58 208deg,
+    #7c2eff 300deg,
+    #ff68c8 360deg
+  );
+  opacity: 0;
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: selector-panel-border-flow 10.8s linear infinite paused;
+  transition: opacity 0.3s ease;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel:hover::after {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+@property --selector-panel-border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
 }
 
 @keyframes selector-panel-border-flow {
   to {
-    background-position: 0 0, 300% 50%;
+    --selector-panel-border-angle: 360deg;
   }
 }
 
@@ -6530,7 +6562,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel:hover,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel:hover::after,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .sound-card-robot,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout .future-illustration-slot .info-card-robot {
     animation: none;
