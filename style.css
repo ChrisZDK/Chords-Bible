@@ -6351,7 +6351,28 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-imag
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-section {
+  border: 0;
   background: transparent;
+  box-shadow: none;
+  clip-path: none;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-section::before,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-section::after {
+  display: none;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .app-shell::before {
+  display: none;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace {
+  position: relative;
+  border: 1px solid rgba(140, 53, 255, 0.55);
+  border-radius: 5px;
+  box-shadow:
+    0 0 0 1px rgba(255, 79, 202, 0.16),
+    0 0 34px rgba(67, 19, 121, 0.44);
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .site-brand-lockup,
