@@ -6019,3 +6019,44 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .type-menu
   font-size: 0.9rem;
   font-weight: 400;
 }
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .category-tabs button,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .type-menu button {
+  flex-basis: 7rem;
+  width: 7rem;
+  min-width: 7rem;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .type-menu button:not(.is-active) {
+  color: #fff;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .type-menu button.is-active {
+  background: linear-gradient(180deg, #320369 0%, #1b0333 100%);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column .related-chords-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column .related-chords-list span:first-child {
+  font-size: 1.1rem;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column .related-chords-list span + span {
+  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .keyboard-legend {
+  font-size: 0.8rem;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .formula-line {
+  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions button {
+  color: #8c35ffad;
+}
