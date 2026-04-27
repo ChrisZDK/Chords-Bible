@@ -1842,10 +1842,6 @@ function updateChordCardText(card) {
     element.textContent = displayedNotesInline;
   });
 
-  card.querySelectorAll("[data-dynamic-chord-about-title]").forEach((element) => {
-    element.textContent = `About ${displayedChordName}`;
-  });
-
   card.querySelectorAll("[data-dynamic-chord-about]").forEach((element) => {
     element.textContent = chordAboutText(displayedChordName, notes, quality);
   });
