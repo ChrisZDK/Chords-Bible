@@ -6058,5 +6058,28 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .formula-l
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions button {
-  color: #8c35ffad;
+  border-color: #a73dff;
+  color: #a73dff;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions button:hover,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions button:focus,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions button:active {
+  border-color: #ff4fca;
+  color: #ff4fca;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-icon-button {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: center;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .site-section {
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
 }
