@@ -1356,7 +1356,7 @@ function chordAboutText(chordNameText, notes, quality) {
 
 function renderRelatedChords(card, root, quality) {
   const list = card.querySelector("[data-related-chords]");
-  const collapsedRelatedChordCount = 4;
+  const collapsedRelatedChordCount = 6;
 
   if (!list) {
     return;
