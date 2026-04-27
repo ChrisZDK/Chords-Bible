@@ -5610,6 +5610,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
     gap: 0.34rem 0.6rem;
     min-height: clamp(10.2rem, 22svh, 11rem);
     padding: 0.62rem 0.72rem 0.72rem;
+    background: linear-gradient(180deg, rgb(0 3 45), rgb(2 2 34)), #00002f;
     overflow: hidden;
     clip-path: polygon(0 8px, 8px 8px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px));
   }
