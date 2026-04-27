@@ -6340,7 +6340,9 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-imag
   aspect-ratio: 6 / 1;
   height: auto;
   max-height: none;
+  border: 0;
   background: transparent;
+  box-shadow: none;
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-banner-image {
