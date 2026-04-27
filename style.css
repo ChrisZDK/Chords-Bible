@@ -5475,6 +5475,10 @@ body.home-dashboard-page {
   overflow-x: hidden;
 }
 
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] {
+  background: linear-gradient(180deg, #040312 0%, #020109 50%, #000003 100%);
+}
+
 body.home-dashboard-page *,
 body.home-dashboard-page *::before,
 body.home-dashboard-page *::after {

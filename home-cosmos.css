@@ -39,11 +39,13 @@ body.home-dashboard-page .home-cosmos {
 }
 
 body.home-dashboard-page[data-theme="dark"] .home-cosmos {
-  background-color: #000;
-  background-image: url("assets/piano-valley/themes/dark/theme-dark-banner-bg.png");
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: min(100vw, 1440px) auto;
+  background-color: #000003;
+  background-image:
+    url("assets/piano-valley/themes/dark/theme-dark-banner-bg.png"),
+    linear-gradient(180deg, #040312 0%, #020109 50%, #000003 100%);
+  background-position: center top, center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: min(100vw, 1440px) auto, cover;
 }
 
 body.home-dashboard-page .home-cosmos::before,
@@ -327,7 +329,7 @@ body.home-dashboard-page .app-shell {
 
 @media (max-width: 700px) {
   body.home-dashboard-page[data-theme="dark"] .home-cosmos {
-    background-position: center top;
-    background-size: min(100vw, 1440px) auto;
+    background-position: center top, center;
+    background-size: min(100vw, 1440px) auto, cover;
   }
 }
