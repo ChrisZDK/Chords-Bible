@@ -42,7 +42,7 @@
           <option value="diabolical" disabled>Diabolical</option>
           <option value="kawaii" disabled>Kawaii</option>
         </select>
-        <button class="header-icon-button" type="button" aria-label="Add current chord to favorites">&#9734;</button>
+        <button class="header-icon-button" type="button" aria-label="Add current chord to favorites">&#9829;</button>
       </div>
     </header>
 
@@ -94,10 +94,6 @@
             <div class="type-menu" role="group" aria-label="Choose chord type" data-chord-quality-menu></div>
           </div>
 
-          <div class="notation-toggle" role="group" aria-label="Choose note naming">
-            <button type="button" data-notation="sharp" aria-label="Use sharp note names" aria-pressed="true">&#9839;</button>
-            <button type="button" data-notation="flat" aria-label="Use flat note names" aria-pressed="false">&#9837;</button>
-          </div>
         </div>
 
         <section class="chord-display" data-major-chord-card data-notes="C,E,G" data-root="C" data-quality="Major" data-octaves="1">
@@ -109,10 +105,11 @@
                 </span>
                 <div class="chord-heading-row">
                   <h2 data-dynamic-chord-title>C Major</h2>
-                  <span class="chord-badge" data-dynamic-chord-badge>Major</span>
-                  <button class="favorite-button" type="button" aria-label="Save current chord">&#9734;</button>
+                  <div class="notation-toggle" role="group" aria-label="Choose note naming">
+                    <button type="button" data-notation="sharp" aria-label="Use sharp note names" aria-pressed="true">&#9839;</button>
+                    <button type="button" data-notation="flat" aria-label="Use flat note names" aria-pressed="false">&#9837;</button>
+                  </div>
                 </div>
-                <p data-dynamic-chord-description>A major triad built from a root, a major third, and a perfect fifth.</p>
                 <div class="card-actions">
                   <button class="inversions-text-button" type="button">Inversions</button>
                 </div>
