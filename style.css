@@ -6282,3 +6282,21 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-lef
     transform: none;
   }
 }
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame {
+  aspect-ratio: 6 / 1;
+  height: auto;
+  max-height: none;
+  background: transparent;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-section {
+  background: transparent;
+}
