@@ -1356,6 +1356,7 @@ function chordAboutText(chordNameText, notes, quality) {
 
 function renderRelatedChords(card, root, quality) {
   const list = card.querySelector("[data-related-chords]");
+  const collapsedRelatedChordCount = 4;
 
   if (!list) {
     return;
@@ -1370,7 +1371,7 @@ function renderRelatedChords(card, root, quality) {
   const relatedStateKey = `${root}:${currentQuality}`;
   const isSameRelatedChord = card.dataset.relatedStateKey === relatedStateKey;
   const isExpanded = isSameRelatedChord && card.dataset.relatedExpanded === "true";
-  const visibleRelatedQualities = isExpanded ? relatedQualities : relatedQualities.slice(0, 3);
+  const visibleRelatedQualities = isExpanded ? relatedQualities : relatedQualities.slice(0, collapsedRelatedChordCount);
   const toggleButton = card.querySelector("[data-related-toggle]");
 
   card.dataset.relatedStateKey = relatedStateKey;
@@ -1410,7 +1411,7 @@ function renderRelatedChords(card, root, quality) {
     return;
   }
 
-  const canExpand = relatedQualities.length > 3;
+  const canExpand = relatedQualities.length > collapsedRelatedChordCount;
   toggleButton.hidden = !canExpand;
   toggleButton.textContent = isExpanded ? "Show less" : "Show more";
   toggleButton.setAttribute("aria-expanded", String(isExpanded));

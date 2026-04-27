@@ -5064,7 +5064,13 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-symbol {
   overflow: hidden;
   overflow-wrap: anywhere;
   text-align: center;
+  font-size: 2rem;
   line-height: 0.9;
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-emblem .chord-symbol,
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] [data-quality] .chord-emblem .chord-symbol {
+  font-size: 2rem;
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-heading-row {
@@ -5285,6 +5291,16 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card .pi
   height: auto;
 }
 
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list li {
+  min-width: 0;
+}
+
 @media (max-width: 900px) {
   body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .chord-layout {
     grid-template-columns: 1fr;
@@ -5363,5 +5379,9 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card .pi
   body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card .piano-svg {
     min-width: 0;
     max-height: none;
+  }
+
+  body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .related-chords-list {
+    grid-template-columns: 1fr;
   }
 }
