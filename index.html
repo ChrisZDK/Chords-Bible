@@ -124,21 +124,40 @@
 
         <section class="chord-display" data-major-chord-card data-notes="C,E,G" data-root="C" data-quality="Major">
           <div class="chord-layout">
-            <article class="card chord-summary-card">
-              <span class="chord-emblem" aria-hidden="true">
-                <span class="chord-symbol" data-dynamic-chord-symbol>C</span>
-              </span>
-              <div class="chord-heading-row">
-                <h2 data-dynamic-chord-title>C Major</h2>
-                <span class="chord-badge" data-dynamic-chord-badge>Major</span>
-                <button class="favorite-button" type="button" aria-label="Save current chord">&#9734;</button>
-              </div>
-              <p data-dynamic-chord-description>A major triad built from a root, a major third, and a perfect fifth.</p>
-              <div class="card-actions">
-                <button type="button">Instrument</button>
-                <button type="button">Inversions</button>
-              </div>
-            </article>
+            <div class="chord-left-column">
+              <article class="card chord-summary-card">
+                <span class="chord-emblem" aria-hidden="true">
+                  <span class="chord-symbol" data-dynamic-chord-symbol>C</span>
+                </span>
+                <div class="chord-heading-row">
+                  <h2 data-dynamic-chord-title>C Major</h2>
+                  <span class="chord-badge" data-dynamic-chord-badge>Major</span>
+                  <button class="favorite-button" type="button" aria-label="Save current chord">&#9734;</button>
+                </div>
+                <p data-dynamic-chord-description>A major triad built from a root, a major third, and a perfect fifth.</p>
+                <div class="card-actions">
+                  <button type="button">Instrument</button>
+                  <button type="button">Inversions</button>
+                </div>
+              </article>
+
+              <article class="card chord-info-card">
+                <div class="future-illustration-slot" aria-hidden="true">
+                  <img
+                    src="assets/piano-valley/themes/dark/wizard-creature.png"
+                    alt=""
+                    width="307"
+                    height="360"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </div>
+                <div>
+                  <h2 data-dynamic-chord-about-title>About C Major</h2>
+                  <p data-dynamic-chord-about>C Major uses C, E, G. A major triad built from a root, a major third, and a perfect fifth.</p>
+                </div>
+              </article>
+            </div>
 
             <article class="card piano-card">
               <div class="piano-card-header">
@@ -153,38 +172,23 @@
                   >
                   <span class="play-icon" aria-hidden="true"></span>
                 </button>
-                <div>
-                  <p class="stat-label">Formula</p>
-                  <p class="formula-line" data-dynamic-chord-formula>1 &bull; 3 &bull; 5</p>
+                <div class="piano-metrics">
+                  <div class="piano-metric-row">
+                    <p class="stat-label">Formula</p>
+                    <p class="formula-line" data-dynamic-chord-formula>1 &bull; 3 &bull; 5</p>
+                  </div>
+                  <div class="note-line">
+                    <span class="stat-label">Notes</span>
+                    <p data-dynamic-chord-notes data-dynamic-chord-notes-inline>C &bull; E &bull; G</p>
+                  </div>
                 </div>
               </div>
-              <div class="note-line">
-                <span class="stat-label">Notes</span>
-                <p data-dynamic-chord-notes data-dynamic-chord-notes-inline>Notes: C - E - G</p>
-              </div>
-              <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
               <p class="keyboard-legend">Chord notes</p>
+              <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
             </article>
           </div>
 
           <div class="chord-details-layout">
-            <article class="card chord-info-card">
-              <div class="future-illustration-slot" aria-hidden="true">
-                <img
-                  src="assets/piano-valley/themes/dark/wizard-creature.png"
-                  alt=""
-                  width="307"
-                  height="360"
-                  loading="lazy"
-                  decoding="async"
-                >
-              </div>
-              <div>
-                <h2 data-dynamic-chord-about-title>About C Major</h2>
-                <p data-dynamic-chord-about>C Major uses C, E, G. A major triad built from a root, a major third, and a perfect fifth.</p>
-              </div>
-            </article>
-
             <article class="card related-chords-card">
               <div class="related-card-title">
                 <img
