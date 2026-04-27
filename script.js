@@ -517,11 +517,19 @@ const keyModeConfigs = {
 };
 const notationStorageKey = "preferredNotation";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
+const soundModeLabels = {
+  "grand-piano": "Grand Piano",
+  synth: "Synth",
+  chiptune: "Chiptune",
+};
 
 let audioContext;
 let activePlaybackOutput;
 let pianoSampler;
 let pianoReady = false;
+let selectedSoundMode = "grand-piano";
+let padReverbImpulse;
+let chipCurve;
 let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
@@ -658,6 +666,177 @@ function storeNotation(notation) {
     window.localStorage?.setItem(notationStorageKey, notation);
   } catch {
     // The toggle still works when storage is blocked.
+  }
+}
+
+function getSelectedSoundMode() {
+  if (!document.body.classList.contains("home-dashboard-page")) {
+    return "grand-piano";
+  }
+
+  return soundModeLabels[selectedSoundMode] ? selectedSoundMode : "grand-piano";
+}
+
+function getSoundOptions(selector = document) {
+  const button = selector.querySelector?.("[data-sound-select-button]");
+  const optionsId = button?.getAttribute("aria-controls");
+
+  return optionsId ? document.getElementById(optionsId) : document.querySelector("[data-sound-options]");
+}
+
+function closeSoundSelector(selector) {
+  const button = selector.querySelector("[data-sound-select-button]");
+  const options = getSoundOptions(selector);
+
+  selector.classList.remove("is-open");
+  button?.setAttribute("aria-expanded", "false");
+
+  if (options) {
+    options.hidden = true;
+  }
+}
+
+function openSoundSelector(selector) {
+  const button = selector.querySelector("[data-sound-select-button]");
+  const options = getSoundOptions(selector);
+
+  selector.classList.add("is-open");
+  button?.setAttribute("aria-expanded", "true");
+
+  if (options) {
+    const rect = button?.getBoundingClientRect();
+
+    if (rect) {
+      const menuWidth = Math.max(rect.width, 156);
+      const menuLeft = Math.min(Math.max(rect.left, 12), Math.max(window.innerWidth - menuWidth - 12, 12));
+      const menuBottom = Math.max(window.innerHeight - rect.top + 6, 12);
+
+      options.style.setProperty("--sound-menu-left", `${menuLeft}px`);
+      options.style.setProperty("--sound-menu-bottom", `${menuBottom}px`);
+      options.style.setProperty("--sound-menu-width", `${menuWidth}px`);
+    }
+
+    options.hidden = false;
+  }
+}
+
+function setSoundMode(mode, selector = document, { stopPlayback = false } = {}) {
+  const normalizedMode = soundModeLabels[mode] ? mode : "grand-piano";
+
+  selectedSoundMode = normalizedMode;
+  selector.querySelectorAll("[data-sound-select-value]").forEach((element) => {
+    element.textContent = soundModeLabels[normalizedMode];
+  });
+
+  document.querySelectorAll("[data-sound-option]").forEach((option) => {
+    const isSelected = option.dataset.soundValue === normalizedMode;
+    option.classList.toggle("is-selected", isSelected);
+    option.setAttribute("aria-selected", String(isSelected));
+  });
+
+  if (stopPlayback && audioContext) {
+    startNewPlayback();
+  }
+}
+
+function focusSoundOption(selector, direction = 1) {
+  const options = Array.from(getSoundOptions(selector)?.querySelectorAll("[data-sound-option]") || []);
+
+  if (!options.length) {
+    return;
+  }
+
+  const selectedIndex = Math.max(0, options.findIndex((option) => option.dataset.soundValue === selectedSoundMode));
+  const activeIndex = options.indexOf(document.activeElement);
+  const currentIndex = activeIndex >= 0 ? activeIndex : selectedIndex;
+  const nextIndex = (currentIndex + direction + options.length) % options.length;
+
+  options[nextIndex]?.focus();
+}
+
+function initializeSoundSelector() {
+  const selectors = document.querySelectorAll("[data-sound-selector]");
+
+  selectors.forEach((selector) => {
+    if (selector.dataset.soundSelectorReady) {
+      return;
+    }
+
+    const button = selector.querySelector("[data-sound-select-button]");
+    const options = getSoundOptions(selector);
+
+    setSoundMode(selectedSoundMode, selector);
+
+    button?.addEventListener("click", () => {
+      if (options?.hidden) {
+        openSoundSelector(selector);
+        getSoundOptions(selector)?.querySelector("[data-sound-option].is-selected")?.focus();
+        return;
+      }
+
+      closeSoundSelector(selector);
+    });
+
+    button?.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
+        return;
+      }
+
+      event.preventDefault();
+      openSoundSelector(selector);
+      focusSoundOption(selector, event.key === "ArrowUp" ? -1 : 1);
+    });
+
+    options?.querySelectorAll("[data-sound-option]").forEach((option) => {
+      option.addEventListener("click", () => {
+        setSoundMode(option.dataset.soundValue, selector, { stopPlayback: true });
+        closeSoundSelector(selector);
+        button?.focus();
+      });
+
+      option.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+          event.preventDefault();
+          focusSoundOption(selector, event.key === "ArrowUp" ? -1 : 1);
+          return;
+        }
+
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          option.click();
+          return;
+        }
+
+        if (event.key === "Escape") {
+          closeSoundSelector(selector);
+          button?.focus();
+        }
+      });
+    });
+
+    selector.dataset.soundSelectorReady = "true";
+  });
+
+  if (!document.body.dataset.soundSelectorDocumentReady) {
+    document.addEventListener("click", (event) => {
+      document.querySelectorAll("[data-sound-selector].is-open").forEach((selector) => {
+        const options = getSoundOptions(selector);
+
+        if (!selector.contains(event.target) && !options?.contains(event.target)) {
+          closeSoundSelector(selector);
+        }
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      document.querySelectorAll("[data-sound-selector].is-open").forEach(closeSoundSelector);
+    });
+
+    document.body.dataset.soundSelectorDocumentReady = "true";
   }
 }
 
@@ -979,12 +1158,201 @@ function chordPlaybackDuration(noteCount = 3, includeNoteSequence = true) {
   return startDelay + chordNoteStartOffset + Math.max(noteCount - 1, 0) * chordNoteSpacing + chordNoteDuration + 0.1;
 }
 
+function shouldUsePianoSampler() {
+  return getSelectedSoundMode() === "grand-piano" && pianoReady && window.Tone && pianoSampler;
+}
+
+function clampAudioValue(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getPadReverbImpulse() {
+  if (padReverbImpulse?.sampleRate === audioContext.sampleRate) {
+    return padReverbImpulse.buffer;
+  }
+
+  const duration = 0.54;
+  const length = Math.floor(audioContext.sampleRate * duration);
+  const impulse = audioContext.createBuffer(2, length, audioContext.sampleRate);
+
+  for (let channel = 0; channel < impulse.numberOfChannels; channel += 1) {
+    const data = impulse.getChannelData(channel);
+
+    for (let index = 0; index < length; index += 1) {
+      const decay = (1 - index / length) ** 2.4;
+      data[index] = (Math.random() * 2 - 1) * decay * 0.42;
+    }
+  }
+
+  padReverbImpulse = {
+    sampleRate: audioContext.sampleRate,
+    buffer: impulse,
+  };
+
+  return impulse;
+}
+
+function createPadReverbBus(destination) {
+  const input = audioContext.createGain();
+  const dry = audioContext.createGain();
+  const wet = audioContext.createGain();
+  const convolver = audioContext.createConvolver();
+
+  dry.gain.value = 0.78;
+  wet.gain.value = 0.32;
+  convolver.buffer = getPadReverbImpulse();
+
+  input.connect(dry);
+  input.connect(convolver);
+  dry.connect(destination);
+  convolver.connect(wet);
+  wet.connect(destination);
+
+  return input;
+}
+
+function playPadNote(frequency, startTime, duration = 1.35, destination = audioContext.destination, velocity = 1) {
+  const filter = audioContext.createBiquadFilter();
+  const noteGain = audioContext.createGain();
+  const oscillators = [
+    { type: "sine", detune: -6, gain: 0.64 },
+    { type: "triangle", detune: 7, gain: 0.42 },
+  ];
+
+  filter.type = "lowpass";
+  filter.Q.setValueAtTime(0.85, startTime);
+  filter.frequency.setValueAtTime(920, startTime);
+  filter.frequency.linearRampToValueAtTime(1650, startTime + 0.48);
+
+  noteGain.gain.setValueAtTime(0.0001, startTime);
+  noteGain.gain.linearRampToValueAtTime(0.09 * velocity, startTime + 0.22);
+  noteGain.gain.setTargetAtTime(0.056 * velocity, startTime + 0.46, 0.45);
+  noteGain.gain.setTargetAtTime(0.0001, startTime + duration, 0.65);
+
+  oscillators.forEach((config) => {
+    const oscillator = audioContext.createOscillator();
+    const oscillatorGain = audioContext.createGain();
+
+    oscillator.type = config.type;
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+    oscillator.detune.setValueAtTime(config.detune, startTime);
+    oscillatorGain.gain.value = config.gain;
+    oscillator.connect(oscillatorGain);
+    oscillatorGain.connect(filter);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 1.55);
+  });
+
+  filter.connect(noteGain);
+  noteGain.connect(destination);
+}
+
+function getChipCurve() {
+  if (chipCurve) {
+    return chipCurve;
+  }
+
+  const samples = 256;
+  chipCurve = new Float32Array(samples);
+
+  for (let index = 0; index < samples; index += 1) {
+    const x = (index * 2) / samples - 1;
+    chipCurve[index] = Math.round(Math.tanh(x * 3.8) * 5) / 5;
+  }
+
+  return chipCurve;
+}
+
+function playChiptuneNote(frequency, startTime, duration = 0.75, destination = audioContext.destination, velocity = 1) {
+  const oscillator = audioContext.createOscillator();
+  const shaper = audioContext.createWaveShaper();
+  const filter = audioContext.createBiquadFilter();
+  const noteGain = audioContext.createGain();
+  const peak = 0.1 * velocity;
+
+  oscillator.type = "square";
+  oscillator.frequency.setValueAtTime(frequency, startTime);
+
+  shaper.curve = getChipCurve();
+  shaper.oversample = "none";
+
+  filter.type = "bandpass";
+  filter.Q.setValueAtTime(6.5, startTime);
+  filter.frequency.setValueAtTime(clampAudioValue(frequency * 2.55, 520, 3800), startTime);
+
+  noteGain.gain.setValueAtTime(0.0001, startTime);
+  noteGain.gain.exponentialRampToValueAtTime(peak, startTime + 0.012);
+  noteGain.gain.exponentialRampToValueAtTime(peak * 0.36, startTime + 0.09);
+  noteGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+  oscillator.connect(shaper);
+  shaper.connect(filter);
+  filter.connect(noteGain);
+  noteGain.connect(destination);
+  oscillator.start(startTime);
+  oscillator.stop(startTime + duration + 0.06);
+}
+
+function playGrandPianoFallbackChord(frequencies, startTime, duration, destination) {
+  const output = audioContext.createGain();
+
+  output.gain.setValueAtTime(0.0001, startTime);
+  output.gain.exponentialRampToValueAtTime(0.12, startTime + 0.03);
+  output.gain.exponentialRampToValueAtTime(0.085, startTime + 0.55);
+  output.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+  output.connect(destination);
+
+  frequencies.forEach((frequency) => {
+    const oscillator = audioContext.createOscillator();
+
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+    oscillator.connect(output);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.08);
+  });
+}
+
+function playNativeChordSound(frequencies, startTime, duration, destination, mode = getSelectedSoundMode()) {
+  if (mode === "synth") {
+    const padBus = createPadReverbBus(destination);
+    frequencies.forEach((frequency) => {
+      playPadNote(frequency, startTime, duration, padBus, 0.88);
+    });
+    return;
+  }
+
+  if (mode === "chiptune") {
+    frequencies.forEach((frequency) => {
+      playChiptuneNote(frequency, startTime, Math.min(duration, 0.92), destination, 0.82);
+    });
+    return;
+  }
+
+  playGrandPianoFallbackChord(frequencies, startTime, duration, destination);
+}
+
+function playNativeSingleNote(frequency, startTime, duration, destination, mode = getSelectedSoundMode()) {
+  if (mode === "synth") {
+    playPadNote(frequency, startTime, duration, createPadReverbBus(destination), 0.92);
+    return;
+  }
+
+  if (mode === "chiptune") {
+    playChiptuneNote(frequency, startTime, Math.min(duration, 0.82), destination, 0.92);
+    return;
+  }
+
+  playSynthNote(frequency, startTime, duration, destination);
+}
+
 function playChord(notes, card, { includeNoteSequence = true, keepLoop = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
   const noteNames = chordNoteNames(notes);
+  const soundMode = getSelectedSoundMode();
   scheduleChordKeyboardPlayback(card, notes, includeNoteSequence);
 
-  if (pianoReady) {
+  if (shouldUsePianoSampler()) {
     Tone.start();
 
     schedulePlayback(() => {
@@ -1005,26 +1373,11 @@ function playChord(notes, card, { includeNoteSequence = true, keepLoop = false }
   const now = audioContext.currentTime + startDelay;
   const frequencies = chordFrequencies(notes);
   const noteStart = audioContext.currentTime + startDelay + chordNoteStartOffset;
-  const output = audioContext.createGain();
-
-  output.gain.setValueAtTime(0.0001, now);
-  output.gain.exponentialRampToValueAtTime(0.12, now + 0.03);
-  output.gain.exponentialRampToValueAtTime(0.085, now + 0.55);
-  output.gain.exponentialRampToValueAtTime(0.0001, now + chordDuration);
-  output.connect(playbackOutput);
-
-  frequencies.forEach((frequency) => {
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(frequency, now);
-    oscillator.connect(output);
-    oscillator.start(now);
-    oscillator.stop(now + chordDuration + 0.08);
-  });
+  playNativeChordSound(frequencies, now, chordDuration, playbackOutput, soundMode);
 
   if (includeNoteSequence) {
     frequencies.forEach((frequency, index) => {
-      playSynthNote(frequency, noteStart + index * chordNoteSpacing, chordNoteDuration, playbackOutput);
+      playNativeSingleNote(frequency, noteStart + index * chordNoteSpacing, chordNoteDuration, playbackOutput, soundMode);
     });
   }
 }
@@ -1224,9 +1577,10 @@ function progressionPlaybackDuration(chordSymbols) {
 
 function playProgression(chordSymbols, item, { keepLoop = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
+  const soundMode = getSelectedSoundMode();
   scheduleProgressionAnimation(item, chordSymbols);
 
-  if (pianoReady) {
+  if (shouldUsePianoSampler()) {
     Tone.start();
 
     chordSymbols.forEach((symbol, index) => {
@@ -1241,19 +1595,10 @@ function playProgression(chordSymbols, item, { keepLoop = false } = {}) {
   const now = audioContext.currentTime + startDelay;
 
   chordSymbols.forEach((symbol, index) => {
-    const output = audioContext.createGain();
     const startTime = now + index * progressionChordSpacing;
     const chordFrequencies = frequenciesFromChordSymbol(symbol);
 
-    output.gain.setValueAtTime(0.0001, startTime);
-    output.gain.exponentialRampToValueAtTime(0.2, startTime + 0.03);
-    output.gain.exponentialRampToValueAtTime(0.14, startTime + 0.6);
-    output.gain.exponentialRampToValueAtTime(0.0001, startTime + progressionChordDuration);
-    output.connect(playbackOutput);
-
-    chordFrequencies.forEach((frequency) => {
-      playSynthNote(frequency, startTime, progressionChordDuration, output);
-    });
+    playNativeChordSound(chordFrequencies, startTime, progressionChordDuration, playbackOutput, soundMode);
   });
   return progressionPlaybackDuration(chordSymbols);
 }
@@ -2277,6 +2622,7 @@ document.addEventListener("keydown", (event) => {
 initializePianoSampler();
 initializeHeaderMenus();
 initializeInstrumentSwitchers();
+initializeSoundSelector();
 initializePianoValleyTheme();
 initializeNotationToggle();
 initializeMajorChordPage();
