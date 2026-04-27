@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=16" />
+  <link rel="stylesheet" href="style.css?v=20" />
   <link rel="stylesheet" href="home-cosmos.css?v=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
@@ -136,7 +136,7 @@
                 </div>
                 <p data-dynamic-chord-description>A major triad built from a root, a major third, and a perfect fifth.</p>
                 <div class="card-actions">
-                  <button type="button">Inversions</button>
+                  <button class="inversions-text-button" type="button">Inversions</button>
                 </div>
               </article>
 
@@ -199,6 +199,35 @@
           </div>
 
           <div class="chord-details-layout">
+            <article class="card sound-card" aria-labelledby="sound-card-title">
+              <div class="sound-card-control">
+                <p class="sound-card-label" id="sound-card-title">Sound</p>
+                <div class="sound-select" data-sound-selector>
+                  <button
+                    class="sound-select-button"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-controls="sound-options"
+                    aria-labelledby="sound-card-title sound-select-value"
+                    data-sound-select-button
+                  >
+                    <span id="sound-select-value" data-sound-select-value>Grand Piano</span>
+                    <span class="sound-select-chevron" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+              <img
+                class="sound-card-robot"
+                src="assets/piano-valley/themes/dark/robot-floating.png"
+                alt=""
+                width="140"
+                height="140"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              >
+            </article>
             <article class="card chord-info-card">
               <div class="future-illustration-slot" aria-hidden="true">
                 <img
@@ -225,6 +254,39 @@
     </footer>
   </div>
 
-  <script src="script.js?v=16"></script>
+  <div class="sound-options" id="sound-options" role="listbox" aria-labelledby="sound-card-title" hidden data-sound-options>
+    <button
+      class="sound-option is-selected"
+      type="button"
+      role="option"
+      aria-selected="true"
+      data-sound-option
+      data-sound-value="grand-piano"
+    >
+      Grand Piano
+    </button>
+    <button
+      class="sound-option"
+      type="button"
+      role="option"
+      aria-selected="false"
+      data-sound-option
+      data-sound-value="synth"
+    >
+      Synth
+    </button>
+    <button
+      class="sound-option"
+      type="button"
+      role="option"
+      aria-selected="false"
+      data-sound-option
+      data-sound-value="chiptune"
+    >
+      Chiptune
+    </button>
+  </div>
+
+  <script src="script.js?v=19"></script>
 </body>
 </html>
