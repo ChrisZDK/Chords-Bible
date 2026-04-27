@@ -5571,6 +5571,10 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] {
     --home-dashboard-gap: clamp(0.32rem, 0.55vw, 0.48rem);
     --home-dashboard-padding: clamp(0.38rem, 0.65vw, 0.58rem);
+    --home-banner-height: clamp(9.6rem, 20svh, 12.5rem);
+    --home-banner-half-height: clamp(4.8rem, 10svh, 6.25rem);
+    --home-switcher-button-height: 2.12rem;
+    --home-switcher-button-half-height: 1.06rem;
     height: 100svh;
     min-height: 100svh;
     padding: var(--home-dashboard-padding);
@@ -5652,7 +5656,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame {
-    height: clamp(9.6rem, 20svh, 12.5rem);
+    height: var(--home-banner-height);
     max-height: 21.5svh;
     min-height: 0;
   }
@@ -5666,7 +5670,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .instrument-switcher-panel {
-    margin-top: clamp(-2.42rem, -5.6svh, -1.94rem);
+    margin-top: calc((var(--home-banner-half-height) + var(--home-switcher-button-half-height) + 1.17rem) * -1);
     margin-bottom: clamp(-1.04rem, -2.2svh, -0.78rem);
     padding: 0.28rem 0.56rem 0.12rem;
   }
@@ -5677,7 +5681,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .instrument-switcher-button {
     min-width: clamp(10.4rem, 13vw, 11.8rem);
-    min-height: 2.12rem;
+    min-height: var(--home-switcher-button-height);
     padding: 0.42rem 0.7rem;
     font-size: clamp(0.58rem, 0.95vw, 0.7rem);
   }
@@ -5960,8 +5964,13 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
 }
 
 @media (min-width: 981px) and (min-height: 840px) {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] {
+    --home-banner-height: clamp(11.25rem, 21svh, 13.6rem);
+    --home-banner-half-height: clamp(5.625rem, 10.5svh, 6.8rem);
+  }
+
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame {
-    height: clamp(11.25rem, 21svh, 13.6rem);
+    height: var(--home-banner-height);
   }
 }
 
@@ -6148,15 +6157,15 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .sound-sel
   width: 100%;
   min-height: 2.34rem;
   padding: 0.42rem 0.64rem;
-  border: 1px solid rgba(167, 61, 255, 0.76);
+  border: 1px solid rgba(255, 79, 202, 0.76);
   border-radius: 7px;
-  background: linear-gradient(180deg, rgba(50, 3, 105, 0.88) 0%, rgba(18, 2, 40, 0.94) 100%);
+  background: linear-gradient(180deg, rgba(255, 79, 202, 0.9) 0%, rgba(99, 7, 76, 0.96) 100%);
   color: #fff;
   font-family: "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 20px rgba(80, 24, 170, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 20px rgba(255, 79, 202, 0.16);
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .sound-select-button:hover,
