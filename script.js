@@ -3057,7 +3057,6 @@ function handleHomeProgressionUtility(action) {
 
 function renderHomeKeySelector() {
   const { selectorPanel } = homeProgressionElements();
-  const scale = homeProgressionScaleNotes();
 
   if (!selectorPanel) {
     return;
@@ -3079,10 +3078,6 @@ function renderHomeKeySelector() {
       <section class="progression-builder-section" aria-labelledby="progression-scale-title">
         <h2 id="progression-scale-title" class="selector-label">2. Choose Scale</h2>
         <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
-      </section>
-      <section class="progression-scale-card" aria-live="polite">
-        <h2 class="selector-label">Scale</h2>
-        <p class="scale-line" data-home-progression-scale>${displayNotes(scale)}</p>
       </section>
     </div>
   `;
@@ -3155,6 +3150,7 @@ function renderHomeProgressionSummary(progression, chords) {
   const labels = homeProgressionLabels(chords);
   const formulaLabel = homeProgressionFormulaLabel();
   const title = homeProgressionTitle();
+  const scale = homeProgressionScaleNotes();
 
   if (!summaryCard) {
     return;
@@ -3162,9 +3158,12 @@ function renderHomeProgressionSummary(progression, chords) {
 
   summaryCard.className = "card progression-summary-card";
   summaryCard.innerHTML = `
+    <span class="chord-emblem" aria-hidden="true">
+      <span class="chord-symbol" data-home-progression-key-symbol>${displayNoteName(homeProgressionState.root)}</span>
+    </span>
     <div class="chord-heading-row">
       <h2 data-home-progression-title>${title}</h2>
-      <p class="formula-line" data-home-progression-summary-formula>${formulaLabel}</p>
+      <p class="scale-line" data-home-progression-scale>${displayNotes(scale)}</p>
       <div class="notation-toggle" role="group" aria-label="Choose note naming">
         <button type="button" data-home-progression-notation="sharp" data-notation="sharp" aria-label="Use sharp note names" aria-pressed="${preferredNotation === "sharp" ? "true" : "false"}">&#9839;</button>
         <button type="button" data-home-progression-notation="flat" data-notation="flat" aria-label="Use flat note names" aria-pressed="${preferredNotation === "flat" ? "true" : "false"}">&#9837;</button>
