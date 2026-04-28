@@ -3188,8 +3188,6 @@ function renderHomeProgressionList() {
   const { listCard } = homeProgressionElements();
   const steps = homeProgressionState.steps;
   const pattern = homeProgressionDegreePattern();
-  const chords = homeProgressionChords();
-  const labels = homeProgressionLabels(chords);
 
   if (!listCard) {
     return;
@@ -3214,7 +3212,6 @@ function renderHomeProgressionList() {
       <p class="selector-label">Utilities</p>
       <div class="progression-utility-row" data-home-progression-utilities></div>
     </div>
-    <p class="progression-output-line" aria-live="polite"><span data-home-progression-output>${labels.join(" - ")}</span></p>
   `;
 
   const stepGrid = listCard.querySelector("[data-home-progression-steps]");
