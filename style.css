@@ -4739,7 +4739,8 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .keyboard-legen
 }
 
 body.piano-app-page[data-page="piano-valley"][data-theme="dark"] .piano-card .keyboard-legend-row {
-  grid-column: 2;
+  grid-column: 1 / -1 !important;
+  grid-row: auto !important;
   width: 100%;
 }
 
