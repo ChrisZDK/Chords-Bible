@@ -10,17 +10,13 @@ Users can build chords, select root notes, explore chord types, view formulas, s
 
 ## ✨ Concept
 
-Chordyssey is built as a musical adventure map, where each instrument belongs to its own visual universe.
-
-The goal is simple: make chord learning clearer, more visual, and a little more magical than staring at a plain theory chart.
-
-Think: music theory meets an old-school RPG menu, but with fewer dragons and more diminished sevenths.
+Chordyssey is built as a musical adventure map. The goal is simple: make chord learning clearer and magical.
 
 ---
 
 ## 🛠️ Built With
 
-This project was developed and iterated with the help of **Codex**.
+This project was developed and iterated with **Codex**.
 
 ---
 
