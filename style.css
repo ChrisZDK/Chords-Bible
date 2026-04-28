@@ -6352,6 +6352,19 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-imag
   object-position: center;
 }
 
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-banner-robot {
+  position: absolute;
+  z-index: 2;
+  top: clamp(4.35rem, 9svh, 4.9rem);
+  left: clamp(38rem, 56.8%, 42.6rem);
+  width: clamp(4.9rem, 7.1vw, 6.2rem);
+  height: auto;
+  filter: drop-shadow(0 0.48rem 0.85rem rgba(103, 52, 255, 0.24));
+  pointer-events: none;
+  transform-origin: 50% 58%;
+  animation: robot-slow-levitate 5.4s ease-in-out infinite;
+}
+
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-section {
   border: 0;
   padding: 0;
@@ -6614,6 +6627,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-
 
 @media (prefers-reduced-motion: reduce) {
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel:hover::after,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-banner-robot,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .sound-card-robot,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout .future-illustration-slot .info-card-robot {
     animation: none;
