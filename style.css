@@ -1023,13 +1023,16 @@ body.piano-app-page {
 }
 
 .chord-summary-card,
+.progression-summary-card,
 .piano-card,
 .chord-info-card,
-.related-chords-card {
+.related-chords-card,
+.progressions-list-card {
   min-width: 0;
 }
 
-.chord-summary-card {
+.chord-summary-card,
+.progression-summary-card {
   display: grid;
   align-content: start;
   gap: 1rem;
@@ -6580,6 +6583,247 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-
   animation-play-state: running;
 }
 
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-summary-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  align-items: start;
+  gap: 1rem;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-summary-formula {
+  position: absolute;
+  top: 0.7rem;
+  right: 1rem;
+  max-width: calc(100% - 1.5rem);
+  margin: 0;
+  color: var(--pv-accent);
+  font-family: "Handjet", system-ui, sans-serif;
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: right;
+  text-shadow: 0 0 12px var(--pv-glow);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-summary-card .chord-emblem {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-summary-card .chord-heading-row {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  min-width: 0;
+  padding-right: 7rem;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-summary-card [data-home-progression-title] {
+  align-self: start;
+  margin-top: 0;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column .progressions-list-card {
+  display: grid;
+  align-content: start;
+  gap: 0.34rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressions-list-card h2 {
+  color: var(--pv-accent);
+  text-shadow: 0 0 12px var(--pv-glow);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressions-list-card .related-chords-list li.is-active {
+  border-color: #360163;
+  box-shadow: 0 0 16px rgba(255, 104, 200, 0.18);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressions-list-card .related-chords-list li button {
+  width: 1.72rem;
+  min-width: 1.72rem;
+  min-height: 1.72rem;
+  border-color: rgba(167, 61, 255, 0.75);
+  background: rgba(11, 8, 28, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 10px rgba(167, 61, 255, 0.16);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressions-list-card .related-chords-list li button:hover,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressions-list-card .related-chords-list li button:focus-visible {
+  border-color: #ff68c8;
+  background: rgba(46, 10, 73, 0.96);
+  box-shadow: 0 0 14px rgba(255, 104, 200, 0.22);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .homepage-progression-animation {
+  width: 100%;
+  margin: 0;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .homepage-progression-animation .progression-step {
+  min-height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .homepage-progression-animation .progression-step > span {
+  display: block;
+  margin: 0 0 0.35rem;
+  color: var(--pv-accent);
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  font-size: 0.82rem;
+  text-shadow: 0 0 10px var(--pv-glow);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .homepage-progression-animation .progression-keyboard {
+  min-width: 0;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .homepage-progression-animation .progression-keyboard .piano-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 701px) {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: end;
+    gap: 0.5rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel h2 {
+    grid-column: 1;
+    margin-bottom: 0;
+    color: #a73dff;
+    font-family: "Press Start 2P", system-ui, sans-serif;
+    font-size: 0.62rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-shadow: 0 0 10px var(--pv-glow);
+    text-transform: uppercase;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0.42rem;
+    width: 100%;
+    margin: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu button {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 1;
+    padding: 0;
+    white-space: nowrap;
+  }
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .scale-line {
+  justify-self: center;
+  width: 100%;
+  margin: 0.5rem 0 0;
+  padding-top: 0.55rem;
+  border-top: 1px solid #392052;
+  color: var(--pv-muted);
+  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+  line-height: 1;
+  text-align: center;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .keyboard-legend {
+  justify-self: start;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .keyboard-legend [data-home-progression-step-label] {
+  color: var(--pv-accent);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-songs-fields {
+  display: grid;
+  align-self: center;
+  gap: 0.34rem;
+  min-width: 0;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-songs-label,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-songs-list {
+  min-width: 0;
+  margin: 0;
+  padding: 0.34rem 0.55rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 3px;
+  background: rgba(8, 10, 27, 0.72);
+  color: var(--pv-text);
+  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-size: clamp(0.78rem, 1.05vw, 0.95rem);
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-songs-label {
+  color: #ff4fca;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px var(--pv-glow);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-songs-separator {
+  color: #ff4fca;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .homepage-progression-animation .progression-step > span {
+  display: none;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-summary-card,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressions-list-card,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-info-card,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel {
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .selector-panel,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-summary-card,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progressions-list-card,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-card,
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-info-card {
+  animation: home-progressions-soft-in 0.22s ease both;
+}
+
+@keyframes home-progressions-soft-in {
+  from {
+    opacity: 0.82;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @property --selector-panel-border-angle {
   syntax: "<angle>";
   inherits: false;
@@ -6629,7 +6873,12 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel:hover::after,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .hero-image-frame .hero-banner-robot,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .sound-card-robot,
-  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout .future-illustration-slot .info-card-robot {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout .future-illustration-slot .info-card-robot,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .selector-panel,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-summary-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progressions-list-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-info-card {
     animation: none;
   }
 }
