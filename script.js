@@ -570,6 +570,7 @@ const homeProgressionState = {
   selectedIndex: 0,
   page: 0,
   octaveCount: 1,
+  arpeggio: false,
   chordSnapshot: null,
 };
 const homeProgressionFormulas = [
@@ -606,6 +607,8 @@ const chordNoteSpacing = 0.62;
 const chordNoteDuration = 0.95;
 const progressionChordSpacing = 1.35;
 const progressionChordDuration = 1.45;
+const progressionArpeggioNoteSpacing = 0.24;
+const progressionArpeggioNoteDuration = 0.26;
 const pianoSampleUrls = {
   A0: "A0.mp3",
   C1: "C1.mp3",
@@ -1543,6 +1546,14 @@ function frequenciesFromChordSymbol(symbol) {
   });
 }
 
+function upDownArpeggioSequence(values) {
+  if (values.length <= 1) {
+    return values;
+  }
+
+  return [...values, ...values.slice(0, -1).reverse()];
+}
+
 function playSynthNote(frequency, startTime, duration = 1.35, destination = audioContext.destination) {
   const oscillator = audioContext.createOscillator();
   const noteGain = audioContext.createGain();
@@ -1605,7 +1616,7 @@ function updateProgressionAnimation(animation) {
   setProgressionAnimationChord(animation, Number(animation.dataset.activeIndex) || 0);
 }
 
-function setProgressionAnimationChord(animation, index, { isPlaying = false } = {}) {
+function setProgressionAnimationChord(animation, index, { isPlaying = false, activeNotes = null } = {}) {
   const symbols = animation.dataset.symbols?.split(",").filter(Boolean) || [];
   const symbol = symbols[index] || symbols[0];
   const step = animation.querySelector(".progression-step");
@@ -1626,7 +1637,7 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false } = 
   });
   keyboard.className = "progression-keyboard";
   keyboard.setAttribute("aria-hidden", "true");
-  keyboard.replaceChildren(createKeyboard(notes, false, isPlaying, Number(animation.dataset.octaves) === 2 ? 2 : 1));
+  keyboard.replaceChildren(createKeyboard(activeNotes || notes, false, isPlaying, Number(animation.dataset.octaves) === 2 ? 2 : 1));
   animation.classList.toggle("is-active", isPlaying);
 }
 
@@ -1634,7 +1645,7 @@ function updateProgressionAnimationLabels() {
   document.querySelectorAll("[data-progression-animation]").forEach(updateProgressionAnimation);
 }
 
-function scheduleProgressionAnimation(item, chordSymbols) {
+function scheduleProgressionAnimation(item, chordSymbols, { arpeggio = false } = {}) {
   if (!item) {
     return;
   }
@@ -1643,15 +1654,34 @@ function scheduleProgressionAnimation(item, chordSymbols) {
   item.classList.add("is-playing");
 
   chordSymbols.forEach((_, index) => {
+    const chordStart = startDelay + index * progressionChordSpacing;
+
+    if (arpeggio) {
+      const notes = upDownArpeggioSequence(chordNotesFromSymbol(chordSymbols[index]));
+
+      notes.forEach((note, noteIndex) => {
+        schedulePlayback(() => {
+          setProgressionAnimationChord(animation, index, { isPlaying: true, activeNotes: [note] });
+        }, chordStart + noteIndex * progressionArpeggioNoteSpacing);
+      });
+
+      schedulePlayback(() => {
+        if (Number(animation.dataset.activeIndex) === index) {
+          setProgressionAnimationChord(animation, index);
+        }
+      }, chordStart + Math.max(notes.length - 1, 0) * progressionArpeggioNoteSpacing + progressionArpeggioNoteDuration);
+      return;
+    }
+
     schedulePlayback(() => {
       setProgressionAnimationChord(animation, index, { isPlaying: true });
-    }, startDelay + index * progressionChordSpacing);
+    }, chordStart);
 
     schedulePlayback(() => {
       if (Number(animation.dataset.activeIndex) === index) {
         setProgressionAnimationChord(animation, index);
       }
-    }, startDelay + index * progressionChordSpacing + progressionChordDuration);
+    }, chordStart + progressionChordDuration);
   });
 
   schedulePlayback(() => {
@@ -1665,15 +1695,24 @@ function progressionPlaybackDuration(chordSymbols) {
   return startDelay + Math.max(chordSymbols.length - 1, 0) * progressionChordSpacing + progressionChordDuration + 0.35;
 }
 
-function playProgression(chordSymbols, item, { keepLoop = false } = {}) {
+function playProgression(chordSymbols, item, { keepLoop = false, arpeggio = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
   const soundMode = getSelectedSoundMode();
-  scheduleProgressionAnimation(item, chordSymbols);
+  scheduleProgressionAnimation(item, chordSymbols, { arpeggio });
 
   if (shouldUsePianoSampler()) {
     Tone.start();
 
     chordSymbols.forEach((symbol, index) => {
+      if (arpeggio) {
+        upDownArpeggioSequence(chordNoteNamesFromSymbol(symbol)).forEach((noteName, noteIndex) => {
+          schedulePlayback(() => {
+            pianoSampler.triggerAttackRelease(noteName, progressionArpeggioNoteDuration, undefined, 0.82);
+          }, startDelay + index * progressionChordSpacing + noteIndex * progressionArpeggioNoteSpacing);
+        });
+        return;
+      }
+
       schedulePlayback(() => {
         pianoSampler.triggerAttackRelease(chordNoteNamesFromSymbol(symbol), progressionChordDuration, undefined, 0.82);
       }, startDelay + index * progressionChordSpacing);
@@ -1687,6 +1726,19 @@ function playProgression(chordSymbols, item, { keepLoop = false } = {}) {
   chordSymbols.forEach((symbol, index) => {
     const startTime = now + index * progressionChordSpacing;
     const chordFrequencies = frequenciesFromChordSymbol(symbol);
+
+    if (arpeggio) {
+      upDownArpeggioSequence(chordFrequencies).forEach((frequency, noteIndex) => {
+        playNativeSingleNote(
+          frequency,
+          startTime + noteIndex * progressionArpeggioNoteSpacing,
+          progressionArpeggioNoteDuration,
+          playbackOutput,
+          soundMode
+        );
+      });
+      return;
+    }
 
     playNativeChordSound(chordFrequencies, startTime, progressionChordDuration, playbackOutput, soundMode);
   });
@@ -3341,11 +3393,25 @@ function ensureHomeProgressionStage(chordSymbols, labels) {
   return animation;
 }
 
+function toggleHomeProgressionArpeggio(event) {
+  homeProgressionState.arpeggio = !homeProgressionState.arpeggio;
+
+  const button = event?.currentTarget;
+
+  if (!button) {
+    return;
+  }
+
+  button.textContent = homeProgressionState.arpeggio ? "No Arpeggio" : "Arpeggio";
+  button.setAttribute("aria-pressed", String(homeProgressionState.arpeggio));
+}
+
 function renderHomePianoCard(progression, chords) {
   const { pianoCard } = homeProgressionElements();
   const labels = homeProgressionLabels(chords);
   const chordSymbols = homeProgressionSymbols(chords);
   const formula = homeProgressionFormulaLabel();
+  const arpeggioLabel = homeProgressionState.arpeggio ? "No Arpeggio" : "Arpeggio";
 
   if (!pianoCard) {
     return;
@@ -3379,12 +3445,16 @@ function renderHomePianoCard(progression, chords) {
       </div>
       <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${homeProgressionState.octaveCount === 2 ? "true" : "false"}">${homeProgressionState.octaveCount === 2 ? "-OCT" : "+OCT"}</button>
     </div>
-    <p class="keyboard-legend">STEPS: <span data-home-progression-step-label></span></p>
+    <div class="keyboard-legend-row">
+      <p class="keyboard-legend">STEPS: <span data-home-progression-step-label></span></p>
+      <button class="arpeggio-toggle" type="button" aria-pressed="${homeProgressionState.arpeggio ? "true" : "false"}" data-home-progression-arpeggio>${arpeggioLabel}</button>
+    </div>
     <div class="keyboard" role="img" aria-label="Piano keys for ${formula} progression"></div>
   `;
 
   pianoCard.querySelector("[data-home-progression-play]")?.addEventListener("click", playHomeSelectedProgression);
   pianoCard.querySelector("[data-home-progression-repeat]")?.addEventListener("click", startHomeProgressionLoop);
+  pianoCard.querySelector("[data-home-progression-arpeggio]")?.addEventListener("click", toggleHomeProgressionArpeggio);
   pianoCard.querySelector("[data-home-progression-octave-toggle]")?.addEventListener("click", () => {
     homeProgressionState.octaveCount = homeProgressionState.octaveCount === 2 ? 1 : 2;
     renderHomeProgressionsMode();
@@ -3483,7 +3553,7 @@ function renderHomeProgressionsMode() {
   renderHomeProgressionScaleLine();
 }
 
-function scheduleHomeProgressionAnimation(chordSymbols, labels) {
+function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = false } = {}) {
   const animation = ensureHomeProgressionStage(chordSymbols, labels);
 
   if (!animation) {
@@ -3491,15 +3561,34 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels) {
   }
 
   chordSymbols.forEach((_, index) => {
+    const chordStart = startDelay + index * progressionChordSpacing;
+
+    if (arpeggio) {
+      const notes = upDownArpeggioSequence(chordNotesFromSymbol(chordSymbols[index]));
+
+      notes.forEach((note, noteIndex) => {
+        schedulePlayback(() => {
+          setProgressionAnimationChord(animation, index, { isPlaying: true, activeNotes: [note] });
+        }, chordStart + noteIndex * progressionArpeggioNoteSpacing);
+      });
+
+      schedulePlayback(() => {
+        if (Number(animation.dataset.activeIndex) === index) {
+          setProgressionAnimationChord(animation, index);
+        }
+      }, chordStart + Math.max(notes.length - 1, 0) * progressionArpeggioNoteSpacing + progressionArpeggioNoteDuration);
+      return;
+    }
+
     schedulePlayback(() => {
       setProgressionAnimationChord(animation, index, { isPlaying: true });
-    }, startDelay + index * progressionChordSpacing);
+    }, chordStart);
 
     schedulePlayback(() => {
       if (Number(animation.dataset.activeIndex) === index) {
         setProgressionAnimationChord(animation, index);
       }
-    }, startDelay + index * progressionChordSpacing + progressionChordDuration);
+    }, chordStart + progressionChordDuration);
   });
 
   schedulePlayback(() => {
@@ -3552,12 +3641,22 @@ function startHomeProgressionLoop(event) {
 function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
   const soundMode = getSelectedSoundMode();
+  const arpeggio = homeProgressionState.arpeggio;
 
-  scheduleHomeProgressionAnimation(chordSymbols, labels);
+  scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio });
 
   if (shouldUsePianoSampler()) {
     Tone.start();
     chordSymbols.forEach((symbol, index) => {
+      if (arpeggio) {
+        upDownArpeggioSequence(chordNoteNamesFromSymbol(symbol)).forEach((noteName, noteIndex) => {
+          schedulePlayback(() => {
+            pianoSampler.triggerAttackRelease(noteName, progressionArpeggioNoteDuration, undefined, 0.82);
+          }, startDelay + index * progressionChordSpacing + noteIndex * progressionArpeggioNoteSpacing);
+        });
+        return;
+      }
+
       schedulePlayback(() => {
         pianoSampler.triggerAttackRelease(chordNoteNamesFromSymbol(symbol), progressionChordDuration, undefined, 0.82);
       }, startDelay + index * progressionChordSpacing);
@@ -3569,7 +3668,22 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
 
   chordSymbols.forEach((symbol, index) => {
     const startTime = now + index * progressionChordSpacing;
-    playNativeChordSound(frequenciesFromChordSymbol(symbol), startTime, progressionChordDuration, playbackOutput, soundMode);
+    const frequencies = frequenciesFromChordSymbol(symbol);
+
+    if (arpeggio) {
+      upDownArpeggioSequence(frequencies).forEach((frequency, noteIndex) => {
+        playNativeSingleNote(
+          frequency,
+          startTime + noteIndex * progressionArpeggioNoteSpacing,
+          progressionArpeggioNoteDuration,
+          playbackOutput,
+          soundMode
+        );
+      });
+      return;
+    }
+
+    playNativeChordSound(frequencies, startTime, progressionChordDuration, playbackOutput, soundMode);
   });
 }
 
