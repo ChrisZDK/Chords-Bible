@@ -2933,7 +2933,6 @@ function renderHomeProgressionSummary(progression, chords) {
     <div class="chord-heading-row">
       <h2 data-home-progression-title>${homeProgressionState.key} Major</h2>
     </div>
-    <p class="progression-summary-formula">${progression.roman}</p>
   `;
   summaryCard.setAttribute("aria-label", `${homeProgressionState.key} Major ${progression.roman} progression`);
   summaryCard.dataset.progression = homeProgressionSymbols(chords).join(",");
