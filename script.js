@@ -3162,9 +3162,6 @@ function renderHomeProgressionSummary(progression, chords) {
 
   summaryCard.className = "card progression-summary-card";
   summaryCard.innerHTML = `
-    <span class="chord-emblem" aria-hidden="true">
-      <span class="chord-symbol" data-home-progression-key-symbol>${displayNoteName(homeProgressionState.root)}</span>
-    </span>
     <div class="chord-heading-row">
       <h2 data-home-progression-title>${title}</h2>
       <p class="formula-line" data-home-progression-summary-formula>${formulaLabel}</p>
