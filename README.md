@@ -1,4 +1,4 @@
-P# 🎹 Chordyssey
+# 🎹 Chordyssey
 
 **Chordyssey** is an interactive music-learning app designed to help users explore chords with fun in a arcade-inspired environment.
 
