@@ -1973,7 +1973,7 @@ function setPianoOctaveMode(card, button, octaveCount) {
 
   card.dataset.octaves = String(visibleOctaves);
   card.classList.toggle("is-two-octaves", visibleOctaves === 2);
-  button.textContent = visibleOctaves === 2 ? "+-OCT" : "+OCT";
+  button.textContent = visibleOctaves === 2 ? "-OCT" : "+OCT";
   button.setAttribute("aria-pressed", String(visibleOctaves === 2));
   button.setAttribute(
     "aria-label",
@@ -3377,7 +3377,7 @@ function renderHomePianoCard(progression, chords) {
           <p data-progression-chords>${labels.join(" - ")}</p>
         </div>
       </div>
-      <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${homeProgressionState.octaveCount === 2 ? "true" : "false"}">${homeProgressionState.octaveCount === 2 ? "+-OCT" : "+OCT"}</button>
+      <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${homeProgressionState.octaveCount === 2 ? "true" : "false"}">${homeProgressionState.octaveCount === 2 ? "-OCT" : "+OCT"}</button>
     </div>
     <p class="keyboard-legend">STEPS: <span data-home-progression-step-label></span></p>
     <div class="keyboard" role="img" aria-label="Piano keys for ${formula} progression"></div>
