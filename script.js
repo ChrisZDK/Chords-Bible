@@ -436,16 +436,24 @@ const minorKeyChordPattern = [
 const progressionSets = {
   common: [
     {
-      roman: "I - IV - V",
-      degrees: [0, 3, 4],
-    },
-    {
       roman: "I - V - vi - IV",
       degrees: [0, 4, 5, 3],
     },
     {
+      roman: "vi - IV - I - V",
+      degrees: [5, 3, 0, 4],
+    },
+    {
       roman: "I - vi - IV - V",
       degrees: [0, 5, 3, 4],
+    },
+    {
+      roman: "I - IV - V",
+      degrees: [0, 3, 4],
+    },
+    {
+      roman: "ii - V - I",
+      degrees: [1, 4, 0],
     },
     {
       roman: "I - IV - I - V",
@@ -455,11 +463,15 @@ const progressionSets = {
       roman: "I - ii - V - I",
       degrees: [0, 1, 4, 0],
     },
+    {
+      roman: "I - V - IV - I",
+      degrees: [0, 4, 3, 0],
+    },
   ],
   uncommon: [
     {
-      roman: "I - iii - IV - iv",
-      degrees: [0, 2, 3, { degree: 3, quality: "Minor" }],
+      roman: "I - iii - IV - iv - V - I",
+      degrees: [0, 2, 3, { degree: 3, quality: "Minor" }, 4, 0],
     },
     {
       roman: "I - bVII - IV - I",
@@ -476,6 +488,18 @@ const progressionSets = {
     {
       roman: "I - #iv\u00b0 - V - I",
       degrees: [0, { rootOffset: 6, quality: "Diminished" }, 4, 0],
+    },
+    {
+      roman: "I - IV - iv - I",
+      degrees: [0, 3, { degree: 3, quality: "Minor" }, 0],
+    },
+    {
+      roman: "I - bII - IV - I",
+      degrees: [0, { rootOffset: 1, quality: "Major" }, 3, 0],
+    },
+    {
+      roman: "I - bIII - IV - I",
+      degrees: [0, { rootOffset: 3, quality: "Major" }, 3, 0],
     },
   ],
 };
@@ -533,6 +557,25 @@ let chipCurve;
 let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
+const homeProgressionsPerPage = 4;
+const homeProgressionState = {
+  mode: "chords",
+  key: "C",
+  selectedIndex: 0,
+  page: 0,
+  octaveCount: 1,
+  chordSnapshot: null,
+};
+const homeProgressionSongExamples = {
+  "I - V - vi - IV": ["Let It Be", "With or Without You", "No Woman, No Cry"],
+  "vi - IV - I - V": ["Apologize", "Counting Stars"],
+  "I - vi - IV - V": ["Stand by Me", "Blue Moon", "Earth Angel"],
+  "I - IV - V": ["La Bamba", "Wild Thing", "Twist and Shout"],
+  "ii - V - I": ["Autumn Leaves", "Fly Me to the Moon", "Satin Doll"],
+  "I - IV - I - V": ["Brown Eyed Girl", "Goodbye Earl", "American Pie"],
+  "I - V - IV - I": ["Free Fallin'", "Three Little Birds", "Bad Moon Rising"],
+  "I - iii - IV - iv - V - I": ["Creep", "Space Oddity"],
+};
 const startDelay = 0.5;
 const chordDuration = 1.45;
 const chordNoteStartOffset = 1.63;
@@ -1545,9 +1588,12 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false } = 
 
   animation.dataset.activeIndex = String(index);
   label.textContent = displaySymbols[index] || displayChordSymbol(symbol);
+  animation.closest(".piano-card")?.querySelectorAll("[data-home-progression-step-label]").forEach((element) => {
+    element.textContent = label.textContent;
+  });
   keyboard.className = "progression-keyboard";
   keyboard.setAttribute("aria-hidden", "true");
-  keyboard.replaceChildren(createKeyboard(notes, false, isPlaying));
+  keyboard.replaceChildren(createKeyboard(notes, false, isPlaying, Number(animation.dataset.octaves) === 2 ? 2 : 1));
   animation.classList.toggle("is-active", isPlaying);
 }
 
@@ -2240,6 +2286,16 @@ function initializeNotationToggle() {
 function initializeHeaderMenus() {
   document.querySelectorAll("[data-header-nav]").forEach((select) => {
     select.addEventListener("change", () => {
+      if (select.id === "piano-area-menu" && isHomeDashboardPage()) {
+        if (select.value === "chords" || select.value === "progressions") {
+          setHomepagePianoAreaMode(select.value);
+          return;
+        }
+
+        select.value = homeProgressionState.mode;
+        return;
+      }
+
       if (!select.value) {
         select.selectedIndex = 0;
         return;
@@ -2501,6 +2557,565 @@ function initializeMajorKeyPage() {
   renderMajorKeyPage(params.get("key") || params.get("root") || "C");
 }
 
+function isHomeDashboardPage() {
+  return document.body.classList.contains("home-dashboard-page");
+}
+
+function homeProgressionElements() {
+  const workspace = document.querySelector("[data-major-chord-page]");
+  const displayCard = document.querySelector("[data-major-chord-card]");
+
+  return {
+    workspace,
+    selectorPanel: workspace?.querySelector(".selector-panel"),
+    summaryCard: workspace?.querySelector(".chord-summary-card, .progression-summary-card"),
+    listCard: workspace?.querySelector(".related-chords-card, .progressions-list-card"),
+    pianoCard: workspace?.querySelector(".piano-card"),
+    infoCard: workspace?.querySelector(".chord-info-card"),
+    displayCard,
+    areaMenu: document.querySelector("#piano-area-menu"),
+  };
+}
+
+function captureHomeChordSnapshot() {
+  if (homeProgressionState.chordSnapshot) {
+    return;
+  }
+
+  const elements = homeProgressionElements();
+
+  if (!elements.selectorPanel || !elements.summaryCard || !elements.listCard || !elements.pianoCard || !elements.infoCard) {
+    return;
+  }
+
+  homeProgressionState.chordSnapshot = {
+    selectorPanel: {
+      className: elements.selectorPanel.className,
+      html: elements.selectorPanel.innerHTML,
+    },
+    summaryCard: {
+      className: elements.summaryCard.className,
+      html: elements.summaryCard.innerHTML,
+    },
+    listCard: {
+      className: elements.listCard.className,
+      html: elements.listCard.innerHTML,
+    },
+    pianoCard: {
+      className: elements.pianoCard.className,
+      html: elements.pianoCard.innerHTML,
+    },
+    infoCard: {
+      className: elements.infoCard.className,
+      html: elements.infoCard.innerHTML,
+    },
+  };
+}
+
+function restoreHomeChordMode() {
+  const elements = homeProgressionElements();
+  const snapshot = homeProgressionState.chordSnapshot;
+
+  if (!snapshot || !elements.selectorPanel || !elements.summaryCard || !elements.listCard || !elements.pianoCard || !elements.infoCard) {
+    return;
+  }
+
+  stopActiveLoop();
+  document.body.classList.remove("is-home-progressions-mode");
+  elements.workspace?.classList.remove("is-progressions-mode");
+  elements.selectorPanel.className = snapshot.selectorPanel.className;
+  elements.selectorPanel.innerHTML = snapshot.selectorPanel.html;
+  elements.summaryCard.className = snapshot.summaryCard.className;
+  elements.summaryCard.innerHTML = snapshot.summaryCard.html;
+  elements.listCard.className = snapshot.listCard.className;
+  elements.listCard.innerHTML = snapshot.listCard.html;
+  elements.pianoCard.className = snapshot.pianoCard.className;
+  elements.pianoCard.innerHTML = snapshot.pianoCard.html;
+  elements.infoCard.className = snapshot.infoCard.className;
+  elements.infoCard.innerHTML = snapshot.infoCard.html;
+
+  if (elements.areaMenu) {
+    elements.areaMenu.value = "chords";
+  }
+
+  homeProgressionState.mode = "chords";
+  initializeMajorChordPage();
+  initializePianoOctaveToggle();
+  initializeChordCards();
+  initializeNotationToggle();
+  updateNotation();
+}
+
+function homeProgressionItems() {
+  return [
+    ...progressionSets.common.slice(0, 8).map((progression) => ({ ...progression, group: "Common" })),
+    ...progressionSets.uncommon.slice(0, 8).map((progression) => ({ ...progression, group: "Uncommon" })),
+  ];
+}
+
+function homeProgressionKeyRoot() {
+  return noteValues[homeProgressionState.key] ?? noteValues.C;
+}
+
+function homeProgressionChords(progression = homeProgressionItems()[homeProgressionState.selectedIndex]) {
+  const rootValue = homeProgressionKeyRoot();
+
+  return progressionChords(progression, rootValue, keyChords(rootValue, keyModeConfigs.major));
+}
+
+function homeProgressionLabels(chords) {
+  return chords.map((chord) => {
+    return chord.quality === "Major" ? displayNoteName(chord.root) : `${displayNoteName(chord.root)}${qualitySuffix(chord.quality)}`;
+  });
+}
+
+function homeProgressionSymbols(chords) {
+  return chords.map((chord) => chord.symbol);
+}
+
+function renderHomeKeySelector() {
+  const { selectorPanel } = homeProgressionElements();
+  const scale = majorKeys[homeProgressionState.key] || majorKeys.C;
+
+  if (!selectorPanel) {
+    return;
+  }
+
+  selectorPanel.className = "selector-panel key-selector-panel";
+  selectorPanel.innerHTML = `
+    <p class="selector-panel-kicker">PROGS BUILDER</p>
+    <h2 id="home-key-selector-title" class="selector-label">Choose key</h2>
+    <div class="root-menu root-menu-centered" role="group" aria-label="Choose major key" data-home-major-key-menu></div>
+    <p class="scale-line" data-home-progression-scale>Scale: ${scale.join(" - ")}</p>
+  `;
+
+  const menu = selectorPanel.querySelector("[data-home-major-key-menu]");
+
+  majorKeyOrder.forEach((keyName) => {
+    const button = document.createElement("button");
+    const isActive = keyName === homeProgressionState.key;
+
+    button.type = "button";
+    button.dataset.homeMajorKey = keyName;
+    button.textContent = keyName;
+    button.setAttribute("aria-label", `Choose ${keyName} major key`);
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+    button.addEventListener("click", () => {
+      stopActiveLoop();
+      homeProgressionState.key = canonicalMajorKey(keyName);
+      renderHomeProgressionsMode();
+    });
+    menu.appendChild(button);
+  });
+}
+
+function renderHomeProgressionSummary(progression, chords) {
+  const { summaryCard } = homeProgressionElements();
+  const labels = homeProgressionLabels(chords);
+
+  if (!summaryCard) {
+    return;
+  }
+
+  summaryCard.className = "card progression-summary-card";
+  summaryCard.innerHTML = `
+    <span class="chord-emblem" aria-hidden="true">
+      <span class="chord-symbol" data-home-progression-key-symbol>${homeProgressionState.key}</span>
+    </span>
+    <div class="chord-heading-row">
+      <h2 data-home-progression-title>${homeProgressionState.key} Major</h2>
+    </div>
+    <p class="progression-summary-formula">${progression.roman}</p>
+  `;
+  summaryCard.setAttribute("aria-label", `${homeProgressionState.key} Major ${progression.roman} progression`);
+  summaryCard.dataset.progression = homeProgressionSymbols(chords).join(",");
+  summaryCard.dataset.displayProgression = labels.join(",");
+}
+
+function renderHomeProgressionList() {
+  const { listCard } = homeProgressionElements();
+  const progressions = homeProgressionItems();
+  const pageCount = Math.max(Math.ceil(progressions.length / homeProgressionsPerPage), 1);
+  const page = Math.min(Math.max(homeProgressionState.page, 0), pageCount - 1);
+  const visibleProgressions = progressions.slice(page * homeProgressionsPerPage, page * homeProgressionsPerPage + homeProgressionsPerPage);
+
+  if (!listCard) {
+    return;
+  }
+
+  homeProgressionState.page = page;
+  listCard.className = "card progressions-list-card";
+  listCard.innerHTML = `
+    <div class="related-card-title">
+      <img
+        src="assets/piano-valley/themes/dark/crystal-icon.png"
+        alt=""
+        width="166"
+        height="190"
+        loading="lazy"
+        decoding="async"
+      >
+      <h2>Progressions</h2>
+      <div class="related-carousel-controls" aria-label="Progression pages">
+        <button class="related-carousel-button" type="button" data-home-progression-prev aria-label="Previous progressions">&lt;</button>
+        <span class="related-page-counter" data-home-progression-page-counter aria-live="polite">${page + 1}/${pageCount}</span>
+        <button class="related-carousel-button" type="button" data-home-progression-next aria-label="Next progressions">&gt;</button>
+      </div>
+    </div>
+    <ol class="related-chords-list progressions-list" data-home-progressions-list></ol>
+  `;
+
+  const list = listCard.querySelector("[data-home-progressions-list]");
+
+  visibleProgressions.forEach((progression, index) => {
+    const progressionIndex = page * homeProgressionsPerPage + index;
+    const chords = homeProgressionChords(progression);
+    const labels = homeProgressionLabels(chords);
+    const item = document.createElement("li");
+    const content = document.createElement("div");
+    const title = document.createElement("span");
+    const chordLine = document.createElement("span");
+    const button = document.createElement("button");
+
+    item.classList.toggle("is-active", progressionIndex === homeProgressionState.selectedIndex);
+    item.dataset.progression = homeProgressionSymbols(chords).join(",");
+    item.dataset.displayProgression = labels.join(",");
+    item.dataset.roman = progression.roman;
+    title.textContent = progression.roman;
+    chordLine.textContent = labels.join(" - ");
+    button.type = "button";
+    button.setAttribute("aria-label", `Select ${progression.roman} progression`);
+    button.addEventListener("click", () => {
+      stopActiveLoop();
+      homeProgressionState.selectedIndex = progressionIndex;
+      renderHomeProgressionsMode();
+    });
+
+    content.append(title, chordLine);
+    item.append(content, button);
+    list.appendChild(item);
+  });
+
+  const previousButton = listCard.querySelector("[data-home-progression-prev]");
+  const nextButton = listCard.querySelector("[data-home-progression-next]");
+
+  previousButton.disabled = pageCount <= 1 || page === 0;
+  previousButton.hidden = pageCount <= 1;
+  previousButton.addEventListener("click", () => {
+    homeProgressionState.page = Math.max(homeProgressionState.page - 1, 0);
+    renderHomeProgressionList();
+  });
+
+  nextButton.disabled = pageCount <= 1 || page >= pageCount - 1;
+  nextButton.hidden = pageCount <= 1;
+  nextButton.addEventListener("click", () => {
+    homeProgressionState.page = Math.min(homeProgressionState.page + 1, pageCount - 1);
+    renderHomeProgressionList();
+  });
+}
+
+function ensureHomeProgressionStage(chordSymbols, labels) {
+  const { pianoCard } = homeProgressionElements();
+  const keyboard = pianoCard?.querySelector(".keyboard");
+
+  if (!keyboard) {
+    return null;
+  }
+
+  let animation = keyboard.querySelector("[data-home-progression-animation]");
+
+  if (!animation) {
+    animation = document.createElement("div");
+    animation.className = "progression-animation homepage-progression-animation";
+    animation.dataset.homeProgressionAnimation = "";
+    animation.dataset.progressionAnimation = "";
+    animation.setAttribute("aria-label", "Selected progression sequence");
+    keyboard.replaceChildren(animation);
+  }
+
+  animation.dataset.symbols = chordSymbols.join(",");
+  animation.dataset.displaySymbols = labels.join(",");
+  animation.dataset.octaves = String(homeProgressionState.octaveCount);
+  keyboard.setAttribute("aria-label", `${homeProgressionState.key} Major ${labels.join(" - ")} progression`);
+  updateProgressionAnimation(animation);
+
+  return animation;
+}
+
+function renderHomePianoCard(progression, chords) {
+  const { pianoCard } = homeProgressionElements();
+  const labels = homeProgressionLabels(chords);
+  const chordSymbols = homeProgressionSymbols(chords);
+
+  if (!pianoCard) {
+    return;
+  }
+
+  pianoCard.innerHTML = `
+    <div class="piano-card-header">
+      <button class="play-button" type="button" aria-label="Play ${progression.roman} progression" data-home-progression-play>
+        <img
+          src="assets/piano-valley/themes/dark/play-button.png"
+          alt=""
+          width="340"
+          height="340"
+          loading="lazy"
+          decoding="async"
+        >
+        <span class="play-icon" aria-hidden="true"></span>
+      </button>
+      <button class="repeat-button progression-repeat" type="button" aria-label="Loop ${progression.roman} progression" aria-pressed="false" data-home-progression-repeat>
+        <span class="repeat-icon" aria-hidden="true"></span>
+      </button>
+      <div class="piano-metrics">
+        <div class="piano-metric-row">
+          <p class="stat-label">Formula</p>
+          <p class="formula-line" data-progression-formula>${progression.roman}</p>
+        </div>
+        <div class="note-line">
+          <span class="stat-label">Chords</span>
+          <p data-progression-chords>${labels.join(" - ")}</p>
+        </div>
+      </div>
+      <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${homeProgressionState.octaveCount === 2 ? "true" : "false"}">${homeProgressionState.octaveCount === 2 ? "-" : "+"}</button>
+    </div>
+    <p class="keyboard-legend">STEPS: <span data-home-progression-step-label></span></p>
+    <div class="keyboard" role="img" aria-label="Piano keys for ${progression.roman} progression"></div>
+  `;
+
+  pianoCard.querySelector("[data-home-progression-play]")?.addEventListener("click", playHomeSelectedProgression);
+  pianoCard.querySelector("[data-home-progression-repeat]")?.addEventListener("click", startHomeProgressionLoop);
+  pianoCard.querySelector("[data-home-progression-octave-toggle]")?.addEventListener("click", () => {
+    homeProgressionState.octaveCount = homeProgressionState.octaveCount === 2 ? 1 : 2;
+    renderHomeProgressionsMode();
+  });
+  ensureHomeProgressionStage(chordSymbols, labels);
+}
+
+function renderHomeProgressionScaleLine() {
+  const { infoCard } = homeProgressionElements();
+  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
+  const songs = homeProgressionSongExamples[progression.roman] || [];
+
+  if (!infoCard) {
+    return;
+  }
+
+  infoCard.innerHTML = `
+    <div class="future-illustration-slot" aria-hidden="true">
+      <img
+        class="info-card-robot"
+        src="assets/piano-valley/themes/dark/robot-floating.png"
+        alt=""
+        width="384"
+        height="384"
+        loading="lazy"
+        decoding="async"
+      >
+    </div>
+    <div class="progression-songs-fields">
+      <p class="progression-songs-label">SONGS:</p>
+      <p class="progression-songs-list" data-home-progression-songs></p>
+    </div>
+  `;
+  fitHomeProgressionSongLine(infoCard, songs);
+}
+
+function renderHomeProgressionSongLine(line, songs, count = 3) {
+  const visibleSongs = songs.slice(0, count);
+
+  if (!visibleSongs.length) {
+    line.textContent = "Nothing found ...";
+    return;
+  }
+
+  line.replaceChildren();
+  visibleSongs.forEach((song, index) => {
+    const songText = document.createElement("span");
+    songText.textContent = song;
+    line.appendChild(songText);
+
+    if (index < visibleSongs.length - 1) {
+      const separator = document.createElement("span");
+      separator.className = "progression-songs-separator";
+      separator.textContent = " | ";
+      line.appendChild(separator);
+    }
+  });
+}
+
+function fitHomeProgressionSongLine(container, songs) {
+  const line = container.querySelector("[data-home-progression-songs]");
+
+  if (!line) {
+    return;
+  }
+
+  if (!songs.length) {
+    line.textContent = "Nothing found ...";
+    return;
+  }
+
+  let visibleCount = Math.min(3, songs.length);
+  renderHomeProgressionSongLine(line, songs, visibleCount);
+
+  window.requestAnimationFrame(() => {
+    while (visibleCount > 1 && line.scrollWidth > line.clientWidth) {
+      visibleCount -= 1;
+      renderHomeProgressionSongLine(line, songs, visibleCount);
+    }
+  });
+}
+
+function renderHomeProgressionsMode() {
+  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
+  const chords = homeProgressionChords(progression);
+
+  homeProgressionState.key = canonicalMajorKey(homeProgressionState.key);
+  document.body.classList.add("is-home-progressions-mode");
+  homeProgressionElements().workspace?.classList.add("is-progressions-mode");
+  document.title = `${homeProgressionState.key} Major Progressions - Chordyssey`;
+  renderHomeKeySelector();
+  renderHomeProgressionSummary(progression, chords);
+  renderHomeProgressionList();
+  renderHomePianoCard(progression, chords);
+  renderHomeProgressionScaleLine();
+}
+
+function scheduleHomeProgressionAnimation(chordSymbols, labels) {
+  const animation = ensureHomeProgressionStage(chordSymbols, labels);
+
+  if (!animation) {
+    return;
+  }
+
+  chordSymbols.forEach((_, index) => {
+    schedulePlayback(() => {
+      setProgressionAnimationChord(animation, index, { isPlaying: true });
+    }, startDelay + index * progressionChordSpacing);
+
+    schedulePlayback(() => {
+      if (Number(animation.dataset.activeIndex) === index) {
+        setProgressionAnimationChord(animation, index);
+      }
+    }, startDelay + index * progressionChordSpacing + progressionChordDuration);
+  });
+
+  schedulePlayback(() => {
+    animation.classList.remove("is-active");
+    setProgressionAnimationChord(animation, 0);
+  }, startDelay + chordSymbols.length * progressionChordSpacing + 0.2);
+}
+
+function playHomeSelectedProgression() {
+  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
+  const chords = homeProgressionChords(progression);
+  const chordSymbols = homeProgressionSymbols(chords);
+  const labels = homeProgressionLabels(chords);
+
+  playHomeProgression(chordSymbols, labels);
+}
+
+function startHomeProgressionLoop(event) {
+  const button = event?.currentTarget;
+
+  if (!button) {
+    return;
+  }
+
+  if (activeLoop?.button === button) {
+    stopActiveLoop();
+    startNewPlayback();
+    return;
+  }
+
+  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
+  const chords = homeProgressionChords(progression);
+  const chordSymbols = homeProgressionSymbols(chords);
+  const labels = homeProgressionLabels(chords);
+
+  stopActiveLoop();
+  activeLoop = { button, timerId: null };
+  setLoopButtonState(button, true);
+
+  const runLoop = () => {
+    if (activeLoop?.button !== button) {
+      return;
+    }
+
+    playHomeProgression(chordSymbols, labels, { keepLoop: true });
+    activeLoop.timerId = window.setTimeout(runLoop, progressionPlaybackDuration(chordSymbols) * 1000);
+  };
+
+  runLoop();
+}
+
+function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
+  const playbackOutput = startNewPlayback({ keepLoop });
+  const soundMode = getSelectedSoundMode();
+
+  scheduleHomeProgressionAnimation(chordSymbols, labels);
+
+  if (shouldUsePianoSampler()) {
+    Tone.start();
+    chordSymbols.forEach((symbol, index) => {
+      schedulePlayback(() => {
+        pianoSampler.triggerAttackRelease(chordNoteNamesFromSymbol(symbol), progressionChordDuration, undefined, 0.82);
+      }, startDelay + index * progressionChordSpacing);
+    });
+    return;
+  }
+
+  const now = audioContext.currentTime + startDelay;
+
+  chordSymbols.forEach((symbol, index) => {
+    const startTime = now + index * progressionChordSpacing;
+    playNativeChordSound(frequenciesFromChordSymbol(symbol), startTime, progressionChordDuration, playbackOutput, soundMode);
+  });
+}
+
+function setHomepagePianoAreaMode(mode) {
+  if (!isHomeDashboardPage()) {
+    return;
+  }
+
+  const elements = homeProgressionElements();
+  const nextMode = mode === "progressions" ? "progressions" : "chords";
+
+  captureHomeChordSnapshot();
+
+  if (elements.areaMenu) {
+    elements.areaMenu.value = nextMode;
+  }
+
+  if (nextMode === homeProgressionState.mode && nextMode === "progressions") {
+    renderHomeProgressionsMode();
+    return;
+  }
+
+  if (nextMode === "chords") {
+    restoreHomeChordMode();
+    return;
+  }
+
+  homeProgressionState.mode = "progressions";
+  homeProgressionState.key = "C";
+  homeProgressionState.selectedIndex = 0;
+  homeProgressionState.page = 0;
+  renderHomeProgressionsMode();
+}
+
+function initializeHomepagePianoAreaMode() {
+  const { areaMenu } = homeProgressionElements();
+
+  if (!isHomeDashboardPage() || !areaMenu) {
+    return;
+  }
+
+  areaMenu.value = homeProgressionState.mode;
+}
+
 function createChordCard(chord, options = {}) {
   const article = document.createElement("article");
   article.className = "card";
@@ -2655,6 +3270,7 @@ initializeSoundSelector();
 initializePianoValleyTheme();
 initializeNotationToggle();
 initializeMajorChordPage();
+initializeHomepagePianoAreaMode();
 initializeMajorKeyPage();
 initializeDynamicMajorPage();
 initializePianoOctaveToggle();
