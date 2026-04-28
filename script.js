@@ -561,17 +561,40 @@ const homeProgressionsPerPage = 4;
 const homeProgressionState = {
   mode: "chords",
   key: "C",
+  root: "C",
+  scaleMode: "major",
+  formulaId: "pop-axis",
+  steps: [0, 4, 5, 3],
+  selectedStepIndex: 0,
+  chordMode: "triads",
   selectedIndex: 0,
   page: 0,
   octaveCount: 1,
   chordSnapshot: null,
 };
+const homeProgressionFormulas = [
+  { id: "pop-axis", label: "I - V - vi - IV", degrees: [0, 4, 5, 3] },
+  { id: "jazz-cadence", label: "ii - V - I", degrees: [1, 4, 0] },
+  { id: "sensitive-axis", label: "vi - IV - I - V", degrees: [5, 3, 0, 4] },
+  { id: "primary", label: "I - IV - V", degrees: [0, 3, 4] },
+  { id: "fifties", label: "I - vi - IV - V", degrees: [0, 5, 3, 4] },
+  { id: "cinematic", label: "I - iii - vi - IV", degrees: [0, 2, 5, 3] },
+  { id: "lift", label: "ii - vi - I - V", degrees: [1, 5, 0, 4] },
+  { id: "falling", label: "I - V - iii - vi", degrees: [0, 4, 2, 5] },
+  { id: "bright-step", label: "I - ii - IV - V", degrees: [0, 1, 3, 4] },
+  { id: "plagal-step", label: "I - IV - ii - V", degrees: [0, 3, 1, 4] },
+  { id: "minor-fall", label: "vi - iii - IV - I", degrees: [5, 2, 3, 0] },
+  { id: "cycle", label: "iii - vi - ii - V", degrees: [2, 5, 1, 4] },
+];
 const homeProgressionSongExamples = {
   "I - V - vi - IV": ["Let It Be", "With or Without You", "No Woman, No Cry"],
+  "ii - V - I": ["Autumn Leaves", "Fly Me to the Moon", "Satin Doll"],
   "vi - IV - I - V": ["Apologize", "Counting Stars"],
   "I - vi - IV - V": ["Stand by Me", "Blue Moon", "Earth Angel"],
   "I - IV - V": ["La Bamba", "Wild Thing", "Twist and Shout"],
-  "ii - V - I": ["Autumn Leaves", "Fly Me to the Moon", "Satin Doll"],
+  "I - iii - vi - IV": ["Don't Stop Believin'", "Basket Case"],
+  "I - V - iii - vi": ["Someone Like You", "A Thousand Years"],
+  "iii - vi - ii - V": ["All the Things You Are", "I Got Rhythm"],
   "I - IV - I - V": ["Brown Eyed Girl", "Goodbye Earl", "American Pie"],
   "I - V - IV - I": ["Free Fallin'", "Three Little Birds", "Bad Moon Rising"],
   "I - iii - IV - iv - V - I": ["Creep", "Space Oddity"],
@@ -1020,14 +1043,13 @@ function displayChordSymbolForRoot(root, quality) {
 }
 
 function displayChordSymbol(symbol) {
-  const match = symbol.trim().match(/^([A-G](?:#|b)?)(dim|m?)$/);
+  const parsed = parseChordSymbol(symbol);
 
-  if (!match) {
+  if (!parsed) {
     return symbol;
   }
 
-  const [, root, suffix] = match;
-  return `${displayNoteName(root)}${suffix}`;
+  return `${displayNoteName(parsed.root)}${qualitySuffix(parsed.quality)}`;
 }
 
 function keyChords(rootValue, config = getKeyConfig()) {
@@ -1464,20 +1486,35 @@ function startChordLoop(notes, card, button) {
   runLoop();
 }
 
-function chordNoteNamesFromSymbol(symbol) {
-  const match = symbol.trim().match(/^([A-G](?:#|b)?)(dim|m?)$/);
+function parseChordSymbol(symbol) {
+  const match = symbol.trim().match(/^([A-G](?:#|b)?)(.*)$/);
 
   if (!match) {
+    return null;
+  }
+
+  const [, rawRoot, suffix] = match;
+  const root = normalizeNote(rawRoot);
+  const quality = Object.keys(chordQualityCatalog).find((catalogQuality) => {
+    return qualitySuffix(catalogQuality) === suffix;
+  });
+
+  if (!quality || !Number.isInteger(noteValues[root])) {
+    return null;
+  }
+
+  return { root, quality };
+}
+
+function chordNoteNamesFromSymbol(symbol) {
+  const parsed = parseChordSymbol(symbol);
+
+  if (!parsed) {
     return [];
   }
 
-  const [, root, quality] = match;
-  const rootValue = noteValues[root];
-  const intervals = quality === "dim" ? [0, 3, 6] : [0, quality ? 3 : 4, 7];
-  const midiNumbers = intervals.map((interval) => {
-    const value = rootValue + interval;
-    return 60 + value;
-  });
+  const rootValue = noteValues[parsed.root];
+  const midiNumbers = chordIntervalsForQuality(parsed.quality).map((interval) => 60 + rootValue + interval);
 
   return midiNumbers.map((midiNumber) => {
     const noteName = sharpNames[midiNumber % 12];
@@ -1488,17 +1525,13 @@ function chordNoteNamesFromSymbol(symbol) {
 }
 
 function chordNotesFromSymbol(symbol) {
-  const match = symbol.trim().match(/^([A-G](?:#|b)?)(dim|m?)$/);
+  const parsed = parseChordSymbol(symbol);
 
-  if (!match) {
+  if (!parsed) {
     return [];
   }
 
-  const [, root, quality] = match;
-  const rootValue = noteValues[root];
-  const intervals = quality === "dim" ? [0, 3, 6] : [0, quality ? 3 : 4, 7];
-
-  return chordNotesFromRoot(rootValue, intervals);
+  return chordNotesFromRoot(noteValues[parsed.root], chordIntervalsForQuality(parsed.quality));
 }
 
 function frequenciesFromChordSymbol(symbol) {
@@ -2776,7 +2809,7 @@ function homeProgressionElements() {
     workspace,
     selectorPanel: workspace?.querySelector(".selector-panel"),
     summaryCard: workspace?.querySelector(".chord-summary-card, .progression-summary-card"),
-    listCard: workspace?.querySelector(".related-chords-card, .progressions-list-card"),
+    listCard: workspace?.querySelector(".related-chords-card, .progressions-list-card, .progression-customizer"),
     pianoCard: workspace?.querySelector(".piano-card"),
     infoCard: workspace?.querySelector(".chord-info-card"),
     displayCard,
@@ -2853,73 +2886,275 @@ function restoreHomeChordMode() {
   updateNotation();
 }
 
-function homeProgressionItems() {
-  return [
-    ...progressionSets.common.slice(0, 8).map((progression) => ({ ...progression, group: "Common" })),
-    ...progressionSets.uncommon.slice(0, 8).map((progression) => ({ ...progression, group: "Uncommon" })),
-  ];
+function homeProgressionConfig() {
+  return homeProgressionState.scaleMode === "minor" ? keyModeConfigs.minor : keyModeConfigs.major;
 }
 
-function homeProgressionKeyRoot() {
-  return noteValues[homeProgressionState.key] ?? noteValues.C;
+function homeProgressionDegreePattern() {
+  return homeProgressionConfig().chordPattern;
 }
 
-function homeProgressionChords(progression = homeProgressionItems()[homeProgressionState.selectedIndex]) {
-  const rootValue = homeProgressionKeyRoot();
+function homeProgressionRootValue() {
+  return noteValues[homeProgressionState.root] ?? noteValues.C;
+}
 
-  return progressionChords(progression, rootValue, keyChords(rootValue, keyModeConfigs.major));
+function homeProgressionScaleNotes() {
+  return scaleNotes(homeProgressionRootValue(), homeProgressionConfig());
+}
+
+function homeProgressionFormulaById(id = homeProgressionState.formulaId) {
+  return homeProgressionFormulas.find((formula) => formula.id === id) || homeProgressionFormulas[0];
+}
+
+function homeProgressionFormulaLabel(steps = homeProgressionState.steps) {
+  const pattern = homeProgressionDegreePattern();
+  return steps.map((degree) => pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I").join(" - ");
+}
+
+function homeProgressionMajorFormulaLabel(steps = homeProgressionState.steps) {
+  return steps.map((degree) => keyChordPattern[degree]?.roman || "I").join(" - ");
+}
+
+function homeProgressionTitle() {
+  return `${displayNoteName(homeProgressionState.root)} ${homeProgressionConfig().titleQuality}`;
+}
+
+function normalizeHomeProgressionState() {
+  if (!Number.isInteger(noteValues[homeProgressionState.root])) {
+    homeProgressionState.root = "C";
+  }
+
+  homeProgressionState.key = homeProgressionState.root;
+  homeProgressionState.scaleMode = homeProgressionState.scaleMode === "minor" ? "minor" : "major";
+  homeProgressionState.chordMode = homeProgressionState.chordMode === "sevenths" ? "sevenths" : "triads";
+
+  if (!Array.isArray(homeProgressionState.steps) || homeProgressionState.steps.length < 2) {
+    homeProgressionState.steps = [...homeProgressionFormulaById("pop-axis").degrees];
+  }
+
+  homeProgressionState.steps = homeProgressionState.steps
+    .map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6))
+    .slice(0, 8);
+  homeProgressionState.selectedStepIndex = Math.min(
+    Math.max(Number(homeProgressionState.selectedStepIndex) || 0, 0),
+    homeProgressionState.steps.length - 1
+  );
+}
+
+function homeProgressionSeventhQuality(degree) {
+  const pattern = homeProgressionDegreePattern();
+  const triadQuality = pattern[degree]?.quality || "Major";
+  let seventhQuality = triadQuality;
+
+  if (homeProgressionState.scaleMode === "minor") {
+    seventhQuality = ["m7", "m7b5", "maj7", "m7", "m7", "maj7", "7"][degree] || triadQuality;
+  } else {
+    seventhQuality = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"][degree] || triadQuality;
+  }
+
+  return chordQualityCatalog[seventhQuality] ? seventhQuality : triadQuality;
+}
+
+function homeProgressionChordForDegree(degree) {
+  const config = homeProgressionConfig();
+  const pattern = config.chordPattern[degree] || config.chordPattern[0];
+  const chordRootValue = scaleValues(homeProgressionRootValue(), config)[degree] ?? homeProgressionRootValue();
+  const root = sharpNames[chordRootValue];
+  const quality = homeProgressionState.chordMode === "sevenths" ? homeProgressionSeventhQuality(degree) : pattern.quality;
+
+  return {
+    roman: pattern.roman,
+    root,
+    quality,
+    notes: chordNotesFromRoot(chordRootValue, chordIntervalsForQuality(quality)),
+    symbol: chordSymbol(root, quality),
+  };
+}
+
+function homeProgressionChords() {
+  return homeProgressionState.steps.map(homeProgressionChordForDegree);
 }
 
 function homeProgressionLabels(chords) {
-  return chords.map((chord) => {
-    return chord.quality === "Major" ? displayNoteName(chord.root) : `${displayNoteName(chord.root)}${qualitySuffix(chord.quality)}`;
-  });
+  return chords.map((chord) => displayChordSymbolForRoot(chord.root, chord.quality));
 }
 
 function homeProgressionSymbols(chords) {
   return chords.map((chord) => chord.symbol);
 }
 
+function setHomeProgressionSteps(steps, formulaId = "custom") {
+  homeProgressionState.steps = steps.map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6)).slice(0, 8);
+  homeProgressionState.formulaId = formulaId;
+  homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
+}
+
+function resetHomeProgressionDefaults() {
+  const defaultFormula = homeProgressionFormulaById("pop-axis");
+
+  stopActiveLoop();
+  homeProgressionState.root = "C";
+  homeProgressionState.key = "C";
+  homeProgressionState.scaleMode = "major";
+  homeProgressionState.formulaId = defaultFormula.id;
+  homeProgressionState.steps = [...defaultFormula.degrees];
+  homeProgressionState.selectedStepIndex = 0;
+  homeProgressionState.chordMode = "triads";
+  homeProgressionState.octaveCount = 1;
+  homeProgressionState.selectedIndex = 0;
+  homeProgressionState.page = 0;
+}
+
+function handleHomeProgressionUtility(action) {
+  if (action === "add") {
+    if (homeProgressionState.steps.length >= 8) {
+      return;
+    }
+
+    stopActiveLoop();
+    homeProgressionState.steps.push(homeProgressionState.steps[homeProgressionState.selectedStepIndex] ?? 0);
+    homeProgressionState.selectedStepIndex = homeProgressionState.steps.length - 1;
+    homeProgressionState.formulaId = "custom";
+    renderHomeProgressionsMode();
+    return;
+  }
+
+  if (action === "remove") {
+    if (homeProgressionState.steps.length <= 2) {
+      return;
+    }
+
+    stopActiveLoop();
+    homeProgressionState.steps.splice(homeProgressionState.selectedStepIndex, 1);
+    homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
+    homeProgressionState.formulaId = "custom";
+    renderHomeProgressionsMode();
+    return;
+  }
+
+  if (action === "random") {
+    const length = 3 + Math.floor(Math.random() * 4);
+    const randomSteps = Array.from({ length }, (_, index) => {
+      if (index === 0) {
+        return Math.random() > 0.35 ? 0 : 5;
+      }
+
+      return [0, 1, 2, 3, 4, 5, 6][Math.floor(Math.random() * 7)];
+    });
+
+    stopActiveLoop();
+    setHomeProgressionSteps(randomSteps, "custom");
+    homeProgressionState.selectedStepIndex = 0;
+    renderHomeProgressionsMode();
+    return;
+  }
+
+  if (action === "reset") {
+    resetHomeProgressionDefaults();
+    renderHomeProgressionsMode();
+  }
+}
+
 function renderHomeKeySelector() {
   const { selectorPanel } = homeProgressionElements();
-  const scale = majorKeys[homeProgressionState.key] || majorKeys.C;
+  const scale = homeProgressionScaleNotes();
 
   if (!selectorPanel) {
     return;
   }
 
-  selectorPanel.className = "selector-panel key-selector-panel";
+  selectorPanel.className = "selector-panel key-selector-panel progression-builder";
   selectorPanel.innerHTML = `
-    <p class="selector-panel-kicker">PROGS BUILDER</p>
-    <h2 id="home-key-selector-title" class="selector-label">Choose key</h2>
-    <div class="root-menu root-menu-centered" role="group" aria-label="Choose major key" data-home-major-key-menu></div>
-    <p class="scale-line" data-home-progression-scale>Scale: ${scale.join(" - ")}</p>
+    <div class="progression-builder-main">
+      <section class="progression-builder-section" aria-labelledby="progression-root-title">
+        <h2 id="progression-root-title" class="selector-label">1. Choose Root Note</h2>
+        <div class="root-menu root-menu-centered progression-root-grid" role="group" aria-label="Choose progression root note" data-home-progression-root-menu></div>
+      </section>
+      <section class="progression-builder-section" aria-labelledby="progression-formula-title">
+        <h2 id="progression-formula-title" class="selector-label">3. Choose Progression</h2>
+        <div class="progression-option-grid" role="group" aria-label="Choose progression formula" data-home-progression-formula-menu></div>
+      </section>
+    </div>
+    <div class="progression-builder-side">
+      <section class="progression-builder-section" aria-labelledby="progression-scale-title">
+        <h2 id="progression-scale-title" class="selector-label">2. Choose Scale</h2>
+        <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
+      </section>
+      <section class="progression-scale-card" aria-live="polite">
+        <h2 class="selector-label">Scale</h2>
+        <p class="scale-line" data-home-progression-scale>${displayNotes(scale)}</p>
+      </section>
+    </div>
   `;
 
-  const menu = selectorPanel.querySelector("[data-home-major-key-menu]");
-
-  majorKeyOrder.forEach((keyName) => {
+  const rootMenu = selectorPanel.querySelector("[data-home-progression-root-menu]");
+  rootSelectorNotes.forEach((root) => {
     const button = document.createElement("button");
-    const isActive = keyName === homeProgressionState.key;
+    const isActive = root === homeProgressionState.root;
 
     button.type = "button";
-    button.dataset.homeMajorKey = keyName;
-    button.textContent = keyName;
-    button.setAttribute("aria-label", `Choose ${keyName} major key`);
+    button.dataset.homeProgressionRoot = root;
+    button.textContent = rootSelectorLabel(root).replace("/", " / ");
+    button.setAttribute("aria-label", `Choose ${displayNoteName(root)} progression root`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
-      homeProgressionState.key = canonicalMajorKey(keyName);
+      homeProgressionState.root = root;
+      homeProgressionState.key = root;
       renderHomeProgressionsMode();
     });
-    menu.appendChild(button);
+    rootMenu.appendChild(button);
+  });
+
+  const scaleMenu = selectorPanel.querySelector("[data-home-progression-scale-menu]");
+  [
+    ["major", "Major"],
+    ["minor", "Minor"],
+  ].forEach(([mode, label]) => {
+    const button = document.createElement("button");
+    const isActive = mode === homeProgressionState.scaleMode;
+
+    button.type = "button";
+    button.dataset.homeProgressionScaleMode = mode;
+    button.textContent = label;
+    button.setAttribute("aria-label", `Choose ${label.toLowerCase()} scale`);
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+    button.addEventListener("click", () => {
+      stopActiveLoop();
+      homeProgressionState.scaleMode = mode;
+      renderHomeProgressionsMode();
+    });
+    scaleMenu.appendChild(button);
+  });
+
+  const formulaMenu = selectorPanel.querySelector("[data-home-progression-formula-menu]");
+  homeProgressionFormulas.forEach((formula) => {
+    const button = document.createElement("button");
+    const isActive = formula.id === homeProgressionState.formulaId;
+
+    button.type = "button";
+    button.dataset.homeProgressionFormula = formula.id;
+    button.textContent = formula.label;
+    button.setAttribute("aria-label", `Choose ${formula.label} progression`);
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+    button.addEventListener("click", () => {
+      stopActiveLoop();
+      homeProgressionState.selectedStepIndex = 0;
+      setHomeProgressionSteps([...formula.degrees], formula.id);
+      renderHomeProgressionsMode();
+    });
+    formulaMenu.appendChild(button);
   });
 }
 
 function renderHomeProgressionSummary(progression, chords) {
   const { summaryCard } = homeProgressionElements();
   const labels = homeProgressionLabels(chords);
+  const formulaLabel = homeProgressionFormulaLabel();
+  const title = homeProgressionTitle();
 
   if (!summaryCard) {
     return;
@@ -2928,102 +3163,166 @@ function renderHomeProgressionSummary(progression, chords) {
   summaryCard.className = "card progression-summary-card";
   summaryCard.innerHTML = `
     <span class="chord-emblem" aria-hidden="true">
-      <span class="chord-symbol" data-home-progression-key-symbol>${homeProgressionState.key}</span>
+      <span class="chord-symbol" data-home-progression-key-symbol>${displayNoteName(homeProgressionState.root)}</span>
     </span>
     <div class="chord-heading-row">
-      <h2 data-home-progression-title>${homeProgressionState.key} Major</h2>
+      <h2 data-home-progression-title>${title}</h2>
+      <p class="formula-line" data-home-progression-summary-formula>${formulaLabel}</p>
+      <div class="notation-toggle" role="group" aria-label="Choose note naming">
+        <button type="button" data-home-progression-notation="sharp" data-notation="sharp" aria-label="Use sharp note names" aria-pressed="${preferredNotation === "sharp" ? "true" : "false"}">&#9839;</button>
+        <button type="button" data-home-progression-notation="flat" data-notation="flat" aria-label="Use flat note names" aria-pressed="${preferredNotation === "flat" ? "true" : "false"}">&#9837;</button>
+      </div>
     </div>
   `;
-  summaryCard.setAttribute("aria-label", `${homeProgressionState.key} Major ${progression.roman} progression`);
+  summaryCard.setAttribute("aria-label", `${title} ${formulaLabel} progression`);
   summaryCard.dataset.progression = homeProgressionSymbols(chords).join(",");
   summaryCard.dataset.displayProgression = labels.join(",");
+
+  summaryCard.querySelectorAll("[data-home-progression-notation]").forEach((button) => {
+    button.addEventListener("click", () => {
+      preferredNotation = button.dataset.homeProgressionNotation === "flat" ? "flat" : "sharp";
+      storeNotation(preferredNotation);
+      renderHomeProgressionsMode();
+    });
+  });
 }
 
 function renderHomeProgressionList() {
   const { listCard } = homeProgressionElements();
-  const progressions = homeProgressionItems();
-  const pageCount = Math.max(Math.ceil(progressions.length / homeProgressionsPerPage), 1);
-  const page = Math.min(Math.max(homeProgressionState.page, 0), pageCount - 1);
-  const visibleProgressions = progressions.slice(page * homeProgressionsPerPage, page * homeProgressionsPerPage + homeProgressionsPerPage);
+  const steps = homeProgressionState.steps;
+  const pattern = homeProgressionDegreePattern();
+  const chords = homeProgressionChords();
+  const labels = homeProgressionLabels(chords);
 
   if (!listCard) {
     return;
   }
 
-  homeProgressionState.page = page;
-  listCard.className = "card progressions-list-card";
+  listCard.className = "card progression-customizer";
   listCard.innerHTML = `
-    <div class="related-card-title">
-      <img
-        src="assets/piano-valley/themes/dark/crystal-icon.png"
-        alt=""
-        width="166"
-        height="190"
-        loading="lazy"
-        decoding="async"
-      >
-      <h2>Progressions</h2>
-      <div class="related-carousel-controls" aria-label="Progression pages">
-        <button class="related-carousel-button" type="button" data-home-progression-prev aria-label="Previous progressions">&lt;</button>
-        <span class="related-page-counter" data-home-progression-page-counter aria-live="polite">${page + 1}/${pageCount}</span>
-        <button class="related-carousel-button" type="button" data-home-progression-next aria-label="Next progressions">&gt;</button>
-      </div>
+    <h2>Customize Progressions</h2>
+    <div class="progression-customizer-section">
+      <p class="selector-label">Steps</p>
+      <div class="progression-step-grid" role="group" aria-label="Customize progression steps" data-home-progression-steps></div>
     </div>
-    <ol class="related-chords-list progressions-list" data-home-progressions-list></ol>
+    <div class="progression-customizer-section">
+      <p class="selector-label">Degree Picker</p>
+      <div class="progression-degree-grid" role="group" aria-label="Choose degree for selected step" data-home-progression-degree-picker></div>
+    </div>
+    <div class="progression-customizer-section progression-options-row">
+      <p class="selector-label">Options</p>
+      <div class="progression-option-buttons" role="group" aria-label="Choose chord detail" data-home-progression-chord-mode></div>
+    </div>
+    <div class="progression-customizer-section">
+      <p class="selector-label">Utilities</p>
+      <div class="progression-utility-row" data-home-progression-utilities></div>
+    </div>
+    <p class="progression-output-line" aria-live="polite">Output: <span data-home-progression-output>${labels.join(" - ")}</span></p>
   `;
 
-  const list = listCard.querySelector("[data-home-progressions-list]");
-
-  visibleProgressions.forEach((progression, index) => {
-    const progressionIndex = page * homeProgressionsPerPage + index;
-    const chords = homeProgressionChords(progression);
-    const labels = homeProgressionLabels(chords);
-    const item = document.createElement("li");
-    const content = document.createElement("div");
-    const title = document.createElement("span");
-    const chordLine = document.createElement("span");
+  const stepGrid = listCard.querySelector("[data-home-progression-steps]");
+  steps.forEach((degree, index) => {
     const button = document.createElement("button");
+    const isActive = index === homeProgressionState.selectedStepIndex;
 
-    item.classList.toggle("is-active", progressionIndex === homeProgressionState.selectedIndex);
-    item.dataset.progression = homeProgressionSymbols(chords).join(",");
-    item.dataset.displayProgression = labels.join(",");
-    item.dataset.roman = progression.roman;
-    title.textContent = progression.roman;
-    chordLine.textContent = labels.join(" - ");
     button.type = "button";
-    button.setAttribute("aria-label", `Select ${progression.roman} progression`);
+    button.className = "progression-step-button";
+    button.dataset.homeProgressionStep = String(index);
+    button.setAttribute("aria-label", `Select step ${index + 1}: ${pattern[degree]?.roman || "I"}`);
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+    button.innerHTML = `<span>Step ${index + 1}</span><strong>${pattern[degree]?.roman || "I"}</strong>`;
     button.addEventListener("click", () => {
-      stopActiveLoop();
-      homeProgressionState.selectedIndex = progressionIndex;
+      homeProgressionState.selectedStepIndex = index;
       renderHomeProgressionsMode();
     });
-
-    content.append(title, chordLine);
-    item.append(content, button);
-    list.appendChild(item);
+    stepGrid.appendChild(button);
   });
 
-  const previousButton = listCard.querySelector("[data-home-progression-prev]");
-  const nextButton = listCard.querySelector("[data-home-progression-next]");
+  const degreePicker = listCard.querySelector("[data-home-progression-degree-picker]");
+  pattern.forEach((degree, index) => {
+    const button = document.createElement("button");
+    const isActive = steps[homeProgressionState.selectedStepIndex] === index;
 
-  previousButton.disabled = pageCount <= 1 || page === 0;
-  previousButton.hidden = pageCount <= 1;
-  previousButton.addEventListener("click", () => {
-    homeProgressionState.page = Math.max(homeProgressionState.page - 1, 0);
-    renderHomeProgressionList();
+    button.type = "button";
+    button.dataset.homeProgressionDegree = String(index);
+    button.textContent = degree.roman;
+    button.setAttribute("aria-label", `Set selected step to ${degree.roman}`);
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+    button.addEventListener("click", () => {
+      stopActiveLoop();
+      homeProgressionState.steps[homeProgressionState.selectedStepIndex] = index;
+      homeProgressionState.formulaId = "custom";
+      renderHomeProgressionsMode();
+    });
+    degreePicker.appendChild(button);
   });
 
-  nextButton.disabled = pageCount <= 1 || page >= pageCount - 1;
-  nextButton.hidden = pageCount <= 1;
-  nextButton.addEventListener("click", () => {
-    homeProgressionState.page = Math.min(homeProgressionState.page + 1, pageCount - 1);
-    renderHomeProgressionList();
+  const modeMenu = listCard.querySelector("[data-home-progression-chord-mode]");
+  [
+    ["triads", "Triads"],
+    ["sevenths", "7th"],
+  ].forEach(([mode, label]) => {
+    const button = document.createElement("button");
+    const isActive = mode === homeProgressionState.chordMode;
+
+    button.type = "button";
+    button.dataset.homeProgressionChordMode = mode;
+    button.textContent = label;
+    button.setAttribute("aria-label", `Use ${label} chords`);
+    button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+    button.addEventListener("click", () => {
+      stopActiveLoop();
+      homeProgressionState.chordMode = mode;
+      renderHomeProgressionsMode();
+    });
+    modeMenu.appendChild(button);
   });
+
+  const utilities = listCard.querySelector("[data-home-progression-utilities]");
+  const utilityButtons = [
+    {
+      id: "add",
+      label: "+ Add Step",
+      disabled: homeProgressionState.steps.length >= 8,
+    },
+    {
+      id: "remove",
+      label: "\u2212 Remove",
+      disabled: homeProgressionState.steps.length <= 2,
+    },
+    {
+      id: "random",
+      label: "\ud83c\udfb2 Random",
+      disabled: false,
+    },
+    {
+      id: "reset",
+      label: "\u21bb Reset",
+      disabled: false,
+    },
+  ];
+
+  utilityButtons.forEach(({ id, label, disabled }) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.homeProgressionUtility = id;
+    button.disabled = disabled;
+    button.setAttribute("aria-label", label.replace(/^[^\w]+/, "").trim());
+    button.textContent = label;
+    button.addEventListener("click", () => handleHomeProgressionUtility(id));
+    utilities.appendChild(button);
+  });
+
 }
 
 function ensureHomeProgressionStage(chordSymbols, labels) {
   const { pianoCard } = homeProgressionElements();
   const keyboard = pianoCard?.querySelector(".keyboard");
+  const title = homeProgressionTitle();
+  const formula = homeProgressionFormulaLabel();
 
   if (!keyboard) {
     return null;
@@ -3043,7 +3342,7 @@ function ensureHomeProgressionStage(chordSymbols, labels) {
   animation.dataset.symbols = chordSymbols.join(",");
   animation.dataset.displaySymbols = labels.join(",");
   animation.dataset.octaves = String(homeProgressionState.octaveCount);
-  keyboard.setAttribute("aria-label", `${homeProgressionState.key} Major ${labels.join(" - ")} progression`);
+  keyboard.setAttribute("aria-label", `${title} ${labels.join(" - ")} progression`);
   updateProgressionAnimation(animation);
 
   return animation;
@@ -3053,6 +3352,7 @@ function renderHomePianoCard(progression, chords) {
   const { pianoCard } = homeProgressionElements();
   const labels = homeProgressionLabels(chords);
   const chordSymbols = homeProgressionSymbols(chords);
+  const formula = homeProgressionFormulaLabel();
 
   if (!pianoCard) {
     return;
@@ -3060,7 +3360,7 @@ function renderHomePianoCard(progression, chords) {
 
   pianoCard.innerHTML = `
     <div class="piano-card-header">
-      <button class="play-button" type="button" aria-label="Play ${progression.roman} progression" data-home-progression-play>
+      <button class="play-button" type="button" aria-label="Play ${formula} progression" data-home-progression-play>
         <img
           src="assets/piano-valley/themes/dark/play-button.png"
           alt=""
@@ -3071,13 +3371,13 @@ function renderHomePianoCard(progression, chords) {
         >
         <span class="play-icon" aria-hidden="true"></span>
       </button>
-      <button class="repeat-button progression-repeat" type="button" aria-label="Loop ${progression.roman} progression" aria-pressed="false" data-home-progression-repeat>
+      <button class="repeat-button progression-repeat" type="button" aria-label="Loop ${formula} progression" aria-pressed="false" data-home-progression-repeat>
         <span class="repeat-icon" aria-hidden="true"></span>
       </button>
       <div class="piano-metrics">
         <div class="piano-metric-row">
           <p class="stat-label">Formula</p>
-          <p class="formula-line" data-progression-formula>${progression.roman}</p>
+          <p class="formula-line" data-progression-formula>${formula}</p>
         </div>
         <div class="note-line">
           <span class="stat-label">Chords</span>
@@ -3087,7 +3387,7 @@ function renderHomePianoCard(progression, chords) {
       <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${homeProgressionState.octaveCount === 2 ? "true" : "false"}">${homeProgressionState.octaveCount === 2 ? "-" : "+"}</button>
     </div>
     <p class="keyboard-legend">STEPS: <span data-home-progression-step-label></span></p>
-    <div class="keyboard" role="img" aria-label="Piano keys for ${progression.roman} progression"></div>
+    <div class="keyboard" role="img" aria-label="Piano keys for ${formula} progression"></div>
   `;
 
   pianoCard.querySelector("[data-home-progression-play]")?.addEventListener("click", playHomeSelectedProgression);
@@ -3101,13 +3401,13 @@ function renderHomePianoCard(progression, chords) {
 
 function renderHomeProgressionScaleLine() {
   const { infoCard } = homeProgressionElements();
-  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
-  const songs = homeProgressionSongExamples[progression.roman] || [];
+  const songs = homeProgressionSongExamples[homeProgressionMajorFormulaLabel()] || [];
 
   if (!infoCard) {
     return;
   }
 
+  infoCard.className = "card chord-info-card progression-songs-card";
   infoCard.innerHTML = `
     <div class="future-illustration-slot" aria-hidden="true">
       <img
@@ -3175,13 +3475,14 @@ function fitHomeProgressionSongLine(container, songs) {
 }
 
 function renderHomeProgressionsMode() {
-  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
-  const chords = homeProgressionChords(progression);
+  normalizeHomeProgressionState();
 
-  homeProgressionState.key = canonicalMajorKey(homeProgressionState.key);
+  const progression = { roman: homeProgressionFormulaLabel(), degrees: [...homeProgressionState.steps] };
+  const chords = homeProgressionChords();
+
   document.body.classList.add("is-home-progressions-mode");
   homeProgressionElements().workspace?.classList.add("is-progressions-mode");
-  document.title = `${homeProgressionState.key} Major Progressions - Chordyssey`;
+  document.title = `${homeProgressionTitle()} Progressions - Chordyssey`;
   renderHomeKeySelector();
   renderHomeProgressionSummary(progression, chords);
   renderHomeProgressionList();
@@ -3215,8 +3516,7 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels) {
 }
 
 function playHomeSelectedProgression() {
-  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
-  const chords = homeProgressionChords(progression);
+  const chords = homeProgressionChords();
   const chordSymbols = homeProgressionSymbols(chords);
   const labels = homeProgressionLabels(chords);
 
@@ -3236,8 +3536,7 @@ function startHomeProgressionLoop(event) {
     return;
   }
 
-  const progression = homeProgressionItems()[homeProgressionState.selectedIndex] || homeProgressionItems()[0];
-  const chords = homeProgressionChords(progression);
+  const chords = homeProgressionChords();
   const chordSymbols = homeProgressionSymbols(chords);
   const labels = homeProgressionLabels(chords);
 
@@ -3306,9 +3605,7 @@ function setHomepagePianoAreaMode(mode) {
   }
 
   homeProgressionState.mode = "progressions";
-  homeProgressionState.key = "C";
-  homeProgressionState.selectedIndex = 0;
-  homeProgressionState.page = 0;
+  resetHomeProgressionDefaults();
   renderHomeProgressionsMode();
 }
 
