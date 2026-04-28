@@ -2306,6 +2306,213 @@ function initializeHeaderMenus() {
   });
 }
 
+function initializeHeaderDropdownMenus() {
+  document.querySelectorAll("#instrument-family-menu, #piano-area-menu, #theme-menu").forEach((select) => {
+    if (select.dataset.headerDropdownReady) {
+      return;
+    }
+
+    const menu = document.createElement("div");
+    const button = document.createElement("button");
+    const value = document.createElement("span");
+    const chevron = document.createElement("span");
+    const options = document.createElement("div");
+    const optionsId = `${select.id}-options`;
+
+    menu.className = "header-menu";
+    menu.dataset.headerMenu = "";
+
+    button.className = "header-control header-select header-menu-button";
+
+    if (select.classList.contains("instrument-family-select")) {
+      button.classList.add("instrument-family-select");
+    }
+    button.type = "button";
+    button.setAttribute("aria-haspopup", "listbox");
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-controls", optionsId);
+    button.setAttribute("aria-label", select.getAttribute("aria-label") || select.id);
+    button.dataset.headerMenuButton = "";
+
+    value.dataset.headerMenuValue = "";
+    chevron.className = "header-menu-chevron";
+    chevron.setAttribute("aria-hidden", "true");
+    button.append(value, chevron);
+
+    options.className = "header-options";
+    options.id = optionsId;
+    options.role = "listbox";
+    options.hidden = true;
+    options.dataset.headerOptions = "";
+
+    const optionButtons = Array.from(select.options).map((selectOption) => {
+      const option = document.createElement("button");
+
+      option.className = "header-option";
+      option.type = "button";
+      option.role = "option";
+      option.textContent = selectOption.textContent;
+      option.disabled = selectOption.disabled;
+      option.dataset.headerOption = "";
+      option.dataset.value = selectOption.value;
+      options.appendChild(option);
+
+      return option;
+    });
+
+    const updateMenu = () => {
+      const selectedOption = select.options[select.selectedIndex] || select.options[0];
+
+      value.textContent = selectedOption?.textContent || "";
+      optionButtons.forEach((option, index) => {
+        const isSelected = index === select.selectedIndex;
+
+        option.classList.toggle("is-selected", isSelected);
+        option.setAttribute("aria-selected", String(isSelected));
+      });
+    };
+
+    const closeMenu = () => {
+      button.setAttribute("aria-expanded", "false");
+      menu.classList.remove("is-open");
+      options.hidden = true;
+    };
+
+    const focusSelectedOption = () => {
+      const selectedOption = optionButtons[select.selectedIndex] || optionButtons.find((option) => !option.disabled);
+
+      selectedOption?.focus();
+    };
+
+    const openMenu = () => {
+      const rect = button.getBoundingClientRect();
+      const menuWidth = rect.width;
+      const menuLeft = Math.min(Math.max(rect.left, 12), Math.max(window.innerWidth - menuWidth - 12, 12));
+      const menuTop = Math.max(rect.bottom + 6, 12);
+
+      document.querySelectorAll("[data-header-options]").forEach((openOptions) => {
+        if (openOptions === options) {
+          return;
+        }
+
+        openOptions.hidden = true;
+        document.querySelector(`[aria-controls="${openOptions.id}"]`)?.setAttribute("aria-expanded", "false");
+      });
+
+      document.querySelectorAll("[data-header-menu].is-open").forEach((openHeaderMenu) => {
+        if (openHeaderMenu !== menu) {
+          openHeaderMenu.classList.remove("is-open");
+        }
+      });
+
+      document.querySelectorAll("[data-sound-selector].is-open").forEach(closeSoundSelector);
+
+      options.style.setProperty("--header-menu-left", `${menuLeft}px`);
+      options.style.setProperty("--header-menu-top", `${menuTop}px`);
+      options.style.setProperty("--header-menu-width", `${menuWidth}px`);
+      button.setAttribute("aria-expanded", "true");
+      menu.classList.add("is-open");
+      options.hidden = false;
+    };
+
+    const selectOption = (option, index) => {
+      if (option.disabled) {
+        return;
+      }
+
+      select.selectedIndex = index;
+      updateMenu();
+      closeMenu();
+      button.focus();
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      if (options.hidden) {
+        openMenu();
+        return;
+      }
+
+      closeMenu();
+    });
+
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+        return;
+      }
+
+      event.preventDefault();
+      openMenu();
+      focusSelectedOption();
+    });
+
+    optionButtons.forEach((option, index) => {
+      option.addEventListener("click", (event) => {
+        event.stopPropagation();
+        selectOption(option, index);
+      });
+
+      option.addEventListener("keydown", (event) => {
+        const enabledOptions = optionButtons.filter((menuOption) => !menuOption.disabled);
+        const currentIndex = enabledOptions.indexOf(option);
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          const direction = event.key === "ArrowDown" ? 1 : -1;
+          const nextIndex = (currentIndex + direction + enabledOptions.length) % enabledOptions.length;
+
+          enabledOptions[nextIndex]?.focus();
+          return;
+        }
+
+        if (event.key === "Home" || event.key === "End") {
+          event.preventDefault();
+          enabledOptions[event.key === "Home" ? 0 : enabledOptions.length - 1]?.focus();
+          return;
+        }
+
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectOption(option, index);
+          return;
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeMenu();
+          button.focus();
+        }
+      });
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!menu.contains(event.target) && !options.contains(event.target)) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
+    });
+
+    select.addEventListener("change", updateMenu);
+    select.classList.add("header-native-select");
+    select.hidden = true;
+    select.setAttribute("aria-hidden", "true");
+    select.tabIndex = -1;
+    select.dataset.headerDropdownReady = "true";
+
+    menu.append(button);
+    document.body.appendChild(options);
+    select.insertAdjacentElement("afterend", menu);
+    updateMenu();
+  });
+}
+
 function initializeInstrumentSwitchers() {
   document.querySelectorAll("[data-instrument-switcher]").forEach((switcher) => {
     const toggle = switcher.querySelector("[data-instrument-toggle]");
@@ -3268,6 +3475,7 @@ initializeHeaderMenus();
 initializeInstrumentSwitchers();
 initializeSoundSelector();
 initializePianoValleyTheme();
+initializeHeaderDropdownMenus();
 initializeNotationToggle();
 initializeMajorChordPage();
 initializeHomepagePianoAreaMode();
