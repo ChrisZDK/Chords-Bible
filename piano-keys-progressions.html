@@ -7,10 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=21" />
+  <link rel="stylesheet" href="style.css?v=22" />
+  <link rel="stylesheet" href="home-cosmos.css?v=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
-<body class="piano-app-page" data-page="piano-valley" data-theme="dark">
+<body class="piano-app-page home-dashboard-page" data-page="piano-valley" data-theme="dark">
+  <div class="home-cosmos" aria-hidden="true">
+    <span class="home-cosmos-stars"></span>
+  </div>
   <div class="app-shell">
     <header class="site-header">
       <div class="site-brand-lockup">
@@ -50,12 +54,22 @@
         <div class="hero-image-frame">
           <img
             class="hero-banner-image"
-            src="assets/piano-valley/themes/dark/piano-dark-banner.png"
+            src="assets/piano-valley/themes/dark/theme-dark-banner.png"
             sizes="(max-width: 700px) 100vw, 1400px"
             alt="Pixel-art Piano scene with floating islands, robots, and a piano path."
-            width="2400"
-            height="800"
+            width="1200"
+            height="175"
             fetchpriority="high"
+          >
+          <img
+            class="hero-banner-robot"
+            src="assets/piano-valley/themes/dark/robot-banner.png"
+            alt=""
+            width="96"
+            height="104"
+            loading="eager"
+            decoding="async"
+            aria-hidden="true"
           >
         </div>
       </section>
