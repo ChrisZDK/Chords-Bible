@@ -2856,13 +2856,13 @@ function restoreHomeChordMode() {
   const elements = homeProgressionElements();
   const snapshot = homeProgressionState.chordSnapshot;
 
+  stopActiveLoop();
+  setHomepageChordModeState(elements);
+
   if (!snapshot || !elements.selectorPanel || !elements.summaryCard || !elements.listCard || !elements.pianoCard || !elements.infoCard) {
     return;
   }
 
-  stopActiveLoop();
-  document.body.classList.remove("is-home-progressions-mode");
-  elements.workspace?.classList.remove("is-progressions-mode");
   elements.selectorPanel.className = snapshot.selectorPanel.className;
   elements.selectorPanel.innerHTML = snapshot.selectorPanel.html;
   elements.summaryCard.className = snapshot.summaryCard.className;
@@ -2874,11 +2874,7 @@ function restoreHomeChordMode() {
   elements.infoCard.className = snapshot.infoCard.className;
   elements.infoCard.innerHTML = snapshot.infoCard.html;
 
-  if (elements.areaMenu) {
-    elements.areaMenu.value = "chords";
-  }
-
-  homeProgressionState.mode = "chords";
+  setHomepageChordModeState(elements);
   initializeMajorChordPage();
   initializePianoOctaveToggle();
   initializeChordCards();
@@ -3473,6 +3469,7 @@ function renderHomeProgressionsMode() {
   const progression = { roman: homeProgressionFormulaLabel(), degrees: [...homeProgressionState.steps] };
   const chords = homeProgressionChords();
 
+  homeProgressionState.mode = "progressions";
   document.body.classList.add("is-home-progressions-mode");
   homeProgressionElements().workspace?.classList.add("is-progressions-mode");
   document.title = `${homeProgressionTitle()} Progressions - Chordyssey`;
@@ -3602,6 +3599,20 @@ function setHomepagePianoAreaMode(mode) {
   renderHomeProgressionsMode();
 }
 
+function setHomepageChordModeState(elements = homeProgressionElements()) {
+  if (!isHomeDashboardPage()) {
+    return;
+  }
+
+  document.body.classList.remove("is-home-progressions-mode");
+  elements.workspace?.classList.remove("is-progressions-mode");
+  homeProgressionState.mode = "chords";
+
+  if (elements.areaMenu) {
+    elements.areaMenu.value = "chords";
+  }
+}
+
 function initializeHomepagePianoAreaMode() {
   const { areaMenu } = homeProgressionElements();
 
@@ -3609,7 +3620,8 @@ function initializeHomepagePianoAreaMode() {
     return;
   }
 
-  areaMenu.value = homeProgressionState.mode;
+  captureHomeChordSnapshot();
+  setHomepageChordModeState();
 }
 
 function createChordCard(chord, options = {}) {

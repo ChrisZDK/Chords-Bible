@@ -5523,6 +5523,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] {
     --home-dashboard-gap: clamp(0.32rem, 0.55vw, 0.48rem);
     --home-dashboard-padding: clamp(0.38rem, 0.65vw, 0.58rem);
+    --home-chord-details-height: clamp(5.25rem, 9.5svh, 5.85rem);
     height: 100svh;
     min-height: 100svh;
     padding: var(--home-dashboard-padding);
@@ -5729,7 +5730,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-display {
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) minmax(var(--home-chord-details-height), auto);
     align-content: stretch;
     gap: 0.3rem;
     min-height: 0;
@@ -5751,6 +5752,8 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout {
     align-self: end;
     margin-top: 0;
+    min-height: var(--home-chord-details-height);
+    overflow: hidden;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .card {
