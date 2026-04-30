@@ -6028,28 +6028,6 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-sum
   color: #ff4fca;
 }
 
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions .inversions-text-button {
-  min-height: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  color: #a73dff;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-}
-
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions .inversions-text-button:hover,
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions .inversions-text-button:focus-visible,
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card .card-actions .inversions-text-button:active {
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: #ff4fca;
-}
-
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-icon-button {
   display: inline-grid;
   place-items: center;
