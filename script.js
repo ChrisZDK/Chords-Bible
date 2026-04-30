@@ -559,6 +559,7 @@ let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
 let homeProgressionSongFitFrame = 0;
+let homeProgressionMobileFormulaMenuOpen = false;
 const homeProgressionsPerPage = 4;
 const homeProgressionState = {
   mode: "chords",
@@ -3043,6 +3044,10 @@ function homeProgressionChords() {
   return homeProgressionState.steps.map(homeProgressionChordForDegree);
 }
 
+function homeProgressionChordsForSteps(steps) {
+  return steps.map(homeProgressionChordForDegree);
+}
+
 function homeProgressionLabels(chords) {
   return chords.map((chord) => displayChordSymbolForRoot(chord.root, chord.quality));
 }
@@ -3055,6 +3060,18 @@ function setHomeProgressionSteps(steps, formulaId = "custom") {
   homeProgressionState.steps = steps.map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6)).slice(0, 8);
   homeProgressionState.formulaId = formulaId;
   homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
+}
+
+function homeProgressionMobileFormulaOptions() {
+  return homeProgressionFormulas.slice(0, 8);
+}
+
+function homeProgressionMobileFormulaText(formula) {
+  return homeProgressionLabels(homeProgressionChordsForSteps(formula.degrees)).join(" - ");
+}
+
+function homeProgressionSelectedFormula() {
+  return homeProgressionFormulas.find((formula) => formula.id === homeProgressionState.formulaId) || homeProgressionFormulaById();
 }
 
 function resetHomeProgressionDefaults() {
@@ -3148,6 +3165,11 @@ function renderHomeKeySelector() {
         <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
       </section>
     </div>
+    <section class="progression-builder-section progression-mobile-formula-select${homeProgressionMobileFormulaMenuOpen ? " is-open" : ""}" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula>
+      <h2 id="progression-mobile-formula-title" class="selector-label">3. CHOOSE PROGRESSION</h2>
+      <button class="progression-mobile-formula-button" type="button" aria-expanded="${homeProgressionMobileFormulaMenuOpen ? "true" : "false"}" aria-controls="progression-mobile-formula-list" data-home-progression-mobile-formula-toggle></button>
+      <div id="progression-mobile-formula-list" class="progression-mobile-formula-list" role="listbox" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula-list${homeProgressionMobileFormulaMenuOpen ? "" : " hidden"}></div>
+    </section>
   `;
 
   const rootMenu = selectorPanel.querySelector("[data-home-progression-root-menu]");
@@ -3163,6 +3185,7 @@ function renderHomeKeySelector() {
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.root = root;
       homeProgressionState.key = root;
       renderHomeProgressionsMode();
@@ -3186,6 +3209,7 @@ function renderHomeKeySelector() {
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.scaleMode = mode;
       renderHomeProgressionsMode();
     });
@@ -3205,12 +3229,54 @@ function renderHomeKeySelector() {
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.selectedStepIndex = 0;
       setHomeProgressionSteps([...formula.degrees], formula.id);
       renderHomeProgressionsMode();
     });
     formulaMenu.appendChild(button);
   });
+
+  const mobileFormulaSelect = selectorPanel.querySelector("[data-home-progression-mobile-formula]");
+  const mobileFormulaToggle = selectorPanel.querySelector("[data-home-progression-mobile-formula-toggle]");
+  const mobileFormulaList = selectorPanel.querySelector("[data-home-progression-mobile-formula-list]");
+  const selectedMobileFormula = homeProgressionSelectedFormula();
+  const selectedMobileFormulaText = homeProgressionMobileFormulaText(selectedMobileFormula);
+
+  if (mobileFormulaSelect && mobileFormulaToggle && mobileFormulaList) {
+    mobileFormulaToggle.textContent = selectedMobileFormulaText;
+    mobileFormulaToggle.setAttribute("aria-label", `Choose progression: ${selectedMobileFormulaText}`);
+
+    mobileFormulaToggle.addEventListener("click", () => {
+      homeProgressionMobileFormulaMenuOpen = !homeProgressionMobileFormulaMenuOpen;
+      mobileFormulaToggle.setAttribute("aria-expanded", String(homeProgressionMobileFormulaMenuOpen));
+      mobileFormulaList.hidden = !homeProgressionMobileFormulaMenuOpen;
+      mobileFormulaSelect.classList.toggle("is-open", homeProgressionMobileFormulaMenuOpen);
+    });
+
+    homeProgressionMobileFormulaOptions().forEach((formula) => {
+      const button = document.createElement("button");
+      const formulaText = homeProgressionMobileFormulaText(formula);
+      const isActive = formula.id === homeProgressionState.formulaId;
+
+      button.type = "button";
+      button.className = "progression-mobile-formula-option";
+      button.dataset.homeProgressionMobileFormula = formula.id;
+      button.textContent = formulaText;
+      button.setAttribute("role", "option");
+      button.setAttribute("aria-label", `Choose ${formulaText} progression`);
+      button.setAttribute("aria-selected", String(isActive));
+      button.classList.toggle("is-active", isActive);
+      button.addEventListener("click", () => {
+        stopActiveLoop();
+        homeProgressionMobileFormulaMenuOpen = false;
+        homeProgressionState.selectedStepIndex = 0;
+        setHomeProgressionSteps([...formula.degrees], formula.id);
+        renderHomeProgressionsMode();
+      });
+      mobileFormulaList.appendChild(button);
+    });
+  }
 }
 
 function renderHomeProgressionSummary(progression, chords) {
