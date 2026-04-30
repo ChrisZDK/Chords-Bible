@@ -2380,6 +2380,7 @@ function initializeHeaderDropdownMenus() {
 
     menu.className = "header-menu";
     menu.dataset.headerMenu = "";
+    menu.dataset.headerMenuFor = select.id;
 
     button.className = "header-control header-select header-menu-button";
 
@@ -2392,6 +2393,15 @@ function initializeHeaderDropdownMenus() {
     button.setAttribute("aria-controls", optionsId);
     button.setAttribute("aria-label", select.getAttribute("aria-label") || select.id);
     button.dataset.headerMenuButton = "";
+    button.dataset.headerMenuFor = select.id;
+
+    if (select.id === "piano-area-menu") {
+      button.setAttribute("aria-label", "Piano area options");
+    }
+
+    if (select.id === "theme-menu") {
+      button.setAttribute("aria-label", "Theme options");
+    }
 
     value.dataset.headerMenuValue = "";
     chevron.className = "header-menu-chevron";
