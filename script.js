@@ -3401,10 +3401,10 @@ function renderHomeProgressionScaleLine() {
     <div class="future-illustration-slot" aria-hidden="true">
       <img
         class="info-card-robot"
-        src="assets/piano-valley/themes/dark/robot-floating.png"
+        src="assets/piano-valley/themes/dark/robot-floating.webp"
         alt=""
-        width="384"
-        height="384"
+        width="320"
+        height="320"
         loading="lazy"
         decoding="async"
       >
