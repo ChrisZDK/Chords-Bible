@@ -559,7 +559,6 @@ let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
 let homeProgressionSongFitFrame = 0;
-const homeProgressionMobileLayoutQuery = window.matchMedia(smartphoneViewportQuery);
 const homeProgressionsPerPage = 4;
 const homeProgressionState = {
   mode: "chords",
@@ -3380,58 +3379,6 @@ function renderHomeProgressionList() {
 
 }
 
-function syncHomeProgressionMobileLayout() {
-  if (!isHomeDashboardPage() || homeProgressionState.mode !== "progressions") {
-    return;
-  }
-
-  const { selectorPanel, listCard } = homeProgressionElements();
-  const rootSection = selectorPanel
-    ?.querySelector("[data-home-progression-root-menu]")
-    ?.closest(".progression-builder-section");
-  const stepSection = document
-    .querySelector("[data-home-progression-steps]")
-    ?.closest(".progression-customizer-section");
-
-  if (!selectorPanel || !listCard || !rootSection || !stepSection) {
-    return;
-  }
-
-  let placeholder = listCard.querySelector("[data-home-progression-steps-placeholder]");
-
-  if (homeProgressionMobileLayoutQuery.matches) {
-    if (!placeholder) {
-      placeholder = document.createElement("span");
-      placeholder.hidden = true;
-      placeholder.dataset.homeProgressionStepsPlaceholder = "";
-      stepSection.before(placeholder);
-    }
-
-    stepSection.classList.add("progression-mobile-steps-section");
-    rootSection.insertAdjacentElement("afterend", stepSection);
-    return;
-  }
-
-  if (placeholder && stepSection.parentElement !== listCard) {
-    placeholder.replaceWith(stepSection);
-  } else {
-    placeholder?.remove();
-  }
-
-  stepSection.classList.remove("progression-mobile-steps-section");
-}
-
-function initializeHomeProgressionMobileLayoutWatcher() {
-  const handleChange = () => syncHomeProgressionMobileLayout();
-
-  if (homeProgressionMobileLayoutQuery.addEventListener) {
-    homeProgressionMobileLayoutQuery.addEventListener("change", handleChange);
-    return;
-  }
-
-  homeProgressionMobileLayoutQuery.addListener(handleChange);
-}
-
 function ensureHomeProgressionStage(chordSymbols, labels) {
   const { pianoCard } = homeProgressionElements();
   const keyboard = pianoCard?.querySelector(".keyboard");
@@ -3614,7 +3561,6 @@ function renderHomeProgressionsMode() {
   renderHomeProgressionList();
   renderHomePianoCard(progression, chords);
   renderHomeProgressionScaleLine();
-  syncHomeProgressionMobileLayout();
 }
 
 function scheduleHomeProgressionAnimation(chordSymbols, labels) {
@@ -3917,7 +3863,6 @@ initializeHeaderDropdownMenus();
 initializeNotationToggle();
 initializeMajorChordPage();
 initializeHomepagePianoAreaMode();
-initializeHomeProgressionMobileLayoutWatcher();
 initializeMajorKeyPage();
 initializeDynamicMajorPage();
 initializePianoOctaveToggle();
