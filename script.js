@@ -2428,6 +2428,36 @@ function initializeHeaderDropdownMenus() {
 
       return option;
     });
+    const mobileIconMenuQuery = window.matchMedia("(max-width: 767px)");
+    const shouldSizeOptionsToContent = () => (
+      mobileIconMenuQuery.matches && (select.id === "piano-area-menu" || select.id === "theme-menu")
+    );
+    const measureOptionsWidth = (fallbackWidth) => {
+      if (!shouldSizeOptionsToContent()) {
+        return fallbackWidth;
+      }
+
+      const viewportMargin = 12;
+      const maxMenuWidth = Math.max(window.innerWidth - viewportMargin * 2, fallbackWidth);
+      const measuringOptions = options.cloneNode(true);
+
+      measuringOptions.id = "";
+      measuringOptions.hidden = false;
+      measuringOptions.style.position = "fixed";
+      measuringOptions.style.left = "0";
+      measuringOptions.style.top = "0";
+      measuringOptions.style.visibility = "hidden";
+      measuringOptions.style.pointerEvents = "none";
+      measuringOptions.style.width = "max-content";
+      measuringOptions.style.maxWidth = `${maxMenuWidth}px`;
+      document.body.appendChild(measuringOptions);
+
+      const measuredWidth = Math.ceil(measuringOptions.getBoundingClientRect().width);
+
+      measuringOptions.remove();
+
+      return Math.min(Math.max(fallbackWidth, measuredWidth), maxMenuWidth);
+    };
 
     const updateMenu = () => {
       const selectedOption = select.options[select.selectedIndex] || select.options[0];
@@ -2455,8 +2485,12 @@ function initializeHeaderDropdownMenus() {
 
     const openMenu = () => {
       const rect = button.getBoundingClientRect();
-      const menuWidth = rect.width;
-      const menuLeft = Math.min(Math.max(rect.left, 12), Math.max(window.innerWidth - menuWidth - 12, 12));
+      const viewportMargin = 12;
+      const menuWidth = measureOptionsWidth(rect.width);
+      const menuLeft = Math.min(
+        Math.max(rect.left, viewportMargin),
+        Math.max(window.innerWidth - menuWidth - viewportMargin, viewportMargin)
+      );
       const menuTop = Math.max(rect.bottom + 6, 12);
 
       document.querySelectorAll("[data-header-options]").forEach((openOptions) => {
