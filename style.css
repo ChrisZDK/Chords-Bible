@@ -5568,6 +5568,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] {
     --home-dashboard-gap: clamp(0.32rem, 0.55vw, 0.48rem);
     --home-dashboard-padding: clamp(0.38rem, 0.65vw, 0.58rem);
+    --home-chord-details-height: clamp(5.25rem, 9.5svh, 5.85rem);
     height: 100svh;
     min-height: 100svh;
     padding: var(--home-dashboard-padding);
@@ -5774,7 +5775,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-display {
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) var(--home-chord-details-height);
     align-content: stretch;
     gap: 0.3rem;
     min-height: 0;
@@ -5787,6 +5788,8 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
     min-height: 0;
     height: 100%;
     overflow: hidden;
+    position: relative;
+    z-index: 1;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column {
@@ -5794,8 +5797,14 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-dis
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout {
-    align-self: end;
+    align-self: stretch;
     margin-top: 0;
+    height: var(--home-chord-details-height);
+    min-height: var(--home-chord-details-height);
+    max-height: var(--home-chord-details-height);
+    overflow: hidden;
+    position: relative;
+    z-index: 0;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .card {
@@ -6146,7 +6155,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .sound-car
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout {
   position: relative;
-  z-index: 40;
+  z-index: 0;
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .sound-card-control {
@@ -8024,6 +8033,12 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
 @media (min-width: 981px) {
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-details-layout {
     grid-template-columns: minmax(11rem, 0.38fr) minmax(0, 1fr) auto;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] {
+    --home-chord-details-height: clamp(5rem, 8svh, 5.45rem);
   }
 }
 
