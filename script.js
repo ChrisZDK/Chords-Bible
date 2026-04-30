@@ -541,6 +541,7 @@ const keyModeConfigs = {
 };
 const notationStorageKey = "preferredNotation";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
+const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
 const soundModeLabels = {
   "grand-piano": "Grand Piano",
   synth: "Synth",
@@ -558,7 +559,7 @@ let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
 let homeProgressionSongFitFrame = 0;
-const homeProgressionMobileLayoutQuery = window.matchMedia("(max-width: 767px)");
+const homeProgressionMobileLayoutQuery = window.matchMedia(smartphoneViewportQuery);
 const homeProgressionsPerPage = 4;
 const homeProgressionState = {
   mode: "chords",
@@ -1885,7 +1886,7 @@ function renderRelatedChords(card, root, quality) {
 }
 
 function relatedChordsPerPageForViewport() {
-  return window.matchMedia("(max-width: 767px)").matches ? 1 : 4;
+  return window.matchMedia(smartphoneViewportQuery).matches ? 1 : 4;
 }
 
 function refreshRelatedChordsForViewport() {
@@ -1899,7 +1900,7 @@ function refreshRelatedChordsForViewport() {
 }
 
 function initializeRelatedChordsViewportWatcher() {
-  const phoneQuery = window.matchMedia("(max-width: 767px)");
+  const phoneQuery = window.matchMedia(smartphoneViewportQuery);
   const handleViewportChange = () => refreshRelatedChordsForViewport();
 
   if (typeof phoneQuery.addEventListener === "function") {
@@ -2430,7 +2431,7 @@ function initializeHeaderDropdownMenus() {
 
       return option;
     });
-    const mobileIconMenuQuery = window.matchMedia("(max-width: 767px)");
+    const mobileIconMenuQuery = window.matchMedia(smartphoneViewportQuery);
     const shouldSizeOptionsToContent = () => (
       mobileIconMenuQuery.matches && (select.id === "piano-area-menu" || select.id === "theme-menu")
     );
