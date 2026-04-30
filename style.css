@@ -8681,6 +8681,11 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
     padding: 0.44rem;
   }
 
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-root-grid,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-degree-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-customizer h2 {
     margin: 0;
     padding-right: 0;
