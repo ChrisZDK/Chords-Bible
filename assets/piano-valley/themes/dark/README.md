@@ -14,7 +14,11 @@ Files:
 - `robot-small.png` — 320×320 transparent sprite.
 - `wizard-creature.png` — 384×384 transparent sprite for the About card.
 - `chord-emblem-c.webp` — 512×512 UI tile for the C chord emblem.
-- `play-button.webp` — 512×512 UI tile for the play button.
+- `play-button.webp` — 256×256 UI tile for the play button inactive state.
+- `play-button-hover.webp` — 256×256 UI tile for the play button hover/pressed state.
+- `repeat-button.webp` — 256×256 UI tile for the repeat button inactive state.
+- `repeat-button-hover.webp` — 256×256 UI tile for the repeat button hover state.
+- `repeat-button-active.webp` — 256×256 UI tile for the repeat button active/looping state.
 - `crystal-icon.png` — 128×128 transparent icon for Related Chords.
 
 Notes:

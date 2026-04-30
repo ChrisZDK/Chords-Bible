@@ -3351,10 +3351,10 @@ function renderHomePianoCard(progression, chords) {
     <div class="piano-card-header">
       <button class="play-button" type="button" aria-label="Play ${formula} progression" data-home-progression-play>
         <img
-          src="assets/piano-valley/themes/dark/play-button.png"
+          src="assets/piano-valley/themes/dark/play-button.webp"
           alt=""
-          width="340"
-          height="340"
+          width="256"
+          height="256"
           loading="lazy"
           decoding="async"
         >
