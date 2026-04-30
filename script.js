@@ -1791,7 +1791,7 @@ function chordAboutText(chordNameText, notes, quality) {
 
 function renderRelatedChords(card, root, quality) {
   const list = card.querySelector("[data-related-chords]");
-  const relatedChordsPerPage = 4;
+  const relatedChordsPerPage = relatedChordsPerPageForViewport();
 
   if (!list) {
     return;
@@ -1874,12 +1874,38 @@ function renderRelatedChords(card, root, quality) {
     if (!nextButton.dataset.relatedCarouselReady) {
       nextButton.addEventListener("click", () => {
         const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
-        card.dataset.relatedPage = String(Math.min((Number.isNaN(currentPage) ? 0 : currentPage) + 1, pageCount - 1));
+        card.dataset.relatedPage = String((Number.isNaN(currentPage) ? 0 : currentPage) + 1);
         renderRelatedChords(card, card.dataset.root, card.dataset.quality);
       });
       nextButton.dataset.relatedCarouselReady = "true";
     }
   }
+}
+
+function relatedChordsPerPageForViewport() {
+  return window.matchMedia("(max-width: 767px)").matches ? 1 : 4;
+}
+
+function refreshRelatedChordsForViewport() {
+  document.querySelectorAll("[data-related-chords]").forEach((list) => {
+    const card = list.closest("[data-major-chord-card], [data-dynamic-chord-card]");
+
+    if (card?.dataset.root && card.dataset.quality) {
+      renderRelatedChords(card, card.dataset.root, card.dataset.quality);
+    }
+  });
+}
+
+function initializeRelatedChordsViewportWatcher() {
+  const phoneQuery = window.matchMedia("(max-width: 767px)");
+  const handleViewportChange = () => refreshRelatedChordsForViewport();
+
+  if (typeof phoneQuery.addEventListener === "function") {
+    phoneQuery.addEventListener("change", handleViewportChange);
+    return;
+  }
+
+  phoneQuery.addListener(handleViewportChange);
 }
 
 function updateChordCardText(card) {
@@ -3785,4 +3811,5 @@ initializeDynamicMajorPage();
 initializePianoOctaveToggle();
 initializeChordCards();
 initializeProgressions();
+initializeRelatedChordsViewportWatcher();
 updateNotation();
