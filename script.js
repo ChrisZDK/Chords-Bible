@@ -557,6 +557,7 @@ let chipCurve;
 let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
+let homeProgressionSongFitFrame = 0;
 const homeProgressionsPerPage = 4;
 const homeProgressionState = {
   mode: "chords",
@@ -3513,6 +3514,11 @@ function renderHomeProgressionSongLine(line, songs, count = 3) {
 function fitHomeProgressionSongLine(container, songs) {
   const line = container.querySelector("[data-home-progression-songs]");
 
+  if (homeProgressionSongFitFrame) {
+    window.cancelAnimationFrame(homeProgressionSongFitFrame);
+    homeProgressionSongFitFrame = 0;
+  }
+
   if (!line) {
     return;
   }
@@ -3525,7 +3531,13 @@ function fitHomeProgressionSongLine(container, songs) {
   let visibleCount = Math.min(3, songs.length);
   renderHomeProgressionSongLine(line, songs, visibleCount);
 
-  window.requestAnimationFrame(() => {
+  homeProgressionSongFitFrame = window.requestAnimationFrame(() => {
+    homeProgressionSongFitFrame = 0;
+
+    if (!line.isConnected || line.clientWidth <= 0) {
+      return;
+    }
+
     while (visibleCount > 1 && line.scrollWidth > line.clientWidth) {
       visibleCount -= 1;
       renderHomeProgressionSongLine(line, songs, visibleCount);
