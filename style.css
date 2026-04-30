@@ -6083,6 +6083,10 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-ic
   text-align: center;
 }
 
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .mobile-github-link {
+  display: none;
+}
+
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .site-section {
   font-size: 1.3rem;
   letter-spacing: 0.08em;
@@ -7158,6 +7162,10 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.035),
     0 0 10px rgba(167, 61, 255, 0.12);
+}
+
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select {
+  display: none;
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder .selector-label,
@@ -8455,6 +8463,388 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressions-panel-sprite {
     display: none;
+  }
+}
+
+@media (max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]::after {
+    content: none;
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] main > .hero-section {
+    display: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .site-actions {
+    grid-template-columns: minmax(0, 1fr) repeat(4, 2.35rem);
+    align-items: center;
+    gap: 0.28rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu[data-header-menu-for="instrument-family-menu"] {
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu[data-header-menu-for="piano-area-menu"],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu[data-header-menu-for="theme-menu"] {
+    width: 2.35rem;
+    min-width: 2.35rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="piano-area-menu"],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="theme-menu"],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-icon-button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .mobile-github-link {
+    display: inline-grid;
+    place-items: center;
+    width: 2.35rem;
+    min-width: 2.35rem;
+    height: 2.35rem;
+    min-height: 2.35rem;
+    padding: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="piano-area-menu"],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="theme-menu"] {
+    justify-content: center;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="piano-area-menu"] [data-header-menu-value],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="theme-menu"] [data-header-menu-value],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="piano-area-menu"] .header-menu-chevron,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="theme-menu"] .header-menu-chevron {
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="piano-area-menu"]::before,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="theme-menu"]::before {
+    content: "";
+    width: 1.2rem;
+    height: 1.2rem;
+    background: #fff;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="piano-area-menu"]::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M9 18.5A3.5 3.5 0 1 1 7 15.34V5.2a1 1 0 0 1 .8-.98l10-2A1 1 0 0 1 19 3.2v11.3a3.5 3.5 0 1 1-2-3.16V7.42l-8 1.6V18.5Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M9 18.5A3.5 3.5 0 1 1 7 15.34V5.2a1 1 0 0 1 .8-.98l10-2A1 1 0 0 1 19 3.2v11.3a3.5 3.5 0 1 1-2-3.16V7.42l-8 1.6V18.5Z'/%3E%3C/svg%3E");
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .header-menu-button[data-header-menu-for="theme-menu"]::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M17.8 2.2a2.9 2.9 0 0 1 4.1 4.1l-8 8-4.1-4.1 8-8ZM8.4 11.5l4.1 4.1c-1.48 1.18-3.27 1.72-5.36 1.62-.24 1.66-1.61 3.08-4.11 4.26.86-1.42 1.1-2.68.73-3.77-.49-1.45.08-3.04 1.37-3.86l3.27-2.35Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M17.8 2.2a2.9 2.9 0 0 1 4.1 4.1l-8 8-4.1-4.1 8-8ZM8.4 11.5l4.1 4.1c-1.48 1.18-3.27 1.72-5.36 1.62-.24 1.66-1.61 3.08-4.11 4.26.86-1.42 1.1-2.68.73-3.77-.49-1.45.08-3.04 1.37-3.86l3.27-2.35Z'/%3E%3C/svg%3E");
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .mobile-github-link {
+    color: #a73dff;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .mobile-github-link svg {
+    width: 1.34rem;
+    height: 1.34rem;
+    fill: currentColor;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .app-shell,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] main,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-display,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-layout,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .related-chords-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-summary-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progression-customizer,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column {
+    display: contents;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-summary-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-summary-card {
+    order: 1;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-card {
+    order: 2;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .related-chords-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-customizer {
+    order: 3;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-emblem,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-summary-card .chord-emblem {
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-heading-row,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-summary-card .chord-heading-row {
+    grid-column: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] [data-dynamic-chord-title],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode [data-home-progression-title] {
+    font-size: clamp(1.25rem, 4.6vw, 2rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace > .selector-panel {
+    gap: 0.34rem;
+    padding: 0.48rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .selector-group {
+    display: grid;
+    gap: 0.28rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .selector-panel-kicker,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .selector-label {
+    margin: 0;
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .category-tabs,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .type-menu,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .root-selector .root-menu {
+    justify-content: center;
+    gap: 0.18rem;
+    width: 100%;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .root-selector .root-menu {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .category-tabs button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .type-menu button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .root-selector .root-menu button {
+    flex: 1 1 3.6rem;
+    width: auto;
+    min-width: 0;
+    min-height: 1.85rem;
+    padding: 0.16rem 0.22rem;
+    font-size: 0.74rem;
+    line-height: 1.05;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .category-tabs button {
+    flex-basis: 4.2rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-workspace .type-menu button {
+    flex-basis: 4.8rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card-header,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-card-header {
+    display: grid !important;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    gap: 0.28rem;
+    align-items: center;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card .play-button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card .repeat-button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .octave-toggle {
+    width: 2.55rem;
+    height: 2.55rem;
+    min-width: 2.55rem;
+    min-height: 2.55rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card .play-button {
+    grid-column: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card .repeat-button {
+    grid-column: 2;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .octave-toggle,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-card-header .octave-toggle {
+    grid-column: 4;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-card-header > .piano-metrics,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-card-header > .piano-metrics {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    min-width: 0;
+    flex-basis: auto;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-metric-row,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .note-line {
+    grid-template-columns: minmax(3.15rem, max-content) minmax(0, 1fr);
+    gap: 0.24rem;
+    align-items: start;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .piano-metric-row .stat-label,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .note-line .stat-label {
+    font-size: 0.72rem;
+    line-height: 1.1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .formula-line,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] [data-dynamic-chord-notes-inline],
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] [data-progression-chords] {
+    min-width: 0;
+    font-size: 0.82rem;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-info-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .related-chords-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .chord-left-column .related-chords-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .github-icon-card,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-songs-card {
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .homepage-progression-animation .progression-keyboard .piano-svg {
+    width: 100%;
+    min-width: 0 !important;
+    max-width: 100%;
+    height: auto !important;
+    max-height: 9rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-customizer {
+    gap: 0.2rem;
+    padding: 0.44rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-root-grid,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu.progression-root-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-root-grid button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu.progression-root-grid button {
+    font-size: 0.74rem;
+    font-weight: 400;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select {
+    display: grid;
+    gap: 0.28rem;
+    padding: 0.42rem;
+    border: 1px solid rgba(167, 61, 255, 0.7);
+    border-radius: 3px;
+    background: linear-gradient(180deg, rgba(12, 13, 29, 0.98), rgba(5, 7, 16, 0.98));
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      0 0 10px rgba(167, 61, 255, 0.12);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-button {
+    width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.14rem;
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-list[hidden] {
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-option {
+    min-width: 0;
+    min-height: 2rem;
+    padding: 0.14rem 0.18rem;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-degree-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-utility-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-customizer h2 {
+    margin: 0;
+    padding-right: 0;
+    font-size: 0.76rem;
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-customizer-section,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-degree-grid,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-option-buttons,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-utility-row {
+    gap: 0.14rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-customizer .selector-label {
+    margin: 0;
+    font-size: 0.62rem;
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode #progression-formula-title,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-formula-title,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-option-grid {
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-customizer button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-degree-grid button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-option-buttons button {
+    min-height: 2rem;
+    padding: 0.14rem 0.18rem;
+    font-size: 0.76rem;
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-button {
+    gap: 0.08rem;
+    min-height: 2.2rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-button span {
+    font-size: 0.56rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-button strong {
+    font-size: 0.88rem;
   }
 }
 
