@@ -3687,7 +3687,7 @@ function renderHomePianoCard(progression, chords) {
     <div class="piano-card-header">
       <button class="play-button" type="button" aria-label="Play ${formula} progression" data-home-progression-play>
         <img
-          src="assets/piano-valley/themes/dark/play-button.webp"
+          src="assets/themes/dark/play-button.webp"
           alt=""
           width="256"
           height="256"
@@ -3741,7 +3741,7 @@ function renderHomeProgressionScaleLine() {
     <div class="future-illustration-slot" aria-hidden="true">
       <img
         class="info-card-robot"
-        src="assets/piano-valley/themes/dark/robot-floating.webp"
+        src="assets/themes/dark/robot-floating.webp"
         alt=""
         width="320"
         height="320"

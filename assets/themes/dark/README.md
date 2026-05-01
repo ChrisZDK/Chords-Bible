@@ -2,7 +2,7 @@
 
 Recommended destination in the repo:
 
-`assets/piano-valley/themes/dark/`
+`assets/themes/dark/`
 
 Runtime files:
 

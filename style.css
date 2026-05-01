@@ -2927,7 +2927,7 @@ body.piano-app-page[data-page="piano-valley"] .progressions-panel .play-button::
   content: "";
   position: absolute;
   inset: 0;
-  background: url("assets/piano-valley/themes/dark/play-button.webp") center / contain no-repeat;
+  background: url("assets/themes/dark/play-button.webp") center / contain no-repeat;
   filter: drop-shadow(0 0 11px rgba(189, 53, 255, 0.45));
 }
 
@@ -3040,11 +3040,11 @@ body.piano-app-page[data-page="piano-valley"] .progressions-panel .progression-c
 
 /* Piano image-backed play/repeat button states. */
 body.piano-app-page[data-page="piano-valley"] {
-  --pv-play-button-image: url("assets/piano-valley/themes/dark/play-button.webp");
-  --pv-play-button-hover-image: url("assets/piano-valley/themes/dark/play-button-hover.webp");
-  --pv-repeat-button-image: url("assets/piano-valley/themes/dark/repeat-button.webp");
-  --pv-repeat-button-hover-image: url("assets/piano-valley/themes/dark/repeat-button-hover.webp");
-  --pv-repeat-button-active-image: url("assets/piano-valley/themes/dark/repeat-button-active.webp");
+  --pv-play-button-image: url("assets/themes/dark/play-button.webp");
+  --pv-play-button-hover-image: url("assets/themes/dark/play-button-hover.webp");
+  --pv-repeat-button-image: url("assets/themes/dark/repeat-button.webp");
+  --pv-repeat-button-hover-image: url("assets/themes/dark/repeat-button-hover.webp");
+  --pv-repeat-button-active-image: url("assets/themes/dark/repeat-button-active.webp");
   --pv-main-action-size: 6.4rem;
   --pv-compact-action-size: 2.9rem;
 }
@@ -3151,11 +3151,11 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] {
   --pv-key-black: #030511;
   --pv-key-active: #7f29e8;
   --pv-key-active-text: #ffffff;
-  --pv-play-button-image: url("assets/piano-valley/themes/dark/play-button.webp");
-  --pv-play-button-hover-image: url("assets/piano-valley/themes/dark/play-button-hover.webp");
-  --pv-repeat-button-image: url("assets/piano-valley/themes/dark/repeat-button.webp");
-  --pv-repeat-button-hover-image: url("assets/piano-valley/themes/dark/repeat-button-hover.webp");
-  --pv-repeat-button-active-image: url("assets/piano-valley/themes/dark/repeat-button-active.webp");
+  --pv-play-button-image: url("assets/themes/dark/play-button.webp");
+  --pv-play-button-hover-image: url("assets/themes/dark/play-button-hover.webp");
+  --pv-repeat-button-image: url("assets/themes/dark/repeat-button.webp");
+  --pv-repeat-button-hover-image: url("assets/themes/dark/repeat-button-hover.webp");
+  --pv-repeat-button-active-image: url("assets/themes/dark/repeat-button-active.webp");
   --pv-main-action-size: clamp(6.4rem, 8vw, 8rem);
   --pv-compact-action-size: 2.75rem;
   --bg: var(--pv-bg);
