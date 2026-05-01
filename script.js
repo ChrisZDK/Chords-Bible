@@ -362,6 +362,12 @@ const chordQualityAliases = {
   5: "Power",
 };
 const chordQualityOptionButtons = new WeakSet();
+const chordPlayButtons = new WeakSet();
+const chordRepeatButtons = new WeakSet();
+const progressionPlayButtons = new WeakSet();
+const progressionRepeatButtons = new WeakSet();
+const relatedCarouselButtons = new WeakSet();
+const pianoOctaveToggleButtons = new WeakSet();
 const majorChordsByRoot = Object.fromEntries(
   rootSelectorNotes.map((root) => {
     const rootValue = noteValues[root];
@@ -1806,9 +1812,9 @@ function ensureChordRepeatButton(card) {
     playButton.after(button);
   }
 
-  if (!button.dataset.loopReady) {
+  if (!chordRepeatButtons.has(button)) {
     button.addEventListener("click", () => startChordLoop(chordCardNotes(card), card, button));
-    button.dataset.loopReady = "true";
+    chordRepeatButtons.add(button);
   }
 
   return button;
@@ -1829,9 +1835,9 @@ function ensureProgressionRepeatButton(item, chordSymbols) {
     playButton.after(button);
   }
 
-  if (!button.dataset.loopReady) {
+  if (!progressionRepeatButtons.has(button)) {
     button.addEventListener("click", () => startProgressionLoop(chordSymbols, item, button));
-    button.dataset.loopReady = "true";
+    progressionRepeatButtons.add(button);
   }
 
   return button;
@@ -1846,6 +1852,27 @@ function chordAboutText(chordNameText, notes, quality) {
   const noteList = displayChordNotesInline(notes, ", ");
 
   return `${chordNameText} uses ${noteList}. ${info.description}`;
+}
+
+function changeRelatedChordPage(card, direction) {
+  const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
+  const nextPage = (Number.isNaN(currentPage) ? 0 : currentPage) + direction;
+  card.dataset.relatedPage = String(Math.max(nextPage, 0));
+  renderRelatedChords(card, card.dataset.root, card.dataset.quality);
+}
+
+function bindRelatedCarouselButton(button, card, direction) {
+  if (!button || relatedCarouselButtons.has(button)) {
+    return;
+  }
+
+  button.addEventListener("click", () => changeRelatedChordPage(card, direction));
+  relatedCarouselButtons.add(button);
+}
+
+function initializeRelatedCarouselButtons(card) {
+  bindRelatedCarouselButton(card.querySelector("[data-related-prev]"), card, -1);
+  bindRelatedCarouselButton(card.querySelector("[data-related-next]"), card, 1);
 }
 
 function renderRelatedChords(card, root, quality) {
@@ -1915,29 +1942,13 @@ function renderRelatedChords(card, root, quality) {
   if (previousButton) {
     previousButton.disabled = pageCount <= 1 || relatedPage === 0;
     previousButton.hidden = pageCount <= 1;
-
-    if (!previousButton.dataset.relatedCarouselReady) {
-      previousButton.addEventListener("click", () => {
-        const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
-        card.dataset.relatedPage = String(Math.max((Number.isNaN(currentPage) ? 0 : currentPage) - 1, 0));
-        renderRelatedChords(card, card.dataset.root, card.dataset.quality);
-      });
-      previousButton.dataset.relatedCarouselReady = "true";
-    }
+    bindRelatedCarouselButton(previousButton, card, -1);
   }
 
   if (nextButton) {
     nextButton.disabled = pageCount <= 1 || relatedPage >= pageCount - 1;
     nextButton.hidden = pageCount <= 1;
-
-    if (!nextButton.dataset.relatedCarouselReady) {
-      nextButton.addEventListener("click", () => {
-        const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
-        card.dataset.relatedPage = String((Number.isNaN(currentPage) ? 0 : currentPage) + 1);
-        renderRelatedChords(card, card.dataset.root, card.dataset.quality);
-      });
-      nextButton.dataset.relatedCarouselReady = "true";
-    }
+    bindRelatedCarouselButton(nextButton, card, 1);
   }
 }
 
@@ -2045,11 +2056,12 @@ function initializeChordCard(card) {
     keyboard.appendChild(createKeyboard(notes));
   }
 
-  if (button && !card.dataset.playReady) {
+  if (button && !chordPlayButtons.has(button)) {
     button.addEventListener("click", () => playChord(chordCardNotes(card), card));
-    card.dataset.playReady = "true";
+    chordPlayButtons.add(button);
   }
 
+  initializeRelatedCarouselButtons(card);
   updateChordCardText(card);
 }
 
@@ -2071,15 +2083,18 @@ function initializePianoOctaveToggle() {
   document.querySelectorAll("[data-octave-toggle]").forEach((button) => {
     const card = button.closest("[data-dynamic-chord-card], [data-major-chord-card]");
 
-    if (!card || button.dataset.octaveToggleReady) {
+    if (!card) {
       return;
     }
 
     setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 2 : 1);
-    button.addEventListener("click", () => {
-      setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 1 : 2);
-    });
-    button.dataset.octaveToggleReady = "true";
+
+    if (!pianoOctaveToggleButtons.has(button)) {
+      button.addEventListener("click", () => {
+        setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 1 : 2);
+      });
+      pianoOctaveToggleButtons.add(button);
+    }
   });
 }
 
@@ -2098,9 +2113,9 @@ function initializeProgressions() {
       loopButton.setAttribute("aria-label", `Loop ${item.dataset.roman || "progression"} progression`);
     }
 
-    if (button && !item.dataset.playReady) {
+    if (button && !progressionPlayButtons.has(button)) {
       button.addEventListener("click", () => playProgression(chordSymbols, item));
-      item.dataset.playReady = "true";
+      progressionPlayButtons.add(button);
     }
   });
 }
