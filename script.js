@@ -540,6 +540,7 @@ const keyModeConfigs = {
   },
 };
 const notationStorageKey = "preferredNotation";
+const selectedModeStorageKey = "chordyssey:selectedMode";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
 const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
 const soundModeLabels = {
@@ -590,6 +591,7 @@ const homeProgressionFormulas = [
   { id: "minor-fall", label: "vi - iii - IV - I", degrees: [5, 2, 3, 0] },
   { id: "cycle", label: "iii - vi - ii - V", degrees: [2, 5, 1, 4] },
 ];
+const homePianoAreaModes = new Set(["chords", "progressions"]);
 const homeProgressionSongExamples = {
   "I - V - vi - IV": ["Let It Be", "With or Without You", "No Woman, No Cry"],
   "ii - V - I": ["Autumn Leaves", "Fly Me to the Moon", "Satin Doll"],
@@ -2658,6 +2660,7 @@ function initializeHeaderDropdownMenus() {
     });
 
     select.addEventListener("change", updateMenu);
+    select.addEventListener("header-menu-sync", updateMenu);
     select.classList.add("header-native-select");
     select.hidden = true;
     select.setAttribute("aria-hidden", "true");
@@ -2924,6 +2927,35 @@ function initializeMajorKeyPage() {
 
 function isHomeDashboardPage() {
   return document.body.classList.contains("home-dashboard-page");
+}
+
+function normalizeHomepagePianoAreaMode(mode) {
+  return homePianoAreaModes.has(mode) ? mode : "chords";
+}
+
+function getStoredHomepagePianoAreaMode() {
+  try {
+    return normalizeHomepagePianoAreaMode(window.localStorage?.getItem(selectedModeStorageKey));
+  } catch (error) {
+    return "chords";
+  }
+}
+
+function storeHomepagePianoAreaMode(mode) {
+  try {
+    window.localStorage?.setItem(selectedModeStorageKey, normalizeHomepagePianoAreaMode(mode));
+  } catch (error) {
+    // Mode switching still works for this session if storage is unavailable.
+  }
+}
+
+function setHomepageAreaMenuValue(elements, mode) {
+  if (!elements.areaMenu) {
+    return;
+  }
+
+  elements.areaMenu.value = normalizeHomepagePianoAreaMode(mode);
+  elements.areaMenu.dispatchEvent(new Event("header-menu-sync"));
 }
 
 function homeProgressionElements() {
@@ -3839,13 +3871,11 @@ function setHomepagePianoAreaMode(mode) {
   }
 
   const elements = homeProgressionElements();
-  const nextMode = mode === "progressions" ? "progressions" : "chords";
+  const nextMode = normalizeHomepagePianoAreaMode(mode);
 
   captureHomeChordSnapshot();
-
-  if (elements.areaMenu) {
-    elements.areaMenu.value = nextMode;
-  }
+  storeHomepagePianoAreaMode(nextMode);
+  setHomepageAreaMenuValue(elements, nextMode);
 
   if (nextMode === homeProgressionState.mode && nextMode === "progressions") {
     renderHomeProgressionsMode();
@@ -3870,10 +3900,7 @@ function setHomepageChordModeState(elements = homeProgressionElements()) {
   document.body.classList.remove("is-home-progressions-mode");
   elements.workspace?.classList.remove("is-progressions-mode");
   homeProgressionState.mode = "chords";
-
-  if (elements.areaMenu) {
-    elements.areaMenu.value = "chords";
-  }
+  setHomepageAreaMenuValue(elements, "chords");
 }
 
 function initializeHomepagePianoAreaMode() {
@@ -3884,7 +3911,7 @@ function initializeHomepagePianoAreaMode() {
   }
 
   captureHomeChordSnapshot();
-  setHomepageChordModeState();
+  setHomepagePianoAreaMode(getStoredHomepagePianoAreaMode());
 }
 
 function createChordCard(chord, options = {}) {
@@ -4042,7 +4069,6 @@ initializePianoValleyTheme();
 initializeHeaderDropdownMenus();
 initializeNotationToggle();
 initializeMajorChordPage();
-initializeHomepagePianoAreaMode();
 initializeMajorKeyPage();
 initializeDynamicMajorPage();
 initializePianoOctaveToggle();
@@ -4050,3 +4076,4 @@ initializeChordCards();
 initializeProgressions();
 initializeRelatedChordsViewportWatcher();
 updateNotation();
+initializeHomepagePianoAreaMode();
