@@ -8688,6 +8688,10 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-ho
     0 0 16px rgba(255, 104, 200, 0.18);
 }
 
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .category-tabs button:not(.is-active):not([aria-pressed="true"]) {
+  background: linear-gradient(180deg, rgba(12, 13, 29, 0.98), rgba(5, 7, 16, 0.98));
+}
+
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .root-selector .root-menu button.is-active,
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .root-selector .root-menu button[aria-pressed="true"],
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .category-tabs button.is-active,
@@ -8704,12 +8708,8 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-ho
     0 0 18px var(--pv-glow);
 }
 
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button,
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button:hover,
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button:focus-visible,
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button.is-active,
-body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button[aria-pressed="true"] {
-  background: linear-gradient(180deg, #39076ef5, #130225f5);
+body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button:not(.is-active):not([aria-pressed="true"]) {
+  background: #130225f5;
 }
 
 @media (min-width: 933px), (min-width: 768px) and (min-height: 431px) {
