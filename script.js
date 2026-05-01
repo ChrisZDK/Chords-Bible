@@ -525,7 +525,7 @@ const keyModeConfigs = {
     titleQuality: "Major",
     subtitle: "Major scale and diatonic triads",
     fallbackRoot: "C",
-    page: "piano-keys-progressions.html",
+    page: "index.html?mode=progressions",
     scaleIntervals: majorScaleIntervals,
     chordPattern: keyChordPattern,
     progressions: progressionSets,
@@ -534,7 +534,7 @@ const keyModeConfigs = {
     titleQuality: "Minor",
     subtitle: "Natural minor scale and diatonic triads",
     fallbackRoot: "A",
-    page: "piano-minor-key.html",
+    page: "index.html?mode=progressions&scale=minor",
     scaleIntervals: minorScaleIntervals,
     chordPattern: minorKeyChordPattern,
     progressions: minorProgressionSets,
@@ -2338,7 +2338,8 @@ function updateRootMenu() {
     const rootMenu = link.closest("[data-root-menu]");
     const page = rootMenu?.dataset.keyPage || getKeyConfig().page;
     link.textContent = rootName;
-    link.setAttribute("href", `${page}?root=${encodeURIComponent(rootName)}`);
+    const separator = page.includes("?") ? "&" : "?";
+    link.setAttribute("href", `${page}${separator}root=${encodeURIComponent(rootName)}`);
   });
 }
 
@@ -2951,6 +2952,13 @@ function normalizeHomepagePianoAreaMode(mode) {
   return homePianoAreaModes.has(mode) ? mode : "chords";
 }
 
+function getHomepagePianoAreaModeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const requestedMode = params.get("mode") || params.get("area");
+
+  return homePianoAreaModes.has(requestedMode) ? requestedMode : "";
+}
+
 function getStoredHomepagePianoAreaMode() {
   try {
     return normalizeHomepagePianoAreaMode(window.localStorage?.getItem(selectedModeStorageKey));
@@ -2964,6 +2972,22 @@ function storeHomepagePianoAreaMode(mode) {
     window.localStorage?.setItem(selectedModeStorageKey, normalizeHomepagePianoAreaMode(mode));
   } catch (error) {
     // Mode switching still works for this session if storage is unavailable.
+  }
+}
+
+function applyHomepageProgressionUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const requestedRoot = params.get("root") || params.get("key");
+  const rootValue = getRootValue(requestedRoot);
+  const requestedScale = params.get("scale") || params.get("keyMode");
+
+  if (Number.isInteger(rootValue)) {
+    homeProgressionState.root = sharpNames[normalizeValue(rootValue)];
+    homeProgressionState.key = homeProgressionState.root;
+  }
+
+  if (requestedScale === "major" || requestedScale === "minor") {
+    homeProgressionState.scaleMode = requestedScale;
   }
 }
 
@@ -3663,7 +3687,7 @@ function renderHomePianoCard(progression, chords) {
     <div class="piano-card-header">
       <button class="play-button" type="button" aria-label="Play ${formula} progression" data-home-progression-play>
         <img
-          src="assets/piano-valley/themes/dark/play-button.webp"
+          src="assets/themes/dark/play-button.webp"
           alt=""
           width="256"
           height="256"
@@ -3717,7 +3741,7 @@ function renderHomeProgressionScaleLine() {
     <div class="future-illustration-slot" aria-hidden="true">
       <img
         class="info-card-robot"
-        src="assets/piano-valley/themes/dark/robot-floating.webp"
+        src="assets/themes/dark/robot-floating.webp"
         alt=""
         width="320"
         height="320"
@@ -3987,7 +4011,15 @@ function initializeHomepagePianoAreaMode() {
   }
 
   captureHomeChordSnapshot();
-  setHomepagePianoAreaMode(getStoredHomepagePianoAreaMode());
+  const requestedMode = getHomepagePianoAreaModeFromUrl();
+  const initialMode = requestedMode || getStoredHomepagePianoAreaMode();
+
+  setHomepagePianoAreaMode(initialMode);
+
+  if (initialMode === "progressions") {
+    applyHomepageProgressionUrlParams();
+    renderHomeProgressionsMode();
+  }
 }
 
 function createChordCard(chord, options = {}) {
