@@ -41,7 +41,7 @@ body.home-dashboard-page .home-cosmos {
 body.home-dashboard-page[data-theme="dark"] .home-cosmos {
   background-color: transparent;
   background-image:
-    url("assets/piano-valley/themes/dark/theme-dark-banner-bg.png"),
+    url("assets/piano-valley/themes/dark/theme-dark-banner-bg.webp"),
     linear-gradient(179deg, #020320 0%, #030216 50%, #000003 100%);
   background-position: center top, center;
   background-repeat: no-repeat, no-repeat;

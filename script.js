@@ -361,6 +361,7 @@ const chordQualityAliases = {
   ...Object.fromEntries(Object.keys(chordQualityCatalog).map((quality) => [quality.toLowerCase(), quality])),
   5: "Power",
 };
+const chordQualityOptionButtons = new WeakSet();
 const majorChordsByRoot = Object.fromEntries(
   rootSelectorNotes.map((root) => {
     const rootValue = noteValues[root];
@@ -540,7 +541,9 @@ const keyModeConfigs = {
   },
 };
 const notationStorageKey = "preferredNotation";
+const selectedModeStorageKey = "chordyssey:selectedMode";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
+const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
 const soundModeLabels = {
   "grand-piano": "Grand Piano",
   synth: "Synth",
@@ -557,6 +560,8 @@ let chipCurve;
 let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
+let homeProgressionSongFitFrame = 0;
+let homeProgressionMobileFormulaMenuOpen = false;
 const homeProgressionsPerPage = 4;
 const homeProgressionState = {
   mode: "chords",
@@ -565,6 +570,7 @@ const homeProgressionState = {
   scaleMode: "major",
   formulaId: "pop-axis",
   steps: [0, 4, 5, 3],
+  stepModes: ["triads", "triads", "triads", "triads"],
   selectedStepIndex: 0,
   chordMode: "triads",
   selectedIndex: 0,
@@ -587,6 +593,7 @@ const homeProgressionFormulas = [
   { id: "minor-fall", label: "vi - iii - IV - I", degrees: [5, 2, 3, 0] },
   { id: "cycle", label: "iii - vi - ii - V", degrees: [2, 5, 1, 4] },
 ];
+const homePianoAreaModes = new Set(["chords", "progressions"]);
 const homeProgressionSongExamples = {
   "I - V - vi - IV": ["Let It Be", "With or Without You", "No Woman, No Cry"],
   "ii - V - I": ["Autumn Leaves", "Fly Me to the Moon", "Satin Doll"],
@@ -1843,7 +1850,7 @@ function chordAboutText(chordNameText, notes, quality) {
 
 function renderRelatedChords(card, root, quality) {
   const list = card.querySelector("[data-related-chords]");
-  const relatedChordsPerPage = 4;
+  const relatedChordsPerPage = relatedChordsPerPageForViewport();
 
   if (!list) {
     return;
@@ -1926,12 +1933,38 @@ function renderRelatedChords(card, root, quality) {
     if (!nextButton.dataset.relatedCarouselReady) {
       nextButton.addEventListener("click", () => {
         const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
-        card.dataset.relatedPage = String(Math.min((Number.isNaN(currentPage) ? 0 : currentPage) + 1, pageCount - 1));
+        card.dataset.relatedPage = String((Number.isNaN(currentPage) ? 0 : currentPage) + 1);
         renderRelatedChords(card, card.dataset.root, card.dataset.quality);
       });
       nextButton.dataset.relatedCarouselReady = "true";
     }
   }
+}
+
+function relatedChordsPerPageForViewport() {
+  return window.matchMedia(smartphoneViewportQuery).matches ? 1 : 4;
+}
+
+function refreshRelatedChordsForViewport() {
+  document.querySelectorAll("[data-related-chords]").forEach((list) => {
+    const card = list.closest("[data-major-chord-card], [data-dynamic-chord-card]");
+
+    if (card?.dataset.root && card.dataset.quality) {
+      renderRelatedChords(card, card.dataset.root, card.dataset.quality);
+    }
+  });
+}
+
+function initializeRelatedChordsViewportWatcher() {
+  const phoneQuery = window.matchMedia(smartphoneViewportQuery);
+  const handleViewportChange = () => refreshRelatedChordsForViewport();
+
+  if (typeof phoneQuery.addEventListener === "function") {
+    phoneQuery.addEventListener("change", handleViewportChange);
+    return;
+  }
+
+  phoneQuery.addListener(handleViewportChange);
 }
 
 function updateChordCardText(card) {
@@ -2116,6 +2149,7 @@ function renderChordTypeOptions(page = dynamicChordPageForElement()) {
   const activeCategory = getChordPageCategory(page);
 
   if (menu.dataset.renderedChordCategory === activeCategory && menu.children.length) {
+    bindChordQualityOptionButtons(menu, page);
     return;
   }
 
@@ -2130,17 +2164,32 @@ function renderChordTypeOptions(page = dynamicChordPageForElement()) {
     button.dataset.chordQualityOption = normalizeChordQuality(quality);
     button.setAttribute("aria-pressed", "false");
     button.textContent = info.label;
-    button.addEventListener("click", () => {
-      const nextQuality = normalizeChordQuality(button.dataset.chordQualityOption);
-      const url = new URL(window.location.href);
-
-      url.searchParams.set("type", nextQuality);
-      window.history.replaceState({}, "", url);
-      setDynamicChordQuality(nextQuality, page);
-    });
+    bindChordQualityOptionButton(button, page);
 
     menu.appendChild(button);
   });
+}
+
+function bindChordQualityOptionButtons(menu, page) {
+  menu.querySelectorAll("[data-chord-quality-option]").forEach((button) => {
+    bindChordQualityOptionButton(button, page);
+  });
+}
+
+function bindChordQualityOptionButton(button, page) {
+  if (chordQualityOptionButtons.has(button)) {
+    return;
+  }
+
+  button.addEventListener("click", () => {
+    const nextQuality = normalizeChordQuality(button.dataset.chordQualityOption);
+    const url = new URL(window.location.href);
+
+    url.searchParams.set("type", nextQuality);
+    window.history.replaceState({}, "", url);
+    setDynamicChordQuality(nextQuality, page);
+  });
+  chordQualityOptionButtons.add(button);
 }
 
 function updateChordRootButtons() {
@@ -2406,6 +2455,7 @@ function initializeHeaderDropdownMenus() {
 
     menu.className = "header-menu";
     menu.dataset.headerMenu = "";
+    menu.dataset.headerMenuFor = select.id;
 
     button.className = "header-control header-select header-menu-button";
 
@@ -2418,6 +2468,15 @@ function initializeHeaderDropdownMenus() {
     button.setAttribute("aria-controls", optionsId);
     button.setAttribute("aria-label", select.getAttribute("aria-label") || select.id);
     button.dataset.headerMenuButton = "";
+    button.dataset.headerMenuFor = select.id;
+
+    if (select.id === "piano-area-menu") {
+      button.setAttribute("aria-label", "Piano area options");
+    }
+
+    if (select.id === "theme-menu") {
+      button.setAttribute("aria-label", "Theme options");
+    }
 
     value.dataset.headerMenuValue = "";
     chevron.className = "header-menu-chevron";
@@ -2444,6 +2503,36 @@ function initializeHeaderDropdownMenus() {
 
       return option;
     });
+    const mobileIconMenuQuery = window.matchMedia(smartphoneViewportQuery);
+    const shouldSizeOptionsToContent = () => (
+      mobileIconMenuQuery.matches && (select.id === "piano-area-menu" || select.id === "theme-menu")
+    );
+    const measureOptionsWidth = (fallbackWidth) => {
+      if (!shouldSizeOptionsToContent()) {
+        return fallbackWidth;
+      }
+
+      const viewportMargin = 12;
+      const maxMenuWidth = Math.max(window.innerWidth - viewportMargin * 2, fallbackWidth);
+      const measuringOptions = options.cloneNode(true);
+
+      measuringOptions.id = "";
+      measuringOptions.hidden = false;
+      measuringOptions.style.position = "fixed";
+      measuringOptions.style.left = "0";
+      measuringOptions.style.top = "0";
+      measuringOptions.style.visibility = "hidden";
+      measuringOptions.style.pointerEvents = "none";
+      measuringOptions.style.width = "max-content";
+      measuringOptions.style.maxWidth = `${maxMenuWidth}px`;
+      document.body.appendChild(measuringOptions);
+
+      const measuredWidth = Math.ceil(measuringOptions.getBoundingClientRect().width);
+
+      measuringOptions.remove();
+
+      return Math.min(Math.max(fallbackWidth, measuredWidth), maxMenuWidth);
+    };
 
     const updateMenu = () => {
       const selectedOption = select.options[select.selectedIndex] || select.options[0];
@@ -2471,8 +2560,12 @@ function initializeHeaderDropdownMenus() {
 
     const openMenu = () => {
       const rect = button.getBoundingClientRect();
-      const menuWidth = rect.width;
-      const menuLeft = Math.min(Math.max(rect.left, 12), Math.max(window.innerWidth - menuWidth - 12, 12));
+      const viewportMargin = 12;
+      const menuWidth = measureOptionsWidth(rect.width);
+      const menuLeft = Math.min(
+        Math.max(rect.left, viewportMargin),
+        Math.max(window.innerWidth - menuWidth - viewportMargin, viewportMargin)
+      );
       const menuTop = Math.max(rect.bottom + 6, 12);
 
       document.querySelectorAll("[data-header-options]").forEach((openOptions) => {
@@ -2585,6 +2678,7 @@ function initializeHeaderDropdownMenus() {
     });
 
     select.addEventListener("change", updateMenu);
+    select.addEventListener("header-menu-sync", updateMenu);
     select.classList.add("header-native-select");
     select.hidden = true;
     select.setAttribute("aria-hidden", "true");
@@ -2853,6 +2947,35 @@ function isHomeDashboardPage() {
   return document.body.classList.contains("home-dashboard-page");
 }
 
+function normalizeHomepagePianoAreaMode(mode) {
+  return homePianoAreaModes.has(mode) ? mode : "chords";
+}
+
+function getStoredHomepagePianoAreaMode() {
+  try {
+    return normalizeHomepagePianoAreaMode(window.localStorage?.getItem(selectedModeStorageKey));
+  } catch (error) {
+    return "chords";
+  }
+}
+
+function storeHomepagePianoAreaMode(mode) {
+  try {
+    window.localStorage?.setItem(selectedModeStorageKey, normalizeHomepagePianoAreaMode(mode));
+  } catch (error) {
+    // Mode switching still works for this session if storage is unavailable.
+  }
+}
+
+function setHomepageAreaMenuValue(elements, mode) {
+  if (!elements.areaMenu) {
+    return;
+  }
+
+  elements.areaMenu.value = normalizeHomepagePianoAreaMode(mode);
+  elements.areaMenu.dispatchEvent(new Event("header-menu-sync"));
+}
+
 function homeProgressionElements() {
   const workspace = document.querySelector("[data-major-chord-page]");
   const displayCard = document.querySelector("[data-major-chord-card]");
@@ -2908,13 +3031,13 @@ function restoreHomeChordMode() {
   const elements = homeProgressionElements();
   const snapshot = homeProgressionState.chordSnapshot;
 
+  stopActiveLoop();
+  setHomepageChordModeState(elements);
+
   if (!snapshot || !elements.selectorPanel || !elements.summaryCard || !elements.listCard || !elements.pianoCard || !elements.infoCard) {
     return;
   }
 
-  stopActiveLoop();
-  document.body.classList.remove("is-home-progressions-mode");
-  elements.workspace?.classList.remove("is-progressions-mode");
   elements.selectorPanel.className = snapshot.selectorPanel.className;
   elements.selectorPanel.innerHTML = snapshot.selectorPanel.html;
   elements.summaryCard.className = snapshot.summaryCard.className;
@@ -2926,11 +3049,7 @@ function restoreHomeChordMode() {
   elements.infoCard.className = snapshot.infoCard.className;
   elements.infoCard.innerHTML = snapshot.infoCard.html;
 
-  if (elements.areaMenu) {
-    elements.areaMenu.value = "chords";
-  }
-
-  homeProgressionState.mode = "chords";
+  setHomepageChordModeState(elements);
   initializeMajorChordPage();
   initializePianoOctaveToggle();
   initializeChordCards();
@@ -2958,9 +3077,34 @@ function homeProgressionFormulaById(id = homeProgressionState.formulaId) {
   return homeProgressionFormulas.find((formula) => formula.id === id) || homeProgressionFormulas[0];
 }
 
-function homeProgressionFormulaLabel(steps = homeProgressionState.steps) {
+function normalizeHomeProgressionChordMode(mode) {
+  return mode === "sevenths" ? "sevenths" : "triads";
+}
+
+function homeProgressionSelectedStepMode(index = homeProgressionState.selectedStepIndex) {
+  return normalizeHomeProgressionChordMode(homeProgressionState.stepModes?.[index]);
+}
+
+function homeProgressionStepLabel(degree, mode = "triads", pattern = homeProgressionDegreePattern()) {
+  if (normalizeHomeProgressionChordMode(mode) !== "sevenths") {
+    return pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I";
+  }
+
+  const seventhLabels = homeProgressionState.scaleMode === "minor"
+    ? ["i7", "ii\u00f87", "IIImaj7", "iv7", "v7", "VImaj7", "VII7"]
+    : ["Imaj7", "ii7", "iii7", "IVmaj7", "V7", "vi7", "vii\u00f87"];
+
+  return seventhLabels[degree] || `${pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I"}7`;
+}
+
+function homeProgressionFormulaLabel(
+  steps = homeProgressionState.steps,
+  stepModes = steps === homeProgressionState.steps ? homeProgressionState.stepModes : []
+) {
   const pattern = homeProgressionDegreePattern();
-  return steps.map((degree) => pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I").join(" - ");
+  return steps
+    .map((degree, index) => homeProgressionStepLabel(degree, stepModes[index], pattern))
+    .join(" - ");
 }
 
 function homeProgressionMajorFormulaLabel(steps = homeProgressionState.steps) {
@@ -2987,10 +3131,18 @@ function normalizeHomeProgressionState() {
   homeProgressionState.steps = homeProgressionState.steps
     .map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6))
     .slice(0, 8);
+
+  const fallbackMode = normalizeHomeProgressionChordMode(homeProgressionState.chordMode);
+  const currentStepModes = Array.isArray(homeProgressionState.stepModes) ? homeProgressionState.stepModes : [];
+  homeProgressionState.stepModes = homeProgressionState.steps.map((_, index) => {
+    return normalizeHomeProgressionChordMode(currentStepModes[index] || fallbackMode);
+  });
+
   homeProgressionState.selectedStepIndex = Math.min(
     Math.max(Number(homeProgressionState.selectedStepIndex) || 0, 0),
     homeProgressionState.steps.length - 1
   );
+  homeProgressionState.chordMode = homeProgressionSelectedStepMode();
 }
 
 function homeProgressionSeventhQuality(degree) {
@@ -3007,12 +3159,12 @@ function homeProgressionSeventhQuality(degree) {
   return chordQualityCatalog[seventhQuality] ? seventhQuality : triadQuality;
 }
 
-function homeProgressionChordForDegree(degree) {
+function homeProgressionChordForDegree(degree, mode = "triads") {
   const config = homeProgressionConfig();
   const pattern = config.chordPattern[degree] || config.chordPattern[0];
   const chordRootValue = scaleValues(homeProgressionRootValue(), config)[degree] ?? homeProgressionRootValue();
   const root = sharpNames[chordRootValue];
-  const quality = homeProgressionState.chordMode === "sevenths" ? homeProgressionSeventhQuality(degree) : pattern.quality;
+  const quality = normalizeHomeProgressionChordMode(mode) === "sevenths" ? homeProgressionSeventhQuality(degree) : pattern.quality;
 
   return {
     roman: pattern.roman,
@@ -3024,7 +3176,15 @@ function homeProgressionChordForDegree(degree) {
 }
 
 function homeProgressionChords() {
-  return homeProgressionState.steps.map(homeProgressionChordForDegree);
+  return homeProgressionState.steps.map((degree, index) => {
+    return homeProgressionChordForDegree(degree, homeProgressionState.stepModes[index]);
+  });
+}
+
+function homeProgressionChordsForSteps(steps, stepModes = []) {
+  return steps.map((degree, index) => {
+    return homeProgressionChordForDegree(degree, stepModes[index]);
+  });
 }
 
 function homeProgressionLabels(chords) {
@@ -3035,10 +3195,26 @@ function homeProgressionSymbols(chords) {
   return chords.map((chord) => chord.symbol);
 }
 
-function setHomeProgressionSteps(steps, formulaId = "custom") {
+function setHomeProgressionSteps(steps, formulaId = "custom", stepModes = []) {
   homeProgressionState.steps = steps.map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6)).slice(0, 8);
+  homeProgressionState.stepModes = homeProgressionState.steps.map((_, index) => {
+    return normalizeHomeProgressionChordMode(stepModes[index]);
+  });
   homeProgressionState.formulaId = formulaId;
   homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
+  homeProgressionState.chordMode = homeProgressionSelectedStepMode();
+}
+
+function homeProgressionMobileFormulaOptions() {
+  return homeProgressionFormulas.slice(0, 8);
+}
+
+function homeProgressionMobileFormulaText(formula) {
+  return homeProgressionLabels(homeProgressionChordsForSteps(formula.degrees)).join(" - ");
+}
+
+function homeProgressionSelectedFormula() {
+  return homeProgressionFormulas.find((formula) => formula.id === homeProgressionState.formulaId) || homeProgressionFormulaById();
 }
 
 function resetHomeProgressionDefaults() {
@@ -3050,6 +3226,7 @@ function resetHomeProgressionDefaults() {
   homeProgressionState.scaleMode = "major";
   homeProgressionState.formulaId = defaultFormula.id;
   homeProgressionState.steps = [...defaultFormula.degrees];
+  homeProgressionState.stepModes = homeProgressionState.steps.map(() => "triads");
   homeProgressionState.selectedStepIndex = 0;
   homeProgressionState.chordMode = "triads";
   homeProgressionState.octaveCount = 1;
@@ -3065,7 +3242,9 @@ function handleHomeProgressionUtility(action) {
 
     stopActiveLoop();
     homeProgressionState.steps.push(homeProgressionState.steps[homeProgressionState.selectedStepIndex] ?? 0);
+    homeProgressionState.stepModes.push(homeProgressionSelectedStepMode());
     homeProgressionState.selectedStepIndex = homeProgressionState.steps.length - 1;
+    homeProgressionState.chordMode = homeProgressionSelectedStepMode();
     homeProgressionState.formulaId = "custom";
     renderHomeProgressionsMode();
     return;
@@ -3078,7 +3257,9 @@ function handleHomeProgressionUtility(action) {
 
     stopActiveLoop();
     homeProgressionState.steps.splice(homeProgressionState.selectedStepIndex, 1);
+    homeProgressionState.stepModes.splice(homeProgressionState.selectedStepIndex, 1);
     homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
+    homeProgressionState.chordMode = homeProgressionSelectedStepMode();
     homeProgressionState.formulaId = "custom";
     renderHomeProgressionsMode();
     return;
@@ -3118,20 +3299,31 @@ function renderHomeKeySelector() {
   selectorPanel.innerHTML = `
     <div class="progression-builder-main">
       <section class="progression-builder-section" aria-labelledby="progression-root-title">
-        <h2 id="progression-root-title" class="selector-label">1. Choose Root Note</h2>
+        <h2 id="progression-root-title" class="selector-label">Choose Root Note</h2>
         <div class="root-menu root-menu-centered progression-root-grid" role="group" aria-label="Choose progression root note" data-home-progression-root-menu></div>
       </section>
       <section class="progression-builder-section" aria-labelledby="progression-formula-title">
-        <h2 id="progression-formula-title" class="selector-label">3. Choose Progression</h2>
+        <h2 id="progression-formula-title" class="selector-label">Choose Progression</h2>
         <div class="progression-option-grid" role="group" aria-label="Choose progression formula" data-home-progression-formula-menu></div>
       </section>
     </div>
+    <aside class="progression-info-message" aria-labelledby="progression-info-title">
+      <div class="progression-info-message-heading">
+        <h2 id="progression-info-title">Build your progression</h2>
+      </div>
+      <p>Create chord journeys. Customize progressions.</p>
+    </aside>
     <div class="progression-builder-side">
       <section class="progression-builder-section" aria-labelledby="progression-scale-title">
-        <h2 id="progression-scale-title" class="selector-label">2. Choose Scale</h2>
+        <h2 id="progression-scale-title" class="selector-label">Choose Scale</h2>
         <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
       </section>
     </div>
+    <section class="progression-builder-section progression-mobile-formula-select${homeProgressionMobileFormulaMenuOpen ? " is-open" : ""}" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula>
+      <h2 id="progression-mobile-formula-title" class="selector-label">Choose Progression</h2>
+      <button class="progression-mobile-formula-button" type="button" aria-expanded="${homeProgressionMobileFormulaMenuOpen ? "true" : "false"}" aria-controls="progression-mobile-formula-list" data-home-progression-mobile-formula-toggle></button>
+      <div id="progression-mobile-formula-list" class="progression-mobile-formula-list" role="listbox" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula-list${homeProgressionMobileFormulaMenuOpen ? "" : " hidden"}></div>
+    </section>
   `;
 
   const rootMenu = selectorPanel.querySelector("[data-home-progression-root-menu]");
@@ -3147,6 +3339,7 @@ function renderHomeKeySelector() {
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.root = root;
       homeProgressionState.key = root;
       renderHomeProgressionsMode();
@@ -3170,6 +3363,7 @@ function renderHomeKeySelector() {
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.scaleMode = mode;
       renderHomeProgressionsMode();
     });
@@ -3189,12 +3383,54 @@ function renderHomeKeySelector() {
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.selectedStepIndex = 0;
       setHomeProgressionSteps([...formula.degrees], formula.id);
       renderHomeProgressionsMode();
     });
     formulaMenu.appendChild(button);
   });
+
+  const mobileFormulaSelect = selectorPanel.querySelector("[data-home-progression-mobile-formula]");
+  const mobileFormulaToggle = selectorPanel.querySelector("[data-home-progression-mobile-formula-toggle]");
+  const mobileFormulaList = selectorPanel.querySelector("[data-home-progression-mobile-formula-list]");
+  const selectedMobileFormula = homeProgressionSelectedFormula();
+  const selectedMobileFormulaText = homeProgressionMobileFormulaText(selectedMobileFormula);
+
+  if (mobileFormulaSelect && mobileFormulaToggle && mobileFormulaList) {
+    mobileFormulaToggle.textContent = selectedMobileFormulaText;
+    mobileFormulaToggle.setAttribute("aria-label", `Choose progression: ${selectedMobileFormulaText}`);
+
+    mobileFormulaToggle.addEventListener("click", () => {
+      homeProgressionMobileFormulaMenuOpen = !homeProgressionMobileFormulaMenuOpen;
+      mobileFormulaToggle.setAttribute("aria-expanded", String(homeProgressionMobileFormulaMenuOpen));
+      mobileFormulaList.hidden = !homeProgressionMobileFormulaMenuOpen;
+      mobileFormulaSelect.classList.toggle("is-open", homeProgressionMobileFormulaMenuOpen);
+    });
+
+    homeProgressionMobileFormulaOptions().forEach((formula) => {
+      const button = document.createElement("button");
+      const formulaText = homeProgressionMobileFormulaText(formula);
+      const isActive = formula.id === homeProgressionState.formulaId;
+
+      button.type = "button";
+      button.className = "progression-mobile-formula-option";
+      button.dataset.homeProgressionMobileFormula = formula.id;
+      button.textContent = formulaText;
+      button.setAttribute("role", "option");
+      button.setAttribute("aria-label", `Choose ${formulaText} progression`);
+      button.setAttribute("aria-selected", String(isActive));
+      button.classList.toggle("is-active", isActive);
+      button.addEventListener("click", () => {
+        stopActiveLoop();
+        homeProgressionMobileFormulaMenuOpen = false;
+        homeProgressionState.selectedStepIndex = 0;
+        setHomeProgressionSteps([...formula.degrees], formula.id);
+        renderHomeProgressionsMode();
+      });
+      mobileFormulaList.appendChild(button);
+    });
+  }
 }
 
 function renderHomeProgressionSummary(progression, chords) {
@@ -3238,6 +3474,8 @@ function renderHomeProgressionSummary(progression, chords) {
 function renderHomeProgressionList() {
   const { listCard } = homeProgressionElements();
   const steps = homeProgressionState.steps;
+  const stepModes = homeProgressionState.stepModes;
+  const selectedStepMode = homeProgressionSelectedStepMode();
   const pattern = homeProgressionDegreePattern();
 
   if (!listCard) {
@@ -3269,16 +3507,18 @@ function renderHomeProgressionList() {
   steps.forEach((degree, index) => {
     const button = document.createElement("button");
     const isActive = index === homeProgressionState.selectedStepIndex;
+    const stepLabel = homeProgressionStepLabel(degree, stepModes[index], pattern);
 
     button.type = "button";
     button.className = "progression-step-button";
     button.dataset.homeProgressionStep = String(index);
-    button.setAttribute("aria-label", `Select step ${index + 1}: ${pattern[degree]?.roman || "I"}`);
+    button.setAttribute("aria-label", `Select step ${index + 1}: ${stepLabel}`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
-    button.innerHTML = `<span>Step ${index + 1}</span><strong>${pattern[degree]?.roman || "I"}</strong>`;
+    button.innerHTML = `<span>Step ${index + 1}</span><strong>${stepLabel}</strong>`;
     button.addEventListener("click", () => {
       homeProgressionState.selectedStepIndex = index;
+      homeProgressionState.chordMode = homeProgressionSelectedStepMode(index);
       renderHomeProgressionsMode();
     });
     stepGrid.appendChild(button);
@@ -3291,8 +3531,8 @@ function renderHomeProgressionList() {
 
     button.type = "button";
     button.dataset.homeProgressionDegree = String(index);
-    button.textContent = degree.roman;
-    button.setAttribute("aria-label", `Set selected step to ${degree.roman}`);
+    button.textContent = homeProgressionStepLabel(index, selectedStepMode, pattern);
+    button.setAttribute("aria-label", `Set selected step to ${homeProgressionStepLabel(index, selectedStepMode, pattern)}`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
@@ -3310,17 +3550,19 @@ function renderHomeProgressionList() {
     ["sevenths", "7th"],
   ].forEach(([mode, label]) => {
     const button = document.createElement("button");
-    const isActive = mode === homeProgressionState.chordMode;
+    const isActive = mode === selectedStepMode;
 
     button.type = "button";
     button.dataset.homeProgressionChordMode = mode;
     button.textContent = label;
-    button.setAttribute("aria-label", `Use ${label} chords`);
+    button.setAttribute("aria-label", `Use ${label.toLowerCase()} for selected step`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionState.stepModes[homeProgressionState.selectedStepIndex] = mode;
       homeProgressionState.chordMode = mode;
+      homeProgressionState.formulaId = "custom";
       renderHomeProgressionsMode();
     });
     modeMenu.appendChild(button);
@@ -3421,10 +3663,10 @@ function renderHomePianoCard(progression, chords) {
     <div class="piano-card-header">
       <button class="play-button" type="button" aria-label="Play ${formula} progression" data-home-progression-play>
         <img
-          src="assets/piano-valley/themes/dark/play-button.png"
+          src="assets/piano-valley/themes/dark/play-button.webp"
           alt=""
-          width="340"
-          height="340"
+          width="256"
+          height="256"
           loading="lazy"
           decoding="async"
         >
@@ -3475,10 +3717,10 @@ function renderHomeProgressionScaleLine() {
     <div class="future-illustration-slot" aria-hidden="true">
       <img
         class="info-card-robot"
-        src="assets/piano-valley/themes/dark/robot-floating.png"
+        src="assets/piano-valley/themes/dark/robot-floating.webp"
         alt=""
-        width="384"
-        height="384"
+        width="320"
+        height="320"
         loading="lazy"
         decoding="async"
       >
@@ -3517,6 +3759,11 @@ function renderHomeProgressionSongLine(line, songs, count = 3) {
 function fitHomeProgressionSongLine(container, songs) {
   const line = container.querySelector("[data-home-progression-songs]");
 
+  if (homeProgressionSongFitFrame) {
+    window.cancelAnimationFrame(homeProgressionSongFitFrame);
+    homeProgressionSongFitFrame = 0;
+  }
+
   if (!line) {
     return;
   }
@@ -3529,7 +3776,13 @@ function fitHomeProgressionSongLine(container, songs) {
   let visibleCount = Math.min(3, songs.length);
   renderHomeProgressionSongLine(line, songs, visibleCount);
 
-  window.requestAnimationFrame(() => {
+  homeProgressionSongFitFrame = window.requestAnimationFrame(() => {
+    homeProgressionSongFitFrame = 0;
+
+    if (!line.isConnected || line.clientWidth <= 0) {
+      return;
+    }
+
     while (visibleCount > 1 && line.scrollWidth > line.clientWidth) {
       visibleCount -= 1;
       renderHomeProgressionSongLine(line, songs, visibleCount);
@@ -3543,6 +3796,7 @@ function renderHomeProgressionsMode() {
   const progression = { roman: homeProgressionFormulaLabel(), degrees: [...homeProgressionState.steps] };
   const chords = homeProgressionChords();
 
+  homeProgressionState.mode = "progressions";
   document.body.classList.add("is-home-progressions-mode");
   homeProgressionElements().workspace?.classList.add("is-progressions-mode");
   document.title = `${homeProgressionTitle()} Progressions - Chordyssey`;
@@ -3693,13 +3947,11 @@ function setHomepagePianoAreaMode(mode) {
   }
 
   const elements = homeProgressionElements();
-  const nextMode = mode === "progressions" ? "progressions" : "chords";
+  const nextMode = normalizeHomepagePianoAreaMode(mode);
 
   captureHomeChordSnapshot();
-
-  if (elements.areaMenu) {
-    elements.areaMenu.value = nextMode;
-  }
+  storeHomepagePianoAreaMode(nextMode);
+  setHomepageAreaMenuValue(elements, nextMode);
 
   if (nextMode === homeProgressionState.mode && nextMode === "progressions") {
     renderHomeProgressionsMode();
@@ -3716,6 +3968,17 @@ function setHomepagePianoAreaMode(mode) {
   renderHomeProgressionsMode();
 }
 
+function setHomepageChordModeState(elements = homeProgressionElements()) {
+  if (!isHomeDashboardPage()) {
+    return;
+  }
+
+  document.body.classList.remove("is-home-progressions-mode");
+  elements.workspace?.classList.remove("is-progressions-mode");
+  homeProgressionState.mode = "chords";
+  setHomepageAreaMenuValue(elements, "chords");
+}
+
 function initializeHomepagePianoAreaMode() {
   const { areaMenu } = homeProgressionElements();
 
@@ -3723,7 +3986,8 @@ function initializeHomepagePianoAreaMode() {
     return;
   }
 
-  areaMenu.value = homeProgressionState.mode;
+  captureHomeChordSnapshot();
+  setHomepagePianoAreaMode(getStoredHomepagePianoAreaMode());
 }
 
 function createChordCard(chord, options = {}) {
@@ -3831,6 +4095,10 @@ function renderProgressions(rootValue, chords, config = getKeyConfig()) {
 
 function updateProgressionLabels() {
   document.querySelectorAll("[data-progression-chords]").forEach((line) => {
+    if (!line.dataset.progressionChords) {
+      return;
+    }
+
     const labels = line.dataset.progressionChords.split(",").map((entry) => {
       const [root, quality] = entry.split(":");
       return quality === "Major" ? displayNoteName(root) : `${displayNoteName(root)}${qualitySuffix(quality)}`;
@@ -3881,10 +4149,11 @@ initializePianoValleyTheme();
 initializeHeaderDropdownMenus();
 initializeNotationToggle();
 initializeMajorChordPage();
-initializeHomepagePianoAreaMode();
 initializeMajorKeyPage();
 initializeDynamicMajorPage();
 initializePianoOctaveToggle();
 initializeChordCards();
 initializeProgressions();
+initializeRelatedChordsViewportWatcher();
 updateNotation();
+initializeHomepagePianoAreaMode();

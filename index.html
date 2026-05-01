@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=24" />
+  <link rel="stylesheet" href="style.css?v=25" />
   <link rel="stylesheet" href="home-cosmos.css?v=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
@@ -43,6 +43,17 @@
           <option value="kawaii" disabled>Kawaii</option>
         </select>
         <button class="header-icon-button" type="button" aria-label="Add current chord to favorites">&#9829;</button>
+        <a
+          class="header-icon-button mobile-github-link"
+          href="https://github.com/ChrisZDK/Chordyssey"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open Chordyssey on GitHub"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 1.25C6.06 1.25 1.25 6.06 1.25 12c0 4.76 3.08 8.79 7.36 10.22.54.1.74-.23.74-.52v-1.84c-3 .65-3.63-1.28-3.63-1.28-.49-1.24-1.2-1.57-1.2-1.57-.98-.67.07-.66.07-.66 1.08.08 1.65 1.11 1.65 1.11.96 1.64 2.52 1.17 3.13.9.1-.7.38-1.17.68-1.44-2.39-.27-4.91-1.2-4.91-5.32 0-1.18.42-2.14 1.11-2.89-.11-.27-.48-1.37.11-2.85 0 0 .91-.29 2.96 1.1.86-.24 1.78-.36 2.69-.36.91 0 1.83.12 2.69.36 2.05-1.39 2.96-1.1 2.96-1.1.59 1.48.22 2.58.11 2.85.69.75 1.11 1.71 1.11 2.89 0 4.13-2.52 5.04-4.92 5.31.39.34.73.99.73 2v2.79c0 .29.2.63.74.52A10.76 10.76 0 0 0 22.75 12c0-5.94-4.81-10.75-10.75-10.75Z"/>
+          </svg>
+        </a>
       </div>
     </header>
 
@@ -52,7 +63,7 @@
         <div class="hero-image-frame">
           <img
             class="hero-banner-image"
-            src="assets/piano-valley/themes/dark/theme-dark-banner.png"
+            src="assets/piano-valley/themes/dark/theme-dark-banner.webp"
             sizes="(max-width: 700px) 100vw, 1400px"
             alt="Pixel-art Piano scene with floating islands, robots, and a piano path."
             width="1200"
@@ -61,7 +72,7 @@
           >
           <img
             class="hero-banner-robot"
-            src="assets/piano-valley/themes/dark/robot-banner.png"
+            src="assets/piano-valley/themes/dark/robot-banner.webp"
             alt=""
             width="96"
             height="104"
@@ -75,7 +86,6 @@
       <section id="major-chords" class="chord-workspace" aria-label="Chord builder" data-major-chord-page data-chord-quality="Major" data-fallback-root="C">
         <div class="selector-panel">
           <div class="selector-group root-selector">
-            <p class="selector-panel-kicker">CHORDS MATRIX</p>
             <p class="selector-label">Root note</p>
             <div class="root-menu root-menu-centered" role="group" aria-label="Choose chord root note" data-chord-root-menu>
               <button class="is-active" type="button" data-chord-root="C" aria-pressed="true">C</button>
@@ -105,6 +115,13 @@
             <div class="type-menu" role="group" aria-label="Choose chord type" data-chord-quality-menu></div>
           </div>
 
+          <aside class="selector-welcome" aria-labelledby="selector-welcome-title">
+            <div class="selector-welcome-heading">
+              <h2 id="selector-welcome-title">Welcome, musician!</h2>
+            </div>
+            <p>Chord Mode lets you explore harmony fast. Pick a root note, chord type and explore related chords.</p>
+          </aside>
+
         </div>
 
         <section class="chord-display" data-major-chord-card data-notes="C,E,G" data-root="C" data-quality="Major" data-octaves="1">
@@ -121,15 +138,12 @@
                     <button type="button" data-notation="flat" aria-label="Use flat note names" aria-pressed="false">&#9837;</button>
                   </div>
                 </div>
-                <div class="card-actions">
-                  <button class="inversions-text-button" type="button">Inversions</button>
-                </div>
               </article>
 
               <article class="card related-chords-card">
                 <div class="related-card-title">
                   <img
-                    src="assets/piano-valley/themes/dark/crystal-icon.png"
+                    src="assets/piano-valley/themes/dark/crystal-icon.webp"
                     alt=""
                     width="166"
                     height="190"
@@ -159,10 +173,10 @@
               <div class="piano-card-header">
                 <button class="play-button" type="button" aria-label="Play C Major chord">
                   <img
-                    src="assets/piano-valley/themes/dark/play-button.png"
+                    src="assets/piano-valley/themes/dark/play-button.webp"
                     alt=""
-                    width="340"
-                    height="340"
+                    width="256"
+                    height="256"
                     loading="lazy"
                     decoding="async"
                   >
@@ -205,10 +219,10 @@
               </div>
               <img
                 class="sound-card-robot"
-                src="assets/piano-valley/themes/dark/robot-keyboard.png"
+                src="assets/piano-valley/themes/dark/robot-keyboard.webp"
                 alt=""
-                width="512"
-                height="512"
+                width="192"
+                height="192"
                 loading="lazy"
                 decoding="async"
                 aria-hidden="true"
@@ -218,10 +232,10 @@
               <div class="future-illustration-slot" aria-hidden="true">
                 <img
                   class="info-card-robot"
-                  src="assets/piano-valley/themes/dark/robot-floating.png"
+                  src="assets/piano-valley/themes/dark/robot-floating.webp"
                   alt=""
-                  width="384"
-                  height="384"
+                  width="320"
+                  height="320"
                   loading="lazy"
                   decoding="async"
                 >
@@ -243,6 +257,20 @@
     <footer>
       <p>Made for beginner piano practice.</p>
     </footer>
+  </div>
+
+  <div class="orientation-advisory orientation-advisory--tablet" role="status" aria-live="polite">
+    <div class="orientation-advisory__panel">
+      <span class="orientation-advisory__icon" aria-hidden="true"></span>
+      <p>For best experience, rotate to landscape.</p>
+    </div>
+  </div>
+
+  <div class="orientation-advisory orientation-advisory--mobile" role="status" aria-live="polite">
+    <div class="orientation-advisory__panel">
+      <span class="orientation-advisory__icon" aria-hidden="true"></span>
+      <p>For best experience, rotate to portrait.</p>
+    </div>
   </div>
 
   <div class="sound-options" id="sound-options" role="listbox" aria-label="Sound options" hidden data-sound-options>
@@ -278,6 +306,6 @@
     </button>
   </div>
 
-  <script src="script.js?v=20"></script>
+  <script src="script.js?v=21"></script>
 </body>
 </html>
