@@ -3221,7 +3221,7 @@ function renderHomeKeySelector() {
       </section>
     </div>
     <section class="progression-builder-section progression-mobile-formula-select${homeProgressionMobileFormulaMenuOpen ? " is-open" : ""}" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula>
-      <h2 id="progression-mobile-formula-title" class="selector-label">3. CHOOSE PROGRESSION</h2>
+      <h2 id="progression-mobile-formula-title" class="selector-label">Choose Progression</h2>
       <button class="progression-mobile-formula-button" type="button" aria-expanded="${homeProgressionMobileFormulaMenuOpen ? "true" : "false"}" aria-controls="progression-mobile-formula-list" data-home-progression-mobile-formula-toggle></button>
       <div id="progression-mobile-formula-list" class="progression-mobile-formula-list" role="listbox" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula-list${homeProgressionMobileFormulaMenuOpen ? "" : " hidden"}></div>
     </section>
