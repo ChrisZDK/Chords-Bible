@@ -570,6 +570,7 @@ const homeProgressionState = {
   scaleMode: "major",
   formulaId: "pop-axis",
   steps: [0, 4, 5, 3],
+  stepModes: ["triads", "triads", "triads", "triads"],
   selectedStepIndex: 0,
   chordMode: "triads",
   selectedIndex: 0,
@@ -3076,9 +3077,34 @@ function homeProgressionFormulaById(id = homeProgressionState.formulaId) {
   return homeProgressionFormulas.find((formula) => formula.id === id) || homeProgressionFormulas[0];
 }
 
-function homeProgressionFormulaLabel(steps = homeProgressionState.steps) {
+function normalizeHomeProgressionChordMode(mode) {
+  return mode === "sevenths" ? "sevenths" : "triads";
+}
+
+function homeProgressionSelectedStepMode(index = homeProgressionState.selectedStepIndex) {
+  return normalizeHomeProgressionChordMode(homeProgressionState.stepModes?.[index]);
+}
+
+function homeProgressionStepLabel(degree, mode = "triads", pattern = homeProgressionDegreePattern()) {
+  if (normalizeHomeProgressionChordMode(mode) !== "sevenths") {
+    return pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I";
+  }
+
+  const seventhLabels = homeProgressionState.scaleMode === "minor"
+    ? ["i7", "ii\u00f87", "IIImaj7", "iv7", "v7", "VImaj7", "VII7"]
+    : ["Imaj7", "ii7", "iii7", "IVmaj7", "V7", "vi7", "vii\u00f87"];
+
+  return seventhLabels[degree] || `${pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I"}7`;
+}
+
+function homeProgressionFormulaLabel(
+  steps = homeProgressionState.steps,
+  stepModes = steps === homeProgressionState.steps ? homeProgressionState.stepModes : []
+) {
   const pattern = homeProgressionDegreePattern();
-  return steps.map((degree) => pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I").join(" - ");
+  return steps
+    .map((degree, index) => homeProgressionStepLabel(degree, stepModes[index], pattern))
+    .join(" - ");
 }
 
 function homeProgressionMajorFormulaLabel(steps = homeProgressionState.steps) {
@@ -3105,10 +3131,18 @@ function normalizeHomeProgressionState() {
   homeProgressionState.steps = homeProgressionState.steps
     .map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6))
     .slice(0, 8);
+
+  const fallbackMode = normalizeHomeProgressionChordMode(homeProgressionState.chordMode);
+  const currentStepModes = Array.isArray(homeProgressionState.stepModes) ? homeProgressionState.stepModes : [];
+  homeProgressionState.stepModes = homeProgressionState.steps.map((_, index) => {
+    return normalizeHomeProgressionChordMode(currentStepModes[index] || fallbackMode);
+  });
+
   homeProgressionState.selectedStepIndex = Math.min(
     Math.max(Number(homeProgressionState.selectedStepIndex) || 0, 0),
     homeProgressionState.steps.length - 1
   );
+  homeProgressionState.chordMode = homeProgressionSelectedStepMode();
 }
 
 function homeProgressionSeventhQuality(degree) {
@@ -3125,12 +3159,12 @@ function homeProgressionSeventhQuality(degree) {
   return chordQualityCatalog[seventhQuality] ? seventhQuality : triadQuality;
 }
 
-function homeProgressionChordForDegree(degree) {
+function homeProgressionChordForDegree(degree, mode = "triads") {
   const config = homeProgressionConfig();
   const pattern = config.chordPattern[degree] || config.chordPattern[0];
   const chordRootValue = scaleValues(homeProgressionRootValue(), config)[degree] ?? homeProgressionRootValue();
   const root = sharpNames[chordRootValue];
-  const quality = homeProgressionState.chordMode === "sevenths" ? homeProgressionSeventhQuality(degree) : pattern.quality;
+  const quality = normalizeHomeProgressionChordMode(mode) === "sevenths" ? homeProgressionSeventhQuality(degree) : pattern.quality;
 
   return {
     roman: pattern.roman,
@@ -3142,11 +3176,15 @@ function homeProgressionChordForDegree(degree) {
 }
 
 function homeProgressionChords() {
-  return homeProgressionState.steps.map(homeProgressionChordForDegree);
+  return homeProgressionState.steps.map((degree, index) => {
+    return homeProgressionChordForDegree(degree, homeProgressionState.stepModes[index]);
+  });
 }
 
-function homeProgressionChordsForSteps(steps) {
-  return steps.map(homeProgressionChordForDegree);
+function homeProgressionChordsForSteps(steps, stepModes = []) {
+  return steps.map((degree, index) => {
+    return homeProgressionChordForDegree(degree, stepModes[index]);
+  });
 }
 
 function homeProgressionLabels(chords) {
@@ -3157,10 +3195,14 @@ function homeProgressionSymbols(chords) {
   return chords.map((chord) => chord.symbol);
 }
 
-function setHomeProgressionSteps(steps, formulaId = "custom") {
+function setHomeProgressionSteps(steps, formulaId = "custom", stepModes = []) {
   homeProgressionState.steps = steps.map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6)).slice(0, 8);
+  homeProgressionState.stepModes = homeProgressionState.steps.map((_, index) => {
+    return normalizeHomeProgressionChordMode(stepModes[index]);
+  });
   homeProgressionState.formulaId = formulaId;
   homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
+  homeProgressionState.chordMode = homeProgressionSelectedStepMode();
 }
 
 function homeProgressionMobileFormulaOptions() {
@@ -3184,6 +3226,7 @@ function resetHomeProgressionDefaults() {
   homeProgressionState.scaleMode = "major";
   homeProgressionState.formulaId = defaultFormula.id;
   homeProgressionState.steps = [...defaultFormula.degrees];
+  homeProgressionState.stepModes = homeProgressionState.steps.map(() => "triads");
   homeProgressionState.selectedStepIndex = 0;
   homeProgressionState.chordMode = "triads";
   homeProgressionState.octaveCount = 1;
@@ -3199,7 +3242,9 @@ function handleHomeProgressionUtility(action) {
 
     stopActiveLoop();
     homeProgressionState.steps.push(homeProgressionState.steps[homeProgressionState.selectedStepIndex] ?? 0);
+    homeProgressionState.stepModes.push(homeProgressionSelectedStepMode());
     homeProgressionState.selectedStepIndex = homeProgressionState.steps.length - 1;
+    homeProgressionState.chordMode = homeProgressionSelectedStepMode();
     homeProgressionState.formulaId = "custom";
     renderHomeProgressionsMode();
     return;
@@ -3212,7 +3257,9 @@ function handleHomeProgressionUtility(action) {
 
     stopActiveLoop();
     homeProgressionState.steps.splice(homeProgressionState.selectedStepIndex, 1);
+    homeProgressionState.stepModes.splice(homeProgressionState.selectedStepIndex, 1);
     homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
+    homeProgressionState.chordMode = homeProgressionSelectedStepMode();
     homeProgressionState.formulaId = "custom";
     renderHomeProgressionsMode();
     return;
@@ -3427,6 +3474,8 @@ function renderHomeProgressionSummary(progression, chords) {
 function renderHomeProgressionList() {
   const { listCard } = homeProgressionElements();
   const steps = homeProgressionState.steps;
+  const stepModes = homeProgressionState.stepModes;
+  const selectedStepMode = homeProgressionSelectedStepMode();
   const pattern = homeProgressionDegreePattern();
 
   if (!listCard) {
@@ -3458,16 +3507,18 @@ function renderHomeProgressionList() {
   steps.forEach((degree, index) => {
     const button = document.createElement("button");
     const isActive = index === homeProgressionState.selectedStepIndex;
+    const stepLabel = homeProgressionStepLabel(degree, stepModes[index], pattern);
 
     button.type = "button";
     button.className = "progression-step-button";
     button.dataset.homeProgressionStep = String(index);
-    button.setAttribute("aria-label", `Select step ${index + 1}: ${pattern[degree]?.roman || "I"}`);
+    button.setAttribute("aria-label", `Select step ${index + 1}: ${stepLabel}`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
-    button.innerHTML = `<span>Step ${index + 1}</span><strong>${pattern[degree]?.roman || "I"}</strong>`;
+    button.innerHTML = `<span>Step ${index + 1}</span><strong>${stepLabel}</strong>`;
     button.addEventListener("click", () => {
       homeProgressionState.selectedStepIndex = index;
+      homeProgressionState.chordMode = homeProgressionSelectedStepMode(index);
       renderHomeProgressionsMode();
     });
     stepGrid.appendChild(button);
@@ -3480,8 +3531,8 @@ function renderHomeProgressionList() {
 
     button.type = "button";
     button.dataset.homeProgressionDegree = String(index);
-    button.textContent = degree.roman;
-    button.setAttribute("aria-label", `Set selected step to ${degree.roman}`);
+    button.textContent = homeProgressionStepLabel(index, selectedStepMode, pattern);
+    button.setAttribute("aria-label", `Set selected step to ${homeProgressionStepLabel(index, selectedStepMode, pattern)}`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
@@ -3499,17 +3550,19 @@ function renderHomeProgressionList() {
     ["sevenths", "7th"],
   ].forEach(([mode, label]) => {
     const button = document.createElement("button");
-    const isActive = mode === homeProgressionState.chordMode;
+    const isActive = mode === selectedStepMode;
 
     button.type = "button";
     button.dataset.homeProgressionChordMode = mode;
     button.textContent = label;
-    button.setAttribute("aria-label", `Use ${label} chords`);
+    button.setAttribute("aria-label", `Use ${label.toLowerCase()} for selected step`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
       stopActiveLoop();
+      homeProgressionState.stepModes[homeProgressionState.selectedStepIndex] = mode;
       homeProgressionState.chordMode = mode;
+      homeProgressionState.formulaId = "custom";
       renderHomeProgressionsMode();
     });
     modeMenu.appendChild(button);
@@ -4042,6 +4095,10 @@ function renderProgressions(rootValue, chords, config = getKeyConfig()) {
 
 function updateProgressionLabels() {
   document.querySelectorAll("[data-progression-chords]").forEach((line) => {
+    if (!line.dataset.progressionChords) {
+      return;
+    }
+
     const labels = line.dataset.progressionChords.split(",").map((entry) => {
       const [root, quality] = entry.split(":");
       return quality === "Major" ? displayNoteName(root) : `${displayNoteName(root)}${qualitySuffix(quality)}`;
