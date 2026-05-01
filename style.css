@@ -8559,6 +8559,12 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .selector-panel .chord-type-selector .type-menu button {
     font-size: clamp(0.66rem, 0.86vw, 0.88rem);
   }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .root-selector .root-menu button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .category-tabs button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button {
+    font-size: 1rem;
+  }
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) .selector-panel .root-selector .root-menu button,
