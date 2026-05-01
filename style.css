@@ -9060,6 +9060,10 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
     padding: 0;
   }
 
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .note-line {
+    padding-top: 0.25rem;
+  }
+
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-metric-row .stat-label,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .note-line .stat-label {
     font-size: clamp(0.46rem, 1.3vw, 0.54rem);
@@ -9249,9 +9253,20 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
     height: auto;
   }
 
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .homepage-progression-animation .progression-keyboard {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0;
+  }
+
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .homepage-progression-animation .progression-keyboard .piano-svg {
+    display: block;
+    width: 100%;
+    min-width: 0 !important;
+    max-width: 100%;
     height: auto !important;
-    max-height: clamp(4.8rem, 15svh, 7.25rem);
+    max-height: none;
   }
 }
 
