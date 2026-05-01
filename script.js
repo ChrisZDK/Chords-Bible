@@ -550,19 +550,46 @@ const notationStorageKey = "preferredNotation";
 const selectedModeStorageKey = "chordyssey:selectedMode";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
 const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
-const soundModeLabels = {
-  "grand-piano": "Grand Piano",
-  synth: "Synth",
-  chiptune: "Chiptune",
+const instrumentFamilies = new Set(["keyboards", "guitars"]);
+const soundModePresets = {
+  keyboards: {
+    "grand-piano": "Grand Piano",
+    synth: "Synth",
+    chiptune: "Chiptune",
+  },
+  guitars: {
+    acoustic: "Acoustic",
+    electric: "Electric",
+    psyche: "Psyche",
+  },
 };
+const defaultSoundModes = {
+  keyboards: "grand-piano",
+  guitars: "acoustic",
+};
+const guitarStringTunings = [
+  { label: "E", value: 4, octave: 2 },
+  { label: "A", value: 9, octave: 2 },
+  { label: "D", value: 2, octave: 3 },
+  { label: "G", value: 7, octave: 3 },
+  { label: "B", value: 11, octave: 3 },
+  { label: "E", value: 4, octave: 4 },
+];
+const guitarFretCount = 5;
 
 let audioContext;
 let activePlaybackOutput;
 let pianoSampler;
 let pianoReady = false;
+let selectedInstrumentFamily = "keyboards";
 let selectedSoundMode = "grand-piano";
+const selectedSoundModesByInstrument = {
+  keyboards: "grand-piano",
+  guitars: "acoustic",
+};
 let padReverbImpulse;
 let chipCurve;
+let guitarDriveCurve;
 let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
@@ -751,12 +778,34 @@ function storeNotation(notation) {
   }
 }
 
+function normalizeInstrumentFamily(family) {
+  return instrumentFamilies.has(family) ? family : "keyboards";
+}
+
+function getSelectedInstrumentFamily() {
+  return normalizeInstrumentFamily(selectedInstrumentFamily);
+}
+
+function isGuitarMode() {
+  return getSelectedInstrumentFamily() === "guitars";
+}
+
+function getSoundModeLabels(family = getSelectedInstrumentFamily()) {
+  return soundModePresets[normalizeInstrumentFamily(family)] || soundModePresets.keyboards;
+}
+
+function getDefaultSoundMode(family = getSelectedInstrumentFamily()) {
+  return defaultSoundModes[normalizeInstrumentFamily(family)] || defaultSoundModes.keyboards;
+}
+
 function getSelectedSoundMode() {
   if (!document.body.classList.contains("home-dashboard-page")) {
     return "grand-piano";
   }
 
-  return soundModeLabels[selectedSoundMode] ? selectedSoundMode : "grand-piano";
+  const labels = getSoundModeLabels();
+
+  return labels[selectedSoundMode] ? selectedSoundMode : getDefaultSoundMode();
 }
 
 function getSoundOptions(selector = document) {
@@ -802,12 +851,42 @@ function openSoundSelector(selector) {
   }
 }
 
+function renderSoundOptions(family = getSelectedInstrumentFamily()) {
+  const options = document.querySelector("[data-sound-options]");
+
+  if (!options) {
+    return;
+  }
+
+  const labels = getSoundModeLabels(family);
+  const selectedMode = selectedSoundModesByInstrument[normalizeInstrumentFamily(family)] || getDefaultSoundMode(family);
+  const buttons = Object.entries(labels).map(([value, label]) => {
+    const button = document.createElement("button");
+    const isSelected = value === selectedMode;
+
+    button.className = `sound-option${isSelected ? " is-selected" : ""}`;
+    button.type = "button";
+    button.role = "option";
+    button.setAttribute("aria-selected", String(isSelected));
+    button.dataset.soundOption = "";
+    button.dataset.soundValue = value;
+    button.textContent = label;
+
+    return button;
+  });
+
+  options.replaceChildren(...buttons);
+  options.setAttribute("aria-label", isGuitarMode() ? "Guitar sound options" : "Sound options");
+}
+
 function setSoundMode(mode, selector = document, { stopPlayback = false } = {}) {
-  const normalizedMode = soundModeLabels[mode] ? mode : "grand-piano";
+  const labels = getSoundModeLabels();
+  const normalizedMode = labels[mode] ? mode : getDefaultSoundMode();
 
   selectedSoundMode = normalizedMode;
+  selectedSoundModesByInstrument[getSelectedInstrumentFamily()] = normalizedMode;
   selector.querySelectorAll("[data-sound-select-value]").forEach((element) => {
-    element.textContent = soundModeLabels[normalizedMode];
+    element.textContent = labels[normalizedMode];
   });
 
   document.querySelectorAll("[data-sound-option]").forEach((option) => {
@@ -819,6 +898,41 @@ function setSoundMode(mode, selector = document, { stopPlayback = false } = {}) 
   if (stopPlayback && audioContext) {
     startNewPlayback();
   }
+}
+
+function bindSoundOptionButtons(selector, options, button) {
+  options?.querySelectorAll("[data-sound-option]").forEach((option) => {
+    if (option.dataset.soundOptionReady) {
+      return;
+    }
+
+    option.addEventListener("click", () => {
+      setSoundMode(option.dataset.soundValue, selector, { stopPlayback: true });
+      closeSoundSelector(selector);
+      button?.focus();
+    });
+
+    option.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        focusSoundOption(selector, event.key === "ArrowUp" ? -1 : 1);
+        return;
+      }
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        option.click();
+        return;
+      }
+
+      if (event.key === "Escape") {
+        closeSoundSelector(selector);
+        button?.focus();
+      }
+    });
+
+    option.dataset.soundOptionReady = "true";
+  });
 }
 
 function focusSoundOption(selector, direction = 1) {
@@ -840,12 +954,14 @@ function initializeSoundSelector() {
   const selectors = document.querySelectorAll("[data-sound-selector]");
 
   selectors.forEach((selector) => {
-    if (selector.dataset.soundSelectorReady) {
-      return;
-    }
-
     const button = selector.querySelector("[data-sound-select-button]");
     const options = getSoundOptions(selector);
+
+    if (selector.dataset.soundSelectorReady) {
+      bindSoundOptionButtons(selector, options, button);
+      setSoundMode(selectedSoundMode, selector);
+      return;
+    }
 
     setSoundMode(selectedSoundMode, selector);
 
@@ -869,32 +985,7 @@ function initializeSoundSelector() {
       focusSoundOption(selector, event.key === "ArrowUp" ? -1 : 1);
     });
 
-    options?.querySelectorAll("[data-sound-option]").forEach((option) => {
-      option.addEventListener("click", () => {
-        setSoundMode(option.dataset.soundValue, selector, { stopPlayback: true });
-        closeSoundSelector(selector);
-        button?.focus();
-      });
-
-      option.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-          event.preventDefault();
-          focusSoundOption(selector, event.key === "ArrowUp" ? -1 : 1);
-          return;
-        }
-
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          option.click();
-          return;
-        }
-
-        if (event.key === "Escape") {
-          closeSoundSelector(selector);
-          button?.focus();
-        }
-      });
-    });
+    bindSoundOptionButtons(selector, options, button);
 
     selector.dataset.soundSelectorReady = "true";
   });
@@ -1198,6 +1289,156 @@ function createKeyboard(notes, preserveLabels = false, isPlaying = false, octave
   return svg;
 }
 
+function buildGuitarVoicing(notes) {
+  const normalizedNotes = notes.map(normalizeNote);
+  const activeValues = new Set(normalizedNotes.map((note) => normalizeValue(noteValues[note])));
+  const rootValue = normalizeValue(noteValues[normalizedNotes[0]] ?? 0);
+
+  return guitarStringTunings.map((string, stringIndex) => {
+    const candidates = Array.from({ length: guitarFretCount + 1 }, (_, fret) => {
+      const value = normalizeValue(string.value + fret);
+
+      if (!activeValues.has(value)) {
+        return null;
+      }
+
+      const chordIndex = normalizedNotes.findIndex((note) => normalizeValue(noteValues[note]) === value);
+      const note = sharpNames[value];
+      const octave = string.octave + Math.floor((string.value + fret) / 12);
+      const score =
+        (chordIndex < 0 ? normalizedNotes.length : chordIndex) * 0.55 +
+        fret * 0.12 +
+        (value === rootValue ? -0.32 : 0) +
+        (fret === 0 ? -0.16 : 0) +
+        stringIndex * 0.015;
+
+      return { fret, note, value, octave, score };
+    }).filter(Boolean);
+
+    if (!candidates.length) {
+      return { ...string, fret: null, note: "", value: null, octave: string.octave };
+    }
+
+    candidates.sort((a, b) => a.score - b.score);
+
+    return { ...string, ...candidates[0] };
+  });
+}
+
+function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = false, currentNotes = null) {
+  const voicing = buildGuitarVoicing(notes);
+  const currentValues = currentNotes
+    ? new Set(currentNotes.map((note) => normalizeValue(noteValues[normalizeNote(note)])))
+    : null;
+  const activeLabels = new Map(
+    preserveLabels
+      ? notes.map((note) => [normalizeValue(noteValues[note]), note])
+      : []
+  );
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const left = 64;
+  const right = 500;
+  const top = 44;
+  const stringGap = 26;
+  const fretWidth = (right - left) / guitarFretCount;
+  const bottom = top + stringGap * (guitarStringTunings.length - 1);
+
+  svg.setAttribute("class", `guitar-svg${isPlaying ? " is-playing" : ""}${currentValues ? " has-current-note" : ""}`);
+  svg.setAttribute("viewBox", "0 0 540 220");
+  svg.setAttribute("aria-hidden", "true");
+
+  Array.from({ length: guitarFretCount + 1 }).forEach((_, fret) => {
+    const x = left + fret * fretWidth;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+    line.setAttribute("class", fret === 0 ? "guitar-nut" : "guitar-fret");
+    line.setAttribute("x1", x);
+    line.setAttribute("x2", x);
+    line.setAttribute("y1", top - 10);
+    line.setAttribute("y2", bottom + 10);
+    svg.appendChild(line);
+
+    if (fret > 0) {
+      label.setAttribute("class", "guitar-fret-label");
+      label.setAttribute("x", x - fretWidth / 2);
+      label.setAttribute("y", top - 22);
+      label.textContent = String(fret);
+      svg.appendChild(label);
+    }
+  });
+
+  voicing.forEach((string, index) => {
+    const y = top + index * stringGap;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    const stringLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+    line.setAttribute("class", "guitar-string");
+    line.setAttribute("x1", left);
+    line.setAttribute("x2", right);
+    line.setAttribute("y1", y);
+    line.setAttribute("y2", y);
+    svg.appendChild(line);
+
+    stringLabel.setAttribute("class", "guitar-string-label");
+    stringLabel.setAttribute("x", left - 36);
+    stringLabel.setAttribute("y", y + 5);
+    stringLabel.textContent = string.label;
+    svg.appendChild(stringLabel);
+
+    if (string.fret === null) {
+      const muted = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+      muted.setAttribute("class", "guitar-muted");
+      muted.setAttribute("x", left - 16);
+      muted.setAttribute("y", y + 6);
+      muted.textContent = "x";
+      svg.appendChild(muted);
+      return;
+    }
+
+    const x = string.fret === 0 ? left - 16 : left + (string.fret - 0.5) * fretWidth;
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    const noteText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const isCurrentNote = currentValues?.has(string.value);
+    const markerClasses = [
+      "guitar-note",
+      string.fret === 0 ? "guitar-open-note" : "",
+      currentValues ? (isCurrentNote ? "is-current-note" : "is-held-note") : "",
+    ].filter(Boolean);
+    const labelClasses = [
+      "guitar-note-label",
+      currentValues ? (isCurrentNote ? "is-current-note-label" : "is-held-note-label") : "",
+    ].filter(Boolean);
+
+    marker.setAttribute("class", markerClasses.join(" "));
+    marker.setAttribute("cx", x);
+    marker.setAttribute("cy", y);
+    marker.setAttribute("r", string.fret === 0 ? 9 : 13);
+    svg.appendChild(marker);
+
+    noteText.setAttribute("class", labelClasses.join(" "));
+    noteText.setAttribute("x", x);
+    noteText.setAttribute("y", y + 5);
+    noteText.textContent = activeLabels.get(string.value) || noteLabelForValue(string.value);
+    svg.appendChild(noteText);
+  });
+
+  return svg;
+}
+
+function noteLabelForValue(value) {
+  return displayNoteName(sharpNames[normalizeValue(value)]);
+}
+
+function createInstrumentDiagram(notes, preserveLabels = false, isPlaying = false, octaveCount = 1, currentNotes = null) {
+  if (isGuitarMode()) {
+    return createGuitarChordDiagram(notes, preserveLabels, isPlaying, currentNotes);
+  }
+
+  return createKeyboard(notes, preserveLabels, isPlaying, octaveCount);
+}
+
 function chordCardNotes(card) {
   return card.dataset.notes.split(",");
 }
@@ -1206,14 +1447,14 @@ function chordCardOctaveCount(card) {
   return card.querySelector("[data-octave-toggle]") && card.dataset.octaves === "2" ? 2 : 1;
 }
 
-function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying = false) {
+function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying = false, currentNotes = null) {
   const keyboard = card.querySelector(".keyboard");
 
   if (!keyboard) {
     return;
   }
 
-  keyboard.replaceChildren(createKeyboard(notes, card.hasAttribute("data-preserve-spelling"), isPlaying, chordCardOctaveCount(card)));
+  keyboard.replaceChildren(createInstrumentDiagram(notes, card.hasAttribute("data-preserve-spelling"), isPlaying, chordCardOctaveCount(card), currentNotes));
 }
 
 function resetChordPlaybackKeyboards() {
@@ -1236,7 +1477,14 @@ function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true) 
 
   notes.forEach((note, index) => {
     const noteStart = startDelay + chordNoteStartOffset + index * chordNoteSpacing;
-    schedulePlayback(() => renderChordCardKeyboard(card, [note], true), noteStart);
+    schedulePlayback(() => {
+      if (isGuitarMode()) {
+        renderChordCardKeyboard(card, notes, true, [note]);
+        return;
+      }
+
+      renderChordCardKeyboard(card, [note], true);
+    }, noteStart);
   });
 
   schedulePlayback(() => renderChordCardKeyboard(card), chordPlaybackDuration(notes.length));
@@ -1405,7 +1653,126 @@ function playGrandPianoFallbackChord(frequencies, startTime, duration, destinati
   });
 }
 
+function getGuitarDriveCurve() {
+  if (guitarDriveCurve) {
+    return guitarDriveCurve;
+  }
+
+  const samples = 512;
+  guitarDriveCurve = new Float32Array(samples);
+
+  for (let index = 0; index < samples; index += 1) {
+    const x = (index * 2) / samples - 1;
+    guitarDriveCurve[index] = Math.tanh(x * 2.4);
+  }
+
+  return guitarDriveCurve;
+}
+
+function createPsycheEchoBus(destination) {
+  const input = audioContext.createGain();
+  const dry = audioContext.createGain();
+  const wet = audioContext.createGain();
+  const delay = audioContext.createDelay(0.5);
+  const feedback = audioContext.createGain();
+  const tone = audioContext.createBiquadFilter();
+
+  dry.gain.value = 0.84;
+  wet.gain.value = 0.24;
+  delay.delayTime.value = 0.18;
+  feedback.gain.value = 0.22;
+  tone.type = "lowpass";
+  tone.frequency.value = 2600;
+
+  input.connect(dry);
+  input.connect(delay);
+  delay.connect(feedback);
+  feedback.connect(delay);
+  delay.connect(tone);
+  tone.connect(wet);
+  dry.connect(destination);
+  wet.connect(destination);
+
+  return input;
+}
+
+function playGuitarPluck(frequency, startTime, duration = 1.1, destination = audioContext.destination, mode = "acoustic", velocity = 1) {
+  const filter = audioContext.createBiquadFilter();
+  const noteGain = audioContext.createGain();
+  const peak = mode === "electric" ? 0.14 * velocity : mode === "psyche" ? 0.105 * velocity : 0.13 * velocity;
+  const releaseDuration = mode === "psyche" ? Math.min(duration, 0.72) : Math.min(duration, 1.08);
+  const oscillatorConfigs = mode === "psyche"
+    ? [
+        { type: "triangle", ratio: 2, detune: -5, gain: 0.7 },
+        { type: "triangle", ratio: 2, detune: 8, gain: 0.58 },
+        { type: "sine", ratio: 4, detune: 0, gain: 0.22 },
+      ]
+    : mode === "electric"
+      ? [
+          { type: "sawtooth", ratio: 1, detune: -4, gain: 0.42 },
+          { type: "triangle", ratio: 1, detune: 5, gain: 0.74 },
+          { type: "sine", ratio: 2, detune: 0, gain: 0.24 },
+        ]
+      : [
+          { type: "triangle", ratio: 1, detune: -7, gain: 0.8 },
+          { type: "sine", ratio: 1, detune: 7, gain: 0.52 },
+          { type: "sine", ratio: 2, detune: 0, gain: 0.2 },
+        ];
+
+  filter.type = mode === "electric" ? "bandpass" : "lowpass";
+  filter.Q.setValueAtTime(mode === "electric" ? 4.2 : 1.1, startTime);
+  filter.frequency.setValueAtTime(mode === "electric" ? clampAudioValue(frequency * 5.5, 760, 4200) : 3400, startTime);
+  filter.frequency.exponentialRampToValueAtTime(mode === "electric" ? 1320 : 1450, startTime + 0.18);
+
+  noteGain.gain.setValueAtTime(0.0001, startTime);
+  noteGain.gain.exponentialRampToValueAtTime(peak, startTime + 0.012);
+  noteGain.gain.exponentialRampToValueAtTime(peak * (mode === "electric" ? 0.5 : 0.34), startTime + 0.09);
+  noteGain.gain.exponentialRampToValueAtTime(0.0001, startTime + releaseDuration);
+
+  oscillatorConfigs.forEach((config) => {
+    const oscillator = audioContext.createOscillator();
+    const oscillatorGain = audioContext.createGain();
+
+    oscillator.type = config.type;
+    oscillator.frequency.setValueAtTime(frequency * config.ratio, startTime);
+    oscillator.detune.setValueAtTime(config.detune, startTime);
+    oscillatorGain.gain.value = config.gain;
+    oscillator.connect(oscillatorGain);
+    oscillatorGain.connect(filter);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + releaseDuration + 0.08);
+  });
+
+  if (mode === "electric") {
+    const drive = audioContext.createWaveShaper();
+
+    drive.curve = getGuitarDriveCurve();
+    drive.oversample = "2x";
+    filter.connect(drive);
+    drive.connect(noteGain);
+  } else {
+    filter.connect(noteGain);
+  }
+
+  noteGain.connect(destination);
+}
+
+function playGuitarChordSound(frequencies, startTime, duration, destination, mode = "acoustic") {
+  const output = mode === "psyche" ? createPsycheEchoBus(destination) : destination;
+  const sortedFrequencies = [...frequencies].sort((a, b) => a - b);
+  const strumSpacing = mode === "electric" ? 0.012 : 0.024;
+
+  sortedFrequencies.forEach((frequency, index) => {
+    playGuitarPluck(frequency, startTime + index * strumSpacing, duration, output, mode, 0.9);
+  });
+}
+
 function playNativeChordSound(frequencies, startTime, duration, destination, mode = getSelectedSoundMode()) {
+  if (soundModePresets.guitars[mode]) {
+    playGuitarChordSound(frequencies, startTime, duration, destination, mode);
+    return;
+  }
+
   if (mode === "synth") {
     const padBus = createPadReverbBus(destination);
     frequencies.forEach((frequency) => {
@@ -1425,6 +1792,12 @@ function playNativeChordSound(frequencies, startTime, duration, destination, mod
 }
 
 function playNativeSingleNote(frequency, startTime, duration, destination, mode = getSelectedSoundMode()) {
+  if (soundModePresets.guitars[mode]) {
+    const output = mode === "psyche" ? createPsycheEchoBus(destination) : destination;
+    playGuitarPluck(frequency, startTime, duration, output, mode, 0.96);
+    return;
+  }
+
   if (mode === "synth") {
     playPadNote(frequency, startTime, duration, createPadReverbBus(destination), 0.92);
     return;
@@ -1645,12 +2018,12 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
 
   animation.dataset.activeIndex = String(index);
   label.textContent = displaySymbols[index] || displayChordSymbol(symbol);
-  animation.closest(".piano-card")?.querySelectorAll("[data-home-progression-step-label]").forEach((element) => {
+  animation.closest(".piano-card, .guitar-card")?.querySelectorAll("[data-home-progression-step-label]").forEach((element) => {
     element.textContent = label.textContent;
   });
   keyboard.className = "progression-keyboard";
   keyboard.setAttribute("aria-hidden", "true");
-  keyboard.replaceChildren(createKeyboard(activeNotes || notes, false, isPlaying, Number(animation.dataset.octaves) === 2 ? 2 : 1));
+  keyboard.replaceChildren(createInstrumentDiagram(activeNotes || notes, false, isPlaying, Number(animation.dataset.octaves) === 2 ? 2 : 1));
   animation.classList.toggle("is-active", isPlaying);
 }
 
@@ -2038,7 +2411,7 @@ function updateChordCardText(card) {
   }
 
   if (keyboard) {
-    keyboard.setAttribute("aria-label", `Piano keys for ${displayedChordName}`);
+    keyboard.setAttribute("aria-label", `${isGuitarMode() ? "Guitar chord diagram" : "Piano keys"} for ${displayedChordName}`);
     renderChordCardKeyboard(card, notes);
   }
 
@@ -2053,7 +2426,7 @@ function initializeChordCard(card) {
   const button = card.querySelector(".play-button");
 
   if (keyboard && !keyboard.firstChild) {
-    keyboard.appendChild(createKeyboard(notes));
+    keyboard.appendChild(createInstrumentDiagram(notes));
   }
 
   if (button && !chordPlayButtons.has(button)) {
@@ -2708,6 +3081,98 @@ function initializeHeaderDropdownMenus() {
   });
 }
 
+function setInstrumentCardClass(card) {
+  card.classList.toggle("piano-card", !isGuitarMode());
+  card.classList.toggle("guitar-card", isGuitarMode());
+}
+
+function syncInstrumentCardClasses() {
+  document.querySelectorAll(".piano-card, .guitar-card").forEach(setInstrumentCardClass);
+}
+
+function updateInstrumentLegendText() {
+  document.querySelectorAll(".keyboard-legend").forEach((legend) => {
+    if (legend.querySelector("[data-home-progression-step-label]")) {
+      return;
+    }
+
+    legend.textContent = isGuitarMode() ? "Guitar voicing" : "Chord notes";
+  });
+}
+
+function refreshInstrumentDiagrams() {
+  if (homeProgressionState.mode === "progressions" && document.querySelector(".is-progressions-mode")) {
+    updateProgressionAnimationLabels();
+    updateInstrumentLegendText();
+    return;
+  }
+
+  document.querySelectorAll(".card[data-notes], [data-dynamic-chord-card][data-notes], [data-major-chord-card][data-notes]").forEach((card) => {
+    const keyboard = card.querySelector(".keyboard");
+
+    if (!keyboard) {
+      return;
+    }
+
+    if (card.dataset.root && card.dataset.quality) {
+      keyboard.setAttribute("aria-label", `${isGuitarMode() ? "Guitar chord diagram" : "Piano keys"} for ${chordTitleForCard(card)}`);
+    }
+
+    renderChordCardKeyboard(card);
+  });
+  updateProgressionAnimationLabels();
+  updateInstrumentLegendText();
+}
+
+function syncInstrumentFamilyMenu(mode = getSelectedInstrumentFamily()) {
+  const menu = document.querySelector("#instrument-family-menu");
+
+  if (!menu) {
+    return;
+  }
+
+  menu.value = normalizeInstrumentFamily(mode);
+  menu.dispatchEvent(new Event("header-menu-sync"));
+}
+
+function applyInstrumentFamilyMode(family, { stopPlayback = true } = {}) {
+  const normalizedFamily = normalizeInstrumentFamily(family);
+  const familyChanged = normalizedFamily !== getSelectedInstrumentFamily();
+
+  selectedInstrumentFamily = normalizedFamily;
+  if (familyChanged) {
+    selectedSoundModesByInstrument[normalizedFamily] = getDefaultSoundMode(normalizedFamily);
+  }
+  selectedSoundMode = selectedSoundModesByInstrument[normalizedFamily] || getDefaultSoundMode(normalizedFamily);
+  document.body.classList.toggle("is-guitar-mode", normalizedFamily === "guitars");
+  document.body.dataset.instrumentFamily = normalizedFamily;
+  syncInstrumentFamilyMenu(normalizedFamily);
+  syncInstrumentCardClasses();
+  renderSoundOptions(normalizedFamily);
+  initializeSoundSelector();
+  setSoundMode(selectedSoundMode, document, { stopPlayback });
+  refreshInstrumentDiagrams();
+}
+
+function initializeInstrumentFamilyMenu() {
+  const menu = document.querySelector("#instrument-family-menu");
+
+  if (!menu) {
+    return;
+  }
+
+  menu.addEventListener("change", () => {
+    if (!instrumentFamilies.has(menu.value)) {
+      syncInstrumentFamilyMenu();
+      return;
+    }
+
+    applyInstrumentFamilyMode(menu.value);
+  });
+
+  applyInstrumentFamilyMode(menu.value || "keyboards", { stopPlayback: false });
+}
+
 function initializeInstrumentSwitchers() {
   document.querySelectorAll("[data-instrument-switcher]").forEach((switcher) => {
     const toggle = switcher.querySelector("[data-instrument-toggle]");
@@ -3024,7 +3489,7 @@ function homeProgressionElements() {
     selectorPanel: workspace?.querySelector(".selector-panel"),
     summaryCard: workspace?.querySelector(".chord-summary-card, .progression-summary-card"),
     listCard: workspace?.querySelector(".related-chords-card, .progressions-list-card, .progression-customizer"),
-    pianoCard: workspace?.querySelector(".piano-card"),
+    pianoCard: workspace?.querySelector(".piano-card, .guitar-card"),
     infoCard: workspace?.querySelector(".chord-info-card"),
     displayCard,
     areaMenu: document.querySelector("#piano-area-menu"),
@@ -3094,6 +3559,7 @@ function restoreHomeChordMode() {
   initializeChordCards();
   initializeNotationToggle();
   updateNotation();
+  applyInstrumentFamilyMode(getSelectedInstrumentFamily(), { stopPlayback: false });
 }
 
 function homeProgressionConfig() {
@@ -3730,7 +4196,7 @@ function renderHomePianoCard(progression, chords) {
       <p class="keyboard-legend">STEPS: <span data-home-progression-step-label></span></p>
       <button class="arpeggio-toggle" type="button" aria-pressed="${homeProgressionState.arpeggio ? "true" : "false"}" data-home-progression-arpeggio>${arpeggioLabel}</button>
     </div>
-    <div class="keyboard" role="img" aria-label="Piano keys for ${formula} progression"></div>
+    <div class="keyboard" role="img" aria-label="${isGuitarMode() ? "Guitar chord diagram" : "Piano keys"} for ${formula} progression"></div>
   `;
 
   pianoCard.querySelector("[data-home-progression-play]")?.addEventListener("click", playHomeSelectedProgression);
@@ -4191,6 +4657,7 @@ document.addEventListener("keydown", (event) => {
 initializePianoSampler();
 initializeHeaderMenus();
 initializeInstrumentSwitchers();
+initializeInstrumentFamilyMenu();
 initializeSoundSelector();
 initializePianoValleyTheme();
 initializeHeaderDropdownMenus();
