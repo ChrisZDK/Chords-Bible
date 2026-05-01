@@ -7505,8 +7505,12 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 0.28rem;
+  width: 100%;
+  min-width: 0;
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-button {
@@ -7527,6 +7531,7 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
   font-size: 0.62rem;
   line-height: 1;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-button strong {
@@ -7534,6 +7539,41 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
   font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
   font-size: 1.08rem;
   line-height: 1;
+  white-space: nowrap;
+}
+
+@media (min-width: 933px), (min-width: 768px) and (min-height: 431px) {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(5)) {
+    gap: 0.2rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(5)) .progression-step-button {
+    gap: 0.12rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(5)) .progression-step-button span {
+    font-size: 0.58rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(5)) .progression-step-button strong {
+    font-size: 1rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(7)) {
+    gap: 0.16rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(7)) .progression-step-button {
+    gap: 0.08rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(7)) .progression-step-button span {
+    font-size: 0.52rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid:has(.progression-step-button:nth-child(7)) .progression-step-button strong {
+    font-size: 0.92rem;
+  }
 }
 
 body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .piano-card-header {
@@ -7692,7 +7732,6 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-option-grid,
-  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-utility-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -8383,7 +8422,6 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-option-grid,
-  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-step-grid,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-degree-grid,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-utility-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
