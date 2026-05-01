@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=24" />
+  <link rel="stylesheet" href="style.css?v=25" />
   <link rel="stylesheet" href="home-cosmos.css?v=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
@@ -254,6 +254,20 @@
     </footer>
   </div>
 
+  <div class="orientation-advisory orientation-advisory--tablet" role="status" aria-live="polite">
+    <div class="orientation-advisory__panel">
+      <span class="orientation-advisory__icon" aria-hidden="true"></span>
+      <p>For best experience, rotate to landscape.</p>
+    </div>
+  </div>
+
+  <div class="orientation-advisory orientation-advisory--mobile" role="status" aria-live="polite">
+    <div class="orientation-advisory__panel">
+      <span class="orientation-advisory__icon" aria-hidden="true"></span>
+      <p>For best experience, rotate to portrait.</p>
+    </div>
+  </div>
+
   <div class="sound-options" id="sound-options" role="listbox" aria-label="Sound options" hidden data-sound-options>
     <button
       class="sound-option is-selected"
@@ -287,6 +301,6 @@
     </button>
   </div>
 
-  <script src="script.js?v=20"></script>
+  <script src="script.js?v=21"></script>
 </body>
 </html>

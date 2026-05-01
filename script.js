@@ -361,6 +361,7 @@ const chordQualityAliases = {
   ...Object.fromEntries(Object.keys(chordQualityCatalog).map((quality) => [quality.toLowerCase(), quality])),
   5: "Power",
 };
+const chordQualityOptionButtons = new WeakSet();
 const majorChordsByRoot = Object.fromEntries(
   rootSelectorNotes.map((root) => {
     const rootValue = noteValues[root];
@@ -2095,6 +2096,7 @@ function renderChordTypeOptions(page = dynamicChordPageForElement()) {
   const activeCategory = getChordPageCategory(page);
 
   if (menu.dataset.renderedChordCategory === activeCategory && menu.children.length) {
+    bindChordQualityOptionButtons(menu, page);
     return;
   }
 
@@ -2109,17 +2111,32 @@ function renderChordTypeOptions(page = dynamicChordPageForElement()) {
     button.dataset.chordQualityOption = normalizeChordQuality(quality);
     button.setAttribute("aria-pressed", "false");
     button.textContent = info.label;
-    button.addEventListener("click", () => {
-      const nextQuality = normalizeChordQuality(button.dataset.chordQualityOption);
-      const url = new URL(window.location.href);
-
-      url.searchParams.set("type", nextQuality);
-      window.history.replaceState({}, "", url);
-      setDynamicChordQuality(nextQuality, page);
-    });
+    bindChordQualityOptionButton(button, page);
 
     menu.appendChild(button);
   });
+}
+
+function bindChordQualityOptionButtons(menu, page) {
+  menu.querySelectorAll("[data-chord-quality-option]").forEach((button) => {
+    bindChordQualityOptionButton(button, page);
+  });
+}
+
+function bindChordQualityOptionButton(button, page) {
+  if (chordQualityOptionButtons.has(button)) {
+    return;
+  }
+
+  button.addEventListener("click", () => {
+    const nextQuality = normalizeChordQuality(button.dataset.chordQualityOption);
+    const url = new URL(window.location.href);
+
+    url.searchParams.set("type", nextQuality);
+    window.history.replaceState({}, "", url);
+    setDynamicChordQuality(nextQuality, page);
+  });
+  chordQualityOptionButtons.add(button);
 }
 
 function updateChordRootButtons() {
