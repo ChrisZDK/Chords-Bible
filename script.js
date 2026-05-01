@@ -3200,17 +3200,23 @@ function renderHomeKeySelector() {
   selectorPanel.innerHTML = `
     <div class="progression-builder-main">
       <section class="progression-builder-section" aria-labelledby="progression-root-title">
-        <h2 id="progression-root-title" class="selector-label">1. Choose Root Note</h2>
+        <h2 id="progression-root-title" class="selector-label">Choose Root Note</h2>
         <div class="root-menu root-menu-centered progression-root-grid" role="group" aria-label="Choose progression root note" data-home-progression-root-menu></div>
       </section>
       <section class="progression-builder-section" aria-labelledby="progression-formula-title">
-        <h2 id="progression-formula-title" class="selector-label">3. Choose Progression</h2>
+        <h2 id="progression-formula-title" class="selector-label">Choose Progression</h2>
         <div class="progression-option-grid" role="group" aria-label="Choose progression formula" data-home-progression-formula-menu></div>
       </section>
     </div>
+    <aside class="progression-info-message" aria-labelledby="progression-info-title">
+      <div class="progression-info-message-heading">
+        <h2 id="progression-info-title">Build your progression</h2>
+      </div>
+      <p>Create chord journeys. Customize progressions.</p>
+    </aside>
     <div class="progression-builder-side">
       <section class="progression-builder-section" aria-labelledby="progression-scale-title">
-        <h2 id="progression-scale-title" class="selector-label">2. Choose Scale</h2>
+        <h2 id="progression-scale-title" class="selector-label">Choose Scale</h2>
         <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
       </section>
     </div>
