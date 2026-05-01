@@ -9339,3 +9339,140 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] .progressi
     content: none;
   }
 }
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  min-height: 100dvh;
+  padding: clamp(1rem, 4vw, 2rem);
+  overflow: hidden;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(168, 70, 255, 0.2), transparent 18rem),
+    rgba(2, 2, 10, 0.82);
+  color: var(--pv-text, #f8f2ff);
+  backdrop-filter: blur(8px);
+}
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory__panel {
+  position: relative;
+  display: grid;
+  gap: 0.85rem;
+  width: min(28rem, calc(100vw - 2rem));
+  max-width: 100%;
+  padding: clamp(1.25rem, 3.4vw, 1.85rem);
+  overflow: hidden;
+  border: 1px solid var(--pv-border-bright, #a846ff);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 45%),
+    linear-gradient(135deg, rgba(19, 10, 43, 0.96), rgba(5, 7, 20, 0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 -18px 42px rgba(0, 0, 0, 0.34),
+    0 0 28px rgba(168, 70, 255, 0.48),
+    0 0 70px rgba(54, 220, 255, 0.14);
+  text-align: center;
+}
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory__panel::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(54, 220, 255, 0.22);
+  pointer-events: none;
+}
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory__panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035) 0,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px,
+    transparent 7px
+  );
+  opacity: 0.32;
+}
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory__icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto;
+  border: 1px solid rgba(54, 220, 255, 0.58);
+  border-radius: 50%;
+  background: rgba(4, 7, 18, 0.78);
+  box-shadow:
+    inset 0 0 18px rgba(54, 220, 255, 0.18),
+    0 0 22px rgba(187, 69, 255, 0.42);
+}
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory__icon::before {
+  content: "";
+  position: absolute;
+  width: 1.35rem;
+  height: 2rem;
+  border: 2px solid var(--pv-text, #f8f2ff);
+  border-radius: 0.25rem;
+  box-shadow: 0 0 12px rgba(248, 242, 255, 0.38);
+  transform: rotate(-18deg);
+}
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory__icon::after {
+  content: "";
+  position: absolute;
+  width: 2.28rem;
+  height: 2.28rem;
+  border: 2px solid transparent;
+  border-top-color: var(--pv-accent-3, #36dcff);
+  border-right-color: var(--pv-accent-3, #36dcff);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 6px rgba(54, 220, 255, 0.8));
+  transform: rotate(34deg);
+}
+
+body.piano-app-page[data-page="piano-valley"] .orientation-advisory p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--pv-text, #f8f2ff);
+  font-family: "Press Start 2P", "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-size: clamp(0.72rem, 2.2vw, 0.98rem);
+  line-height: 1.75;
+  letter-spacing: 0;
+  text-shadow:
+    0 0 10px rgba(248, 242, 255, 0.42),
+    0 0 20px rgba(187, 69, 255, 0.38);
+}
+
+@media (min-width: 768px) and (max-width: 1180px) and (orientation: portrait) {
+  body.piano-app-page[data-page="piano-valley"] .orientation-advisory--tablet {
+    display: grid;
+  }
+}
+
+@media (max-width: 767px) and (orientation: landscape),
+  (max-width: 932px) and (max-height: 430px) and (orientation: landscape) {
+  body.piano-app-page[data-page="piano-valley"] .orientation-advisory--mobile {
+    display: grid;
+  }
+
+  body.piano-app-page[data-page="piano-valley"] .orientation-advisory__panel {
+    width: min(26rem, calc(100vw - 2rem));
+    padding: clamp(1rem, 4svh, 1.35rem);
+  }
+
+  body.piano-app-page[data-page="piano-valley"] .orientation-advisory__icon {
+    width: 3rem;
+    height: 3rem;
+  }
+}
