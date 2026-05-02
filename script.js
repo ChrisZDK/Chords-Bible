@@ -4179,6 +4179,48 @@ function getChordPageCategory(page) {
   return normalizeChordCategory(page?.dataset.chordCategory || chordCategoryForQuality(getChordPageQuality(page)));
 }
 
+function isChordTypeMenuMobileViewport() {
+  return window.matchMedia(smartphoneViewportQuery).matches;
+}
+
+function syncChordTypeMenuAccessibility(page = dynamicChordPageForElement()) {
+  const menu = page?.querySelector("[data-chord-quality-menu]");
+
+  if (!menu) {
+    return;
+  }
+
+  const isExpanded = page.dataset.chordTypeMenuExpanded === "true";
+  menu.setAttribute("aria-hidden", String(isChordTypeMenuMobileViewport() && !isExpanded));
+}
+
+function setChordTypeMenuExpanded(expanded, page = dynamicChordPageForElement()) {
+  if (!page) {
+    return;
+  }
+
+  page.dataset.chordTypeMenuExpanded = expanded ? "true" : "false";
+  syncChordTypeMenuAccessibility(page);
+}
+
+function initializeChordTypeMenuViewportWatcher(page = dynamicChordPageForElement()) {
+  if (!page || page.dataset.chordTypeMenuViewportWatcher === "true") {
+    return;
+  }
+
+  const phoneQuery = window.matchMedia(smartphoneViewportQuery);
+  const handleViewportChange = () => syncChordTypeMenuAccessibility(page);
+
+  if (typeof phoneQuery.addEventListener === "function") {
+    phoneQuery.addEventListener("change", handleViewportChange);
+  } else {
+    phoneQuery.addListener(handleViewportChange);
+  }
+
+  page.dataset.chordTypeMenuViewportWatcher = "true";
+  syncChordTypeMenuAccessibility(page);
+}
+
 function updateChordCategoryButtons(page = dynamicChordPageForElement()) {
   if (!page) {
     return;
@@ -4245,6 +4287,7 @@ function bindChordQualityOptionButton(button, page) {
     url.searchParams.set("type", nextQuality);
     window.history.replaceState({}, "", url);
     setDynamicChordQuality(nextQuality, page);
+    setChordTypeMenuExpanded(false, page);
   });
   chordQualityOptionButtons.add(button);
 }
@@ -4380,12 +4423,15 @@ function initializeMajorChordPage() {
   page.querySelectorAll("[data-chord-category]").forEach((button) => {
     button.addEventListener("click", () => {
       setDynamicChordCategory(button.dataset.chordCategory, page);
+      setChordTypeMenuExpanded(true, page);
     });
   });
 
   updateChordRootButtons();
   renderChordTypeOptions(page);
   updateChordTypeButtons(page);
+  setChordTypeMenuExpanded(false, page);
+  initializeChordTypeMenuViewportWatcher(page);
   setDynamicChordRoot(initialRoot, page);
 }
 
