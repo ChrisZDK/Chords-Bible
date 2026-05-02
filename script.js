@@ -3455,6 +3455,7 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
       ? {
           symbol,
           voicingIndex: guitarVoicing ? guitarVoicing.voicingIndex : 0,
+          showFingering: true,
         }
       : {}
   ));
