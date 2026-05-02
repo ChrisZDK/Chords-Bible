@@ -6,18 +6,20 @@
   --accent: #fff;
   --highlight: #49dcfa;
   --play-highlight: #FA8045;
-  --scrollbar-thumb: #008b8b;
-  --scrollbar-thumb-hover: #00a6a6;
+  --scrollbar-track: #050111;
+  --scrollbar-thumb: #a73dff;
+  --scrollbar-thumb-hover: #c176ff;
+  --scrollbar-thumb-border: #050111;
 }
 
 * {
   box-sizing: border-box;
-  scrollbar-color: var(--scrollbar-thumb) var(--bg);
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 html {
   background: var(--bg);
-  scrollbar-color: var(--scrollbar-thumb) var(--bg);
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar {
@@ -26,11 +28,11 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  border: 2px solid var(--bg);
+  border: 2px solid var(--scrollbar-thumb-border);
   border-radius: 999px;
   background: var(--scrollbar-thumb);
 }
@@ -1270,8 +1272,10 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] {
   --accent: var(--pv-text);
   --highlight: var(--pv-accent);
   --play-highlight: var(--pv-accent-2);
-  --scrollbar-thumb: #6f29ba;
-  --scrollbar-thumb-hover: #a846ff;
+  --scrollbar-track: #050111;
+  --scrollbar-thumb: #a73dff;
+  --scrollbar-thumb-hover: #c176ff;
+  --scrollbar-thumb-border: #050111;
   position: relative;
   min-height: 100vh;
   padding: 1rem;
@@ -3165,8 +3169,10 @@ body.piano-app-page[data-page="piano-valley"][data-theme="dark"] {
   --accent: var(--pv-accent);
   --highlight: var(--pv-accent);
   --play-highlight: var(--pv-accent-2);
-  --scrollbar-thumb: #54228b;
-  --scrollbar-thumb-hover: var(--pv-border-bright);
+  --scrollbar-track: #050111;
+  --scrollbar-thumb: #a73dff;
+  --scrollbar-thumb-hover: #c176ff;
+  --scrollbar-thumb-border: #050111;
   min-height: 100vh;
   padding: 0.85rem;
   overflow-x: hidden;
@@ -9290,53 +9296,54 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-ho
     --progression-mobile-card-padding: clamp(0.22rem, 0.85svh, 0.36rem);
     --progression-mobile-button-height: clamp(1.56rem, 4.2svh, 1.9rem);
     --progression-mobile-font-size: clamp(0.62rem, 1.95vw, 0.74rem);
-    height: min(100vh, 100svh) !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
+    height: auto !important;
+    min-height: 100svh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .app-shell {
     grid-template-rows: auto minmax(0, 1fr);
     gap: var(--progression-mobile-gap);
-    height: calc(min(100vh, 100svh) - 1rem) !important;
-    min-height: 0 !important;
-    max-height: calc(min(100vh, 100svh) - 1rem) !important;
-    overflow: hidden !important;
+    height: auto !important;
+    min-height: calc(100svh - 1rem) !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode main,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-workspace,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-display,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-layout {
-    min-height: 0 !important;
-    overflow: hidden !important;
+    min-height: 0;
+    overflow: visible !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode main {
-    height: 100% !important;
-    max-height: 100% !important;
+    height: auto !important;
+    max-height: none !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-workspace {
-    grid-template-rows: auto minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
     gap: var(--progression-mobile-gap);
-    height: 100% !important;
-    max-height: 100% !important;
+    height: auto !important;
+    max-height: none !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-display,
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-layout {
-    height: 100% !important;
-    max-height: 100% !important;
+    height: auto !important;
+    max-height: none !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-display {
-    grid-template-rows: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
     gap: var(--progression-mobile-gap);
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-layout {
-    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto auto !important;
     gap: var(--progression-mobile-gap);
   }
 
@@ -9488,10 +9495,10 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-ho
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-details-layout {
     gap: var(--progression-mobile-gap);
-    height: clamp(1.9rem, 5.8svh, 2.45rem) !important;
+    height: auto !important;
     min-height: clamp(1.9rem, 5.8svh, 2.45rem) !important;
-    max-height: clamp(1.9rem, 5.8svh, 2.45rem) !important;
-    overflow: hidden !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-details-layout .sound-card {
@@ -9609,9 +9616,9 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-ho
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-details-layout {
-    height: 1.85rem !important;
+    height: auto !important;
     min-height: 1.85rem !important;
-    max-height: 1.85rem !important;
+    max-height: none !important;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .sound-card-robot {
@@ -9670,11 +9677,11 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-ho
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .chord-workspace {
-    width: calc(100% / var(--progression-landscape-scale)) !important;
-    max-width: none !important;
-    height: calc(100% / var(--progression-landscape-scale)) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
     max-height: none !important;
-    transform: scale(var(--progression-landscape-scale));
+    transform: none;
     transform-origin: top left;
   }
 }
