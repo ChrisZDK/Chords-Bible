@@ -552,7 +552,7 @@ const selectedModeStorageKey = "chordyssey:selectedMode";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
 const instrumentFamilyStorageKey = "chordyssey:instrumentFamily";
 const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
-const instrumentFamilies = new Set(["keyboards", "guitars"]);
+const instrumentFamilies = new Set(["keyboards", "guitars", "ukulele"]);
 const soundModePresets = {
   keyboards: {
     "grand-piano": "Grand Piano",
@@ -564,10 +564,15 @@ const soundModePresets = {
     electric: "Electric",
     psyche: "Psyche",
   },
+  ukulele: {
+    hawaii: "Hawaii",
+    banjo: "Banjo",
+  },
 };
 const defaultSoundModes = {
   keyboards: "grand-piano",
   guitars: "acoustic",
+  ukulele: "hawaii",
 };
 const instrumentThemeVisuals = {
   dark: {
@@ -591,6 +596,16 @@ const instrumentThemeVisuals = {
         alt: "",
       },
     },
+    ukulele: {
+      banner: {
+        src: "assets/themes/dark/theme-dark-banner-guitar.webp",
+        alt: "Pixel-art ukulele scene with floating islands, robots, and a stringed-instrument path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/dark/robot-guitar.webp",
+        alt: "",
+      },
+    },
   },
 };
 const guitarStringTunings = [
@@ -600,6 +615,12 @@ const guitarStringTunings = [
   { label: "G", value: 7, octave: 3 },
   { label: "B", value: 11, octave: 3 },
   { label: "E", value: 4, octave: 4 },
+];
+const ukuleleStringTunings = [
+  { label: "G", value: 7, octave: 4 },
+  { label: "C", value: 0, octave: 4 },
+  { label: "E", value: 4, octave: 4 },
+  { label: "A", value: 9, octave: 4 },
 ];
 const guitarFretRanges = {
   compact: 5,
@@ -648,6 +669,75 @@ const guitarVoicingCatalog = {
   ],
   "G:Minor": [
     { label: "G E-minor Barre", frets: [3, 5, 5, 3, 3, 3], fingers: [1, 3, 4, 1, 1, 1], barre: { fret: 3, strings: [0, 1, 2, 3, 4, 5] } },
+  ],
+};
+const ukuleleVoicingCatalog = {
+  "C:Major": [
+    { label: "Open C", frets: [0, 0, 0, 3], fingers: [null, null, null, 3] },
+    { label: "Compact C", frets: [5, 4, 3, 3], fingers: [4, 3, 1, 1], barre: { fret: 3, strings: [2, 3] } },
+  ],
+  "D:Major": [
+    { label: "Open D", frets: [2, 2, 2, 0], fingers: [1, 2, 3, null] },
+  ],
+  "E:Major": [
+    { label: "Compact E", frets: [4, 4, 4, 2], fingers: [2, 3, 4, 1] },
+  ],
+  "F:Major": [
+    { label: "Open F", frets: [2, 0, 1, 0], fingers: [2, null, 1, null] },
+  ],
+  "G:Major": [
+    { label: "Open G", frets: [0, 2, 3, 2], fingers: [null, 1, 3, 2] },
+    { label: "Compact G", frets: [4, 2, 3, 2], fingers: [3, 1, 2, 1], barre: { fret: 2, strings: [1, 2, 3] } },
+  ],
+  "A:Major": [
+    { label: "Open A", frets: [2, 1, 0, 0], fingers: [2, 1, null, null] },
+  ],
+  "B:Major": [
+    { label: "Compact B", frets: [4, 3, 2, 2], fingers: [3, 2, 1, 1], barre: { fret: 2, strings: [2, 3] } },
+  ],
+  "C:Minor": [
+    { label: "Open Cm", frets: [0, 3, 3, 3], fingers: [null, 1, 2, 3] },
+  ],
+  "D:Minor": [
+    { label: "Open Dm", frets: [2, 2, 1, 0], fingers: [2, 3, 1, null] },
+  ],
+  "E:Minor": [
+    { label: "Open Em", frets: [0, 4, 3, 2], fingers: [null, 3, 2, 1] },
+  ],
+  "F:Minor": [
+    { label: "Compact Fm", frets: [1, 0, 1, 3], fingers: [1, null, 2, 4] },
+  ],
+  "G:Minor": [
+    { label: "Open Gm", frets: [0, 2, 3, 1], fingers: [null, 2, 3, 1] },
+  ],
+  "A:Minor": [
+    { label: "Open Am", frets: [2, 0, 0, 0], fingers: [2, null, null, null] },
+    { label: "Compact Am", frets: [2, 4, 5, 3], fingers: [1, 3, 4, 2] },
+  ],
+  "B:Minor": [
+    { label: "Compact Bm", frets: [4, 2, 2, 2], fingers: [3, 1, 1, 1], barre: { fret: 2, strings: [1, 2, 3] } },
+  ],
+  "C:7": [
+    { label: "Open C7", frets: [0, 0, 0, 1], fingers: [null, null, null, 1] },
+  ],
+  "D:7": [
+    { label: "Beginner D7", frets: [2, 2, 2, 3], fingers: [1, 1, 1, 2], barre: { fret: 2, strings: [0, 1, 2] } },
+    { label: "Compact D7", frets: [5, 6, 5, 5], fingers: [1, 2, 1, 1], barre: { fret: 5, strings: [0, 2, 3] } },
+  ],
+  "E:7": [
+    { label: "Open E7", frets: [1, 2, 0, 2], fingers: [1, 2, null, 3] },
+  ],
+  "F:7": [
+    { label: "Compact F7", frets: [2, 3, 1, 3], fingers: [2, 3, 1, 4] },
+  ],
+  "G:7": [
+    { label: "Beginner G7", frets: [0, 2, 1, 2], fingers: [null, 2, 1, 3] },
+  ],
+  "A:7": [
+    { label: "Open A7", frets: [0, 1, 0, 0], fingers: [null, 1, null, null] },
+  ],
+  "B:7": [
+    { label: "Compact B7", frets: [4, 3, 2, 0], fingers: [3, 2, 1, null] },
   ],
 };
 const guitarMovableVoicingTemplates = [
@@ -706,6 +796,28 @@ const guitarEssentialIntervalsByQuality = {
   sus4add9: [0, 5, 7, 14],
 };
 const guitarGeneratedVoicingLimit = 5;
+const stringedInstrumentConfigs = {
+  guitars: {
+    name: "Guitar",
+    article: "guitar",
+    strings: guitarStringTunings,
+    fretRanges: guitarFretRanges,
+    voicingCatalog: guitarVoicingCatalog,
+    movableVoicingTemplates: guitarMovableVoicingTemplates,
+    generatedVoicingLimit: guitarGeneratedVoicingLimit,
+    generatedSearchMaxPosition: 8,
+  },
+  ukulele: {
+    name: "Ukulele",
+    article: "ukulele",
+    strings: ukuleleStringTunings,
+    fretRanges: guitarFretRanges,
+    voicingCatalog: ukuleleVoicingCatalog,
+    movableVoicingTemplates: [],
+    generatedVoicingLimit: guitarGeneratedVoicingLimit,
+    generatedSearchMaxPosition: 8,
+  },
+};
 
 let audioContext;
 let activePlaybackOutput;
@@ -722,6 +834,7 @@ const guitarVoicingCache = new Map();
 const selectedSoundModesByInstrument = {
   keyboards: "grand-piano",
   guitars: "acoustic",
+  ukulele: "hawaii",
 };
 let padReverbImpulse;
 let chipCurve;
@@ -1041,6 +1154,50 @@ function isGuitarMode() {
   return getSelectedInstrumentFamily() === "guitars";
 }
 
+function getStringedInstrumentConfig(family = getSelectedInstrumentFamily()) {
+  return stringedInstrumentConfigs[normalizeInstrumentFamily(family)] || null;
+}
+
+function isStringedInstrumentMode() {
+  return Boolean(getStringedInstrumentConfig());
+}
+
+function getStringedInstrumentName() {
+  return getStringedInstrumentConfig()?.name || "Guitar";
+}
+
+function getStringedInstrumentArticle() {
+  return getStringedInstrumentConfig()?.article || "guitar";
+}
+
+function getStringedInstrumentTunings() {
+  return getStringedInstrumentConfig()?.strings || guitarStringTunings;
+}
+
+function getStringedInstrumentVoicingCatalog() {
+  return getStringedInstrumentConfig()?.voicingCatalog || guitarVoicingCatalog;
+}
+
+function getStringedInstrumentMovableTemplates() {
+  return getStringedInstrumentConfig()?.movableVoicingTemplates || guitarMovableVoicingTemplates;
+}
+
+function getStringedInstrumentFretRanges() {
+  return getStringedInstrumentConfig()?.fretRanges || guitarFretRanges;
+}
+
+function getStringedGeneratedVoicingLimit() {
+  return getStringedInstrumentConfig()?.generatedVoicingLimit || guitarGeneratedVoicingLimit;
+}
+
+function getStringedGeneratedSearchMaxPosition() {
+  return getStringedInstrumentConfig()?.generatedSearchMaxPosition || 8;
+}
+
+function isStringedSoundMode(mode) {
+  return Boolean(soundModePresets.guitars[mode] || soundModePresets.ukulele[mode]);
+}
+
 function getStoredInstrumentFamily() {
   try {
     const storedFamily = window.localStorage?.getItem(instrumentFamilyStorageKey);
@@ -1145,7 +1302,7 @@ function renderSoundOptions(family = getSelectedInstrumentFamily()) {
   });
 
   options.replaceChildren(...buttons);
-  options.setAttribute("aria-label", isGuitarMode() ? "Guitar sound options" : "Sound options");
+  options.setAttribute("aria-label", getStringedInstrumentConfig(family) ? `${getStringedInstrumentConfig(family).name} sound options` : "Sound options");
 }
 
 function setSoundMode(mode, selector = document, { stopPlayback = false } = {}) {
@@ -1665,13 +1822,14 @@ function normalizeGuitarBarre(barre, frets) {
     return null;
   }
 
+  const stringsConfig = getStringedInstrumentTunings();
   const fret = Number.parseInt(barre.fret, 10);
   const strings = Array.isArray(barre.strings)
     ? barre.strings
         .map((stringIndex) => Number.parseInt(stringIndex, 10))
         .filter((stringIndex, index, all) => {
           return stringIndex >= 0
-            && stringIndex < guitarStringTunings.length
+            && stringIndex < stringsConfig.length
             && all.indexOf(stringIndex) === index;
         })
     : [];
@@ -1715,7 +1873,7 @@ function inferGuitarFingers(frets, barre = null) {
 }
 
 function normalizeGuitarFingers(fingers, frets, barre = null) {
-  if (!Array.isArray(fingers) || fingers.length !== guitarStringTunings.length) {
+  if (!Array.isArray(fingers) || fingers.length !== getStringedInstrumentTunings().length) {
     return inferGuitarFingers(frets, barre);
   }
 
@@ -1754,13 +1912,15 @@ function guitarStringNote(string, fret) {
 }
 
 function guitarVoicingValues(frets) {
+  const stringsConfig = getStringedInstrumentTunings();
+
   return frets
     .map((fret, index) => {
       if (fret === null || !Number.isFinite(fret)) {
         return null;
       }
 
-      return normalizeValue(guitarStringTunings[index].value + fret);
+      return normalizeValue(stringsConfig[index].value + fret);
     })
     .filter((value) => value !== null);
 }
@@ -1782,6 +1942,8 @@ function guitarPlayedStringIndexes(frets) {
 }
 
 function guitarFrettedNotes(frets) {
+  const stringsConfig = getStringedInstrumentTunings();
+
   return frets
     .map((fret, stringIndex) => {
       if (!Number.isFinite(fret) || fret <= 0) {
@@ -1791,7 +1953,7 @@ function guitarFrettedNotes(frets) {
       return {
         stringIndex,
         fret,
-        value: normalizeValue(guitarStringTunings[stringIndex].value + fret),
+        value: normalizeValue(stringsConfig[stringIndex].value + fret),
       };
     })
     .filter(Boolean);
@@ -1939,6 +2101,7 @@ function guitarOpenHighPositionConflict(frets) {
 }
 
 function guitarBassInterval(frets, root) {
+  const stringsConfig = getStringedInstrumentTunings();
   const rootValue = normalizeValue(noteValues[normalizeNote(root)]);
   const firstPlayedIndex = guitarPlayedStringIndexes(frets)[0];
 
@@ -1946,7 +2109,7 @@ function guitarBassInterval(frets, root) {
     return 0;
   }
 
-  return normalizeValue(guitarStringTunings[firstPlayedIndex].value + frets[firstPlayedIndex] - rootValue);
+  return normalizeValue(stringsConfig[firstPlayedIndex].value + frets[firstPlayedIndex] - rootValue);
 }
 
 function guitarStringSkipPenalty(frets) {
@@ -2034,7 +2197,10 @@ function isPlayableGeneratedGuitarVoicing(frets, root, quality) {
 }
 
 function isValidGuitarVoicing(frets, root, quality) {
-  if (!Array.isArray(frets) || frets.length !== guitarStringTunings.length) {
+  const stringsConfig = getStringedInstrumentTunings();
+  const fretRanges = getStringedInstrumentFretRanges();
+
+  if (!Array.isArray(frets) || frets.length !== stringsConfig.length) {
     return false;
   }
 
@@ -2051,7 +2217,7 @@ function isValidGuitarVoicing(frets, root, quality) {
     return false;
   }
 
-  if (Math.max(...fretted, 0) > guitarFretRanges.extended) {
+  if (Math.max(...fretted, 0) > fretRanges.extended) {
     return false;
   }
 
@@ -2067,7 +2233,7 @@ function isValidGuitarVoicing(frets, root, quality) {
     return false;
   }
 
-  return playedCount >= Math.min(essentialValues.size, guitarStringTunings.length);
+  return playedCount >= Math.min(essentialValues.size, stringsConfig.length);
 }
 
 function guitarVoicingLabel(root, quality, sourceLabel, index = 0) {
@@ -2105,16 +2271,19 @@ function normalizeGuitarVoicing(root, quality, voicing, index = 0) {
 }
 
 function guitarRootFretCandidates(root, stringIndex) {
+  const stringsConfig = getStringedInstrumentTunings();
+  const fretRanges = getStringedInstrumentFretRanges();
   const rootValue = normalizeValue(noteValues[normalizeNote(root)]);
-  const stringValue = guitarStringTunings[stringIndex]?.value ?? guitarStringTunings[0].value;
+  const stringValue = stringsConfig[stringIndex]?.value ?? stringsConfig[0].value;
 
-  return Array.from({ length: guitarFretRanges.extended + 1 }, (_, fret) => fret)
+  return Array.from({ length: fretRanges.extended + 1 }, (_, fret) => fret)
     .filter((fret) => normalizeValue(stringValue + fret) === rootValue);
 }
 
 function buildMovableGuitarVoicings(root, quality) {
   const normalizedQuality = normalizeChordQuality(quality);
-  const templates = guitarMovableVoicingTemplates.filter((template) => template.qualities.includes(normalizedQuality));
+  const fretRanges = getStringedInstrumentFretRanges();
+  const templates = getStringedInstrumentMovableTemplates().filter((template) => template.qualities.includes(normalizedQuality));
 
   return templates.flatMap((template) => {
     return guitarRootFretCandidates(root, template.rootString)
@@ -2126,7 +2295,7 @@ function buildMovableGuitarVoicings(root, quality) {
 
           const fret = rootFret + offset;
 
-          return fret >= 0 && fret <= guitarFretRanges.extended ? fret : Number.NaN;
+          return fret >= 0 && fret <= fretRanges.extended ? fret : Number.NaN;
         });
 
         if (frets.some((fret) => Number.isNaN(fret))) {
@@ -2154,11 +2323,13 @@ function buildMovableGuitarVoicings(root, quality) {
 
 function guitarCandidateFretsForString(stringIndex, chordValues, position) {
   const frets = [];
+  const stringsConfig = getStringedInstrumentTunings();
+  const fretRanges = getStringedInstrumentFretRanges();
 
-  for (let fret = 0; fret <= guitarFretRanges.extended; fret += 1) {
+  for (let fret = 0; fret <= fretRanges.extended; fret += 1) {
     const inPosition = fret === 0 || (fret >= position && fret <= position + 4);
 
-    if (inPosition && chordValues.has(normalizeValue(guitarStringTunings[stringIndex].value + fret))) {
+    if (inPosition && chordValues.has(normalizeValue(stringsConfig[stringIndex].value + fret))) {
       frets.push(fret);
     }
   }
@@ -2167,6 +2338,7 @@ function guitarCandidateFretsForString(stringIndex, chordValues, position) {
 }
 
 function scoreGuitarVoicing(frets, root, quality = "Major") {
+  const stringsConfig = getStringedInstrumentTunings();
   const rootValue = normalizeValue(noteValues[normalizeNote(root)]);
   const playedIndexes = guitarPlayedStringIndexes(frets);
   const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
@@ -2176,7 +2348,7 @@ function scoreGuitarVoicing(frets, root, quality = "Major") {
   const firstPlayedIndex = playedIndexes[0] ?? 0;
   const bassValue = frets[firstPlayedIndex] === null
     ? rootValue
-    : normalizeValue(guitarStringTunings[firstPlayedIndex].value + frets[firstPlayedIndex]);
+    : normalizeValue(stringsConfig[firstPlayedIndex].value + frets[firstPlayedIndex]);
   const bassRootPenalty = bassValue === rootValue ? 0 : 2.6;
   const maxFret = Math.max(...fretted, 0);
   const span = guitarVoicingFrettedSpan(frets);
@@ -2196,11 +2368,12 @@ function scoreGuitarVoicing(frets, root, quality = "Major") {
 function findGeneratedGuitarVoicings(root, quality) {
   const normalizedQuality = normalizeChordQuality(quality);
   const chordValues = guitarChordValueSet(root, normalizedQuality);
+  const stringsConfig = getStringedInstrumentTunings();
   const candidates = [];
   const seen = new Set();
 
-  for (let position = 1; position <= 8; position += 1) {
-    const stringCandidates = guitarStringTunings.map((_, index) => {
+  for (let position = 1; position <= getStringedGeneratedSearchMaxPosition(); position += 1) {
+    const stringCandidates = stringsConfig.map((_, index) => {
       return guitarCandidateFretsForString(index, chordValues, position);
     });
 
@@ -2209,7 +2382,7 @@ function findGeneratedGuitarVoicings(root, quality) {
         return;
       }
 
-      if (stringIndex >= guitarStringTunings.length) {
+      if (stringIndex >= stringsConfig.length) {
         if (!isValidGuitarVoicing(frets, root, normalizedQuality)) {
           return;
         }
@@ -2249,7 +2422,7 @@ function findGeneratedGuitarVoicings(root, quality) {
 
   return candidates
     .sort((a, b) => a.score - b.score)
-    .slice(0, guitarGeneratedVoicingLimit)
+    .slice(0, getStringedGeneratedVoicingLimit())
     .map((voicing, index) => ({
       label: guitarVoicingLabel(root, normalizedQuality, "", index),
       frets: voicing.frets,
@@ -2277,13 +2450,14 @@ function getGuitarVoicings(root, quality) {
   const key = guitarVoicingKey(root, quality);
   const normalizedRoot = key.split(":")[0] || normalizeNote(root || "C");
   const normalizedQuality = normalizeChordQuality(quality);
-  const cacheKey = `${normalizedRoot}:${normalizedQuality}:${preferredNotation}`;
+  const family = getSelectedInstrumentFamily();
+  const cacheKey = `${family}:${normalizedRoot}:${normalizedQuality}:${preferredNotation}`;
 
   if (guitarVoicingCache.has(cacheKey)) {
     return guitarVoicingCache.get(cacheKey);
   }
 
-  const curated = (guitarVoicingCatalog[key] || [])
+  const curated = (getStringedInstrumentVoicingCatalog()[key] || [])
     .map((voicing, index) => normalizeGuitarVoicing(normalizedRoot, normalizedQuality, voicing, index))
     .filter(Boolean);
   const movable = buildMovableGuitarVoicings(normalizedRoot, normalizedQuality)
@@ -2330,14 +2504,15 @@ function syncCurrentGuitarVoicing(root, quality, requestedIndex = guitarState.ch
 }
 
 function getGuitarFretRange() {
-  return guitarFretRanges.extended;
+  return getStringedInstrumentFretRanges().extended;
 }
 
 function setGuitarFretRange(range) {
-  guitarState.fretRange = guitarFretRanges.extended;
+  guitarState.fretRange = getStringedInstrumentFretRanges().extended;
 }
 
 function guitarRenderContext(notes, options = {}) {
+  const stringsConfig = getStringedInstrumentTunings();
   const parsed = options.symbol ? parseChordSymbol(options.symbol) : null;
   const root = parsed?.root || options.root || notes[0] || "C";
   const quality = parsed?.quality || options.quality || "Major";
@@ -2355,7 +2530,7 @@ function guitarRenderContext(notes, options = {}) {
       root,
       quality: normalizedQuality,
       notes: normalizedNotes,
-      strings: guitarStringTunings.map((string) => ({
+      strings: stringsConfig.map((string) => ({
         ...string,
         ...guitarStringNote(string, null),
         finger: null,
@@ -2367,7 +2542,7 @@ function guitarRenderContext(notes, options = {}) {
     };
   }
 
-  const strings = guitarStringTunings.map((string, index) => ({
+  const strings = stringsConfig.map((string, index) => ({
     ...string,
     ...guitarStringNote(string, voicing.frets[index]),
     finger: voicing.fingers?.[index] || null,
@@ -2392,15 +2567,17 @@ function guitarRenderContext(notes, options = {}) {
 }
 
 function guitarVisibleFretWindow() {
+  const fretRanges = getStringedInstrumentFretRanges();
+
   return {
     startFret: 1,
-    fretCount: guitarFretRanges.extended,
+    fretCount: fretRanges.extended,
     showNut: true,
   };
 }
 
 function shouldShowGuitarFretLabel(fret, fretCount) {
-  return fretCount <= guitarFretRanges.compact || [3, 5, 7, 9, 12].includes(fret);
+  return fretCount <= getStringedInstrumentFretRanges().compact || [3, 5, 7, 9, 12].includes(fret);
 }
 
 function guitarActiveFretRange(strings) {
@@ -2420,6 +2597,7 @@ function guitarActiveFretRange(strings) {
 
 function guitarBarreGeometry(voicing, fretWindow, left, top, stringGap, fretWidth) {
   const barre = voicing.barre;
+  const stringCount = getStringedInstrumentTunings().length;
 
   if (!barre) {
     return null;
@@ -2431,7 +2609,7 @@ function guitarBarreGeometry(voicing, fretWindow, left, top, stringGap, fretWidt
     return null;
   }
 
-  const strings = barre.strings.filter((stringIndex) => stringIndex >= 0 && stringIndex < guitarStringTunings.length);
+  const strings = barre.strings.filter((stringIndex) => stringIndex >= 0 && stringIndex < stringCount);
 
   if (strings.length < 2) {
     return null;
@@ -2458,6 +2636,8 @@ function createSvgText(className, x, y, textContent) {
 
 function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = false, currentNotes = null, options = {}) {
   const voicing = guitarRenderContext(notes, options);
+  const stringCount = getStringedInstrumentTunings().length;
+  const fretRanges = getStringedInstrumentFretRanges();
   const currentValues = currentNotes
     ? new Set(currentNotes.map((note) => normalizeValue(noteValues[normalizeNote(note)])))
     : null;
@@ -2473,12 +2653,12 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
   const top = 44;
   const stringGap = 26;
   const fretWidth = (right - left) / fretWindow.fretCount;
-  const bottom = top + stringGap * (guitarStringTunings.length - 1);
+  const bottom = top + stringGap * (stringCount - 1);
   const showFingering = Boolean(options.showFingering);
   const activeFretRange = showFingering ? guitarActiveFretRange(voicing.strings) : null;
   const noteMarkers = [];
 
-  svg.setAttribute("class", `guitar-svg${isPlaying ? " is-playing" : ""}${currentValues ? " has-current-note" : ""}${voicing.supported ? "" : " is-fallback"}${fretWindow.fretCount === guitarFretRanges.extended ? " is-extended" : ""}`);
+  svg.setAttribute("class", `guitar-svg${isPlaying ? " is-playing" : ""}${currentValues ? " has-current-note" : ""}${voicing.supported ? "" : " is-fallback"}${fretWindow.fretCount === fretRanges.extended ? " is-extended" : ""}`);
   svg.setAttribute("viewBox", "0 0 560 232");
   svg.setAttribute("aria-hidden", "true");
   svg.dataset.voicing = voicing.pattern;
@@ -2628,7 +2808,7 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
     marker.setAttribute("class", markerClasses.join(" "));
     marker.setAttribute("cx", markerData.x);
     marker.setAttribute("cy", markerData.y);
-    marker.setAttribute("r", markerData.isOpen ? 9 : fretWindow.fretCount === guitarFretRanges.extended ? 10.5 : 13);
+    marker.setAttribute("r", markerData.isOpen ? 9 : fretWindow.fretCount === fretRanges.extended ? 10.5 : 13);
     svg.appendChild(marker);
 
     svg.appendChild(createSvgText(
@@ -2640,7 +2820,7 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
   });
 
   if (!voicing.supported) {
-    svg.appendChild(createSvgText("guitar-fallback-title", (left + right) / 2, bottom + 33, "Voicing coming soon"));
+    svg.appendChild(createSvgText("guitar-fallback-title", (left + right) / 2, bottom + 33, `${getStringedInstrumentName()} voicing coming soon`));
     svg.appendChild(createSvgText("guitar-fallback-notes", (left + right) / 2, bottom + 53, displayChordNotesInline(notes, " - ")));
   }
 
@@ -2652,7 +2832,7 @@ function noteLabelForValue(value) {
 }
 
 function createInstrumentDiagram(notes, preserveLabels = false, isPlaying = false, octaveCount = 1, currentNotes = null, options = {}) {
-  if (isGuitarMode()) {
+  if (isStringedInstrumentMode()) {
     return createGuitarChordDiagram(notes, preserveLabels, isPlaying, currentNotes, options);
   }
 
@@ -2759,7 +2939,7 @@ function syncPianoPlayStyleToggle(button) {
 }
 
 function syncPianoPlayStyleToggles() {
-  if (isGuitarMode()) {
+  if (isStringedInstrumentMode()) {
     return;
   }
 
@@ -2780,7 +2960,7 @@ function guitarStrumPickingModeName() {
 }
 
 function guitarStrumPickingAriaLabel() {
-  return `Toggle guitar play mode. Current mode: ${guitarStrumPickingModeName()}`;
+  return `Toggle ${getStringedInstrumentArticle()} play mode. Current mode: ${guitarStrumPickingModeName()}`;
 }
 
 function syncGuitarStrumPickingToggle(button) {
@@ -2794,7 +2974,7 @@ function syncGuitarStrumPickingToggle(button) {
 }
 
 function syncGuitarStrumPickingToggles() {
-  if (!isGuitarMode()) {
+  if (!isStringedInstrumentMode()) {
     return;
   }
 
@@ -2812,9 +2992,10 @@ function syncGuitarFretToggleButton(card, button) {
   }
 
   const fretRange = getGuitarFretRange();
+  const fretRanges = getStringedInstrumentFretRanges();
 
   card.dataset.guitarFretRange = String(fretRange);
-  card.classList.toggle("is-twelve-frets", fretRange === guitarFretRanges.extended);
+  card.classList.toggle("is-twelve-frets", fretRange === fretRanges.extended);
   syncGuitarStrumPickingToggle(button);
 }
 
@@ -2923,7 +3104,7 @@ function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying =
     return;
   }
 
-  if (isGuitarMode()) {
+  if (isStringedInstrumentMode()) {
     syncGuitarChordControls(card);
     keyboard.replaceChildren(createInstrumentDiagram(
       notes,
@@ -2951,7 +3132,7 @@ function chordNoteSequenceStartOffset(includeNoteSequence = true) {
 }
 
 function chordStartOffset() {
-  return isGuitarMode() ? startDelay : 0;
+  return isStringedInstrumentMode() ? startDelay : 0;
 }
 
 function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true, noteSequence = notes, { playbackStartOffset = startDelay, noteSequenceStartOffset = chordNoteStartOffset } = {}) {
@@ -2965,7 +3146,7 @@ function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true, 
     return;
   }
 
-  if (isGuitarMode()) {
+  if (isStringedInstrumentMode()) {
     schedulePlayback(() => renderChordCardKeyboard(card, notes, true), playbackStartOffset);
   } else {
     schedulePlayback(() => renderChordCardKeyboard(card, [], true), playbackStartOffset);
@@ -2974,7 +3155,7 @@ function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true, 
   noteSequence.forEach((note, index) => {
     const noteStart = playbackStartOffset + noteSequenceStartOffset + index * chordNoteSpacing;
     schedulePlayback(() => {
-      if (isGuitarMode()) {
+      if (isStringedInstrumentMode()) {
         renderChordCardKeyboard(card, notes, true, [note]);
         return;
       }
@@ -3196,14 +3377,28 @@ function createPsycheEchoBus(destination) {
 }
 
 function createGuitarPlaybackOutput(destination, mode = "acoustic") {
-  return mode === "psyche" ? createPsycheEchoBus(destination) : destination;
+  return mode === "psyche" || mode === "hawaii" ? createPsycheEchoBus(destination) : destination;
 }
 
 function playGuitarPluck(frequency, startTime, duration = 1.1, destination = audioContext.destination, mode = "acoustic", velocity = 1) {
   const filter = audioContext.createBiquadFilter();
   const noteGain = audioContext.createGain();
-  const peak = mode === "electric" ? 0.14 * velocity : mode === "psyche" ? 0.105 * velocity : 0.13 * velocity;
-  const releaseDuration = mode === "psyche" ? Math.min(duration, 0.72) : Math.min(duration, 1.08);
+  const peak = mode === "electric"
+    ? 0.14 * velocity
+    : mode === "psyche"
+      ? 0.105 * velocity
+      : mode === "banjo"
+        ? 0.115 * velocity
+        : mode === "hawaii"
+          ? 0.12 * velocity
+          : 0.13 * velocity;
+  const releaseDuration = mode === "psyche"
+    ? Math.min(duration, 0.72)
+    : mode === "banjo"
+      ? Math.min(duration, 0.55)
+      : mode === "hawaii"
+        ? Math.min(duration, 0.96)
+        : Math.min(duration, 1.08);
   const oscillatorConfigs = mode === "psyche"
     ? [
         { type: "triangle", ratio: 2, detune: -5, gain: 0.7 },
@@ -3216,20 +3411,44 @@ function playGuitarPluck(frequency, startTime, duration = 1.1, destination = aud
           { type: "triangle", ratio: 1, detune: 5, gain: 0.74 },
           { type: "sine", ratio: 2, detune: 0, gain: 0.24 },
         ]
-      : [
-          { type: "triangle", ratio: 1, detune: -7, gain: 0.8 },
-          { type: "sine", ratio: 1, detune: 7, gain: 0.52 },
-          { type: "sine", ratio: 2, detune: 0, gain: 0.2 },
-        ];
+      : mode === "banjo"
+        ? [
+            { type: "square", ratio: 1, detune: -2, gain: 0.28 },
+            { type: "triangle", ratio: 2, detune: 4, gain: 0.78 },
+            { type: "sine", ratio: 3, detune: 0, gain: 0.18 },
+          ]
+        : mode === "hawaii"
+          ? [
+              { type: "triangle", ratio: 1, detune: -5, gain: 0.86 },
+              { type: "sine", ratio: 1, detune: 6, gain: 0.56 },
+              { type: "sine", ratio: 2, detune: 0, gain: 0.17 },
+            ]
+          : [
+              { type: "triangle", ratio: 1, detune: -7, gain: 0.8 },
+              { type: "sine", ratio: 1, detune: 7, gain: 0.52 },
+              { type: "sine", ratio: 2, detune: 0, gain: 0.2 },
+            ];
 
-  filter.type = mode === "electric" ? "bandpass" : "lowpass";
-  filter.Q.setValueAtTime(mode === "electric" ? 4.2 : 1.1, startTime);
-  filter.frequency.setValueAtTime(mode === "electric" ? clampAudioValue(frequency * 5.5, 760, 4200) : 3400, startTime);
-  filter.frequency.exponentialRampToValueAtTime(mode === "electric" ? 1320 : 1450, startTime + 0.18);
+  filter.type = mode === "electric" || mode === "banjo" ? "bandpass" : "lowpass";
+  filter.Q.setValueAtTime(mode === "electric" ? 4.2 : mode === "banjo" ? 5.4 : mode === "hawaii" ? 0.9 : 1.1, startTime);
+  filter.frequency.setValueAtTime(
+    mode === "electric"
+      ? clampAudioValue(frequency * 5.5, 760, 4200)
+      : mode === "banjo"
+        ? clampAudioValue(frequency * 7.5, 1100, 5600)
+        : mode === "hawaii"
+          ? 3000
+          : 3400,
+    startTime
+  );
+  filter.frequency.exponentialRampToValueAtTime(
+    mode === "electric" ? 1320 : mode === "banjo" ? 2100 : mode === "hawaii" ? 1250 : 1450,
+    startTime + (mode === "banjo" ? 0.09 : 0.18)
+  );
 
   noteGain.gain.setValueAtTime(0.0001, startTime);
   noteGain.gain.exponentialRampToValueAtTime(peak, startTime + 0.012);
-  noteGain.gain.exponentialRampToValueAtTime(peak * (mode === "electric" ? 0.5 : 0.34), startTime + 0.09);
+  noteGain.gain.exponentialRampToValueAtTime(peak * (mode === "electric" ? 0.5 : mode === "banjo" ? 0.22 : mode === "hawaii" ? 0.38 : 0.34), startTime + 0.09);
   noteGain.gain.exponentialRampToValueAtTime(0.0001, startTime + releaseDuration);
 
   oscillatorConfigs.forEach((config) => {
@@ -3263,7 +3482,7 @@ function playGuitarPluck(frequency, startTime, duration = 1.1, destination = aud
 function playGuitarChordSound(frequencies, startTime, duration, destination, mode = "acoustic", { preserveOrder = false } = {}) {
   const output = createGuitarPlaybackOutput(destination, mode);
   const playableFrequencies = preserveOrder ? [...frequencies] : [...frequencies].sort((a, b) => a - b);
-  const strumSpacing = mode === "electric" ? 0.012 : 0.024;
+  const strumSpacing = mode === "electric" || mode === "banjo" ? 0.012 : mode === "hawaii" ? 0.02 : 0.024;
 
   playableFrequencies.forEach((frequency, index) => {
     playGuitarPluck(frequency, startTime + index * strumSpacing, duration, output, mode, 0.9);
@@ -3283,7 +3502,7 @@ function playGuitarPickedNoteSequence(frequencies, startTime, spacing, duration,
 }
 
 function playNativeChordSound(frequencies, startTime, duration, destination, mode = getSelectedSoundMode(), options = {}) {
-  if (soundModePresets.guitars[mode]) {
+  if (isStringedSoundMode(mode)) {
     playGuitarChordSound(frequencies, startTime, duration, destination, mode, options);
     return;
   }
@@ -3307,7 +3526,7 @@ function playNativeChordSound(frequencies, startTime, duration, destination, mod
 }
 
 function playNativeSingleNote(frequency, startTime, duration, destination, mode = getSelectedSoundMode()) {
-  if (soundModePresets.guitars[mode]) {
+  if (isStringedSoundMode(mode)) {
     const output = createGuitarPlaybackOutput(destination, mode);
     playGuitarSingleNoteSound(frequency, startTime, duration, output, mode);
     return;
@@ -3330,12 +3549,12 @@ function playChord(notes, card, { includeNoteSequence, keepLoop = false } = {}) 
   const playbackOutput = startNewPlayback({ keepLoop });
   const noteNames = chordNoteNames(notes);
   const soundMode = getSelectedSoundMode();
-  const guitarVoicingPlayback = isGuitarMode() ? guitarVoicingPlaybackFromCard(card) : null;
+  const guitarVoicingPlayback = isStringedInstrumentMode() ? guitarVoicingPlaybackFromCard(card) : null;
   const frequencies = guitarVoicingPlayback?.frequencies || chordFrequencies(notes);
   const noteSequence = guitarVoicingPlayback?.notes || notes;
   const playNoteSequence = typeof includeNoteSequence === "boolean"
     ? includeNoteSequence
-    : isGuitarMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
+    : isStringedInstrumentMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
   const playbackStartOffset = chordStartOffset(playNoteSequence);
   const noteSequenceStartOffset = chordNoteSequenceStartOffset(playNoteSequence);
 
@@ -3364,14 +3583,14 @@ function playChord(notes, card, { includeNoteSequence, keepLoop = false } = {}) 
 
   const now = audioContext.currentTime + playbackStartOffset;
   const noteStart = audioContext.currentTime + playbackStartOffset + noteSequenceStartOffset;
-  if (playNoteSequence && !isGuitarMode()) {
+  if (playNoteSequence && !isStringedInstrumentMode()) {
     frequencies.forEach((frequency, index) => {
       playNativeSingleNote(frequency, noteStart + index * chordNoteSpacing, chordNoteDuration, playbackOutput, soundMode);
     });
     return;
   }
 
-  if (playNoteSequence && isGuitarMode()) {
+  if (playNoteSequence && isStringedInstrumentMode()) {
     playGuitarPickedNoteSequence(frequencies, noteStart, chordNoteSpacing, chordNoteDuration, playbackOutput, soundMode);
     return;
   }
@@ -3408,8 +3627,8 @@ function startChordLoop(notes, card, button) {
       return;
     }
 
-    const includeNoteSequence = isGuitarMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
-    const noteCount = isGuitarMode()
+    const includeNoteSequence = isStringedInstrumentMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
+    const noteCount = isStringedInstrumentMode()
       ? guitarVoicingPlaybackFromCard(card)?.frequencies.length || notes.length
       : notes.length;
 
@@ -3554,7 +3773,7 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
   const symbols = animation.dataset.symbols?.split(",").filter(Boolean) || [];
   const symbol = symbols[index] || symbols[0];
   const step = animation.querySelector(".progression-step");
-  const isHomeGuitarProgression = isGuitarMode() && animation.hasAttribute("data-home-progression-animation");
+  const isHomeGuitarProgression = isStringedInstrumentMode() && animation.hasAttribute("data-home-progression-animation");
 
   if (!symbol || !step) {
     return;
@@ -3579,12 +3798,12 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
   keyboard.className = "progression-keyboard";
   keyboard.setAttribute("aria-hidden", "true");
   keyboard.replaceChildren(createInstrumentDiagram(
-    isGuitarMode() ? notes : activeNotes || notes,
+    isStringedInstrumentMode() ? notes : activeNotes || notes,
     false,
     isPlaying,
     Number(animation.dataset.octaves) === 2 ? 2 : 1,
-    isGuitarMode() ? activeNotes : null,
-    isGuitarMode()
+    isStringedInstrumentMode() ? activeNotes : null,
+    isStringedInstrumentMode()
       ? {
           symbol,
           voicingIndex: guitarVoicing ? guitarVoicing.voicingIndex : 0,
@@ -3611,7 +3830,7 @@ function scheduleProgressionAnimation(item, chordSymbols, { arpeggio = false } =
     const chordStart = startDelay + index * progressionChordSpacing;
 
     if (arpeggio) {
-      const guitarVoicingPlayback = isGuitarMode() ? guitarVoicingPlaybackFromSymbol(chordSymbols[index], 0) : null;
+      const guitarVoicingPlayback = isStringedInstrumentMode() ? guitarVoicingPlaybackFromSymbol(chordSymbols[index], 0) : null;
       const sourceNotes = guitarVoicingPlayback?.notes || chordNotesFromSymbol(chordSymbols[index]);
       const notes = guitarVoicingPlayback ? sourceNotes : upDownArpeggioSequence(sourceNotes);
 
@@ -3681,7 +3900,7 @@ function playProgression(chordSymbols, item, { keepLoop = false, arpeggio = fals
 
   chordSymbols.forEach((symbol, index) => {
     const startTime = now + index * progressionChordSpacing;
-    const guitarVoicingPlayback = isGuitarMode() ? guitarVoicingPlaybackFromSymbol(symbol, 0) : null;
+    const guitarVoicingPlayback = isStringedInstrumentMode() ? guitarVoicingPlaybackFromSymbol(symbol, 0) : null;
     const chordFrequencies = guitarVoicingPlayback?.frequencies || frequenciesFromChordSymbol(symbol);
 
     if (arpeggio) {
@@ -3805,9 +4024,10 @@ function chordAboutText(chordNameText, notes, quality) {
 function guitarChordAboutText(chordNameText, notes, quality, card) {
   const voicing = card ? currentGuitarChordVoicing(card) : guitarRenderContext(notes, { quality });
   const noteList = guitarReadableNoteList(notes);
+  const instrumentArticle = getStringedInstrumentArticle();
 
   if (!voicing.supported) {
-    return `${chordNameText} uses ${noteList}. Voicing coming soon; use these notes while this shape is added.`;
+    return `${chordNameText} uses ${noteList}. ${getStringedInstrumentName()} voicing coming soon; use these notes while this shape is added.`;
   }
 
   const voicingName = guitarVoicingLabelForSentence(voicing.label);
@@ -3820,14 +4040,14 @@ function guitarChordAboutText(chordNameText, notes, quality, card) {
   const fingeringText = voicing.barre
     ? `This voicing is a ${voicingName} chord with an index barre at fret ${voicing.barre.fret}. Finger numbers show suggested fingering across the fretboard.`
     : voicing.compact
-      ? `This ${voicingName} voicing keeps the essential chord tones in a playable guitar shape. Finger numbers show suggested fingering.`
-      : `This ${voicingName} voicing shows a playable guitar shape across the fretboard. Finger numbers show suggested fingering.`;
+      ? `This ${voicingName} voicing keeps the essential chord tones in a playable ${instrumentArticle} shape. Finger numbers show suggested fingering.`
+      : `This ${voicingName} voicing shows a playable ${instrumentArticle} shape across the fretboard. Finger numbers show suggested fingering.`;
 
   return `${chordNameText} uses ${noteList}. ${fingeringText}${markerText ? ` ${markerText}` : ""}`;
 }
 
 function syncGuitarChordAboutElements(card) {
-  if (!card || !isGuitarMode()) {
+  if (!card || !isStringedInstrumentMode()) {
     return;
   }
 
@@ -4008,7 +4228,7 @@ function updateChordCardText(card) {
   });
 
   card.querySelectorAll("[data-dynamic-chord-about]").forEach((element) => {
-    element.textContent = isGuitarMode()
+    element.textContent = isStringedInstrumentMode()
       ? guitarChordAboutText(displayedChordName, notes, quality, card)
       : chordAboutText(displayedChordName, notes, quality);
   });
@@ -4030,7 +4250,7 @@ function updateChordCardText(card) {
   }
 
   if (keyboard) {
-    keyboard.setAttribute("aria-label", `${isGuitarMode() ? "Guitar chord diagram" : "Piano keys"} for ${displayedChordName}`);
+    keyboard.setAttribute("aria-label", `${isStringedInstrumentMode() ? `${getStringedInstrumentName()} chord diagram` : "Piano keys"} for ${displayedChordName}`);
     renderChordCardKeyboard(card, notes);
   }
 
@@ -4070,7 +4290,7 @@ function syncPianoOctaveToggleButton(button, octaveCount) {
     return;
   }
 
-  button.hidden = isGuitarMode();
+  button.hidden = isStringedInstrumentMode();
   button.textContent = pianoOctaveToggleLabel(octaveCount);
   button.setAttribute("aria-pressed", String(octaveCount === 2));
   button.setAttribute("aria-label", pianoOctaveToggleAriaLabel(octaveCount));
@@ -4099,7 +4319,7 @@ function initializePianoOctaveToggle() {
       return;
     }
 
-    if (isGuitarMode()) {
+    if (isStringedInstrumentMode()) {
       syncGuitarFretToggleButton(card, button);
     } else {
       syncPianoPlayStyleToggle(button);
@@ -4107,7 +4327,7 @@ function initializePianoOctaveToggle() {
 
     if (!pianoPlayStyleToggleButtons.has(button)) {
       button.addEventListener("click", () => {
-        if (isGuitarMode()) {
+        if (isStringedInstrumentMode()) {
           toggleGuitarStrumPickingMode();
           return;
         }
@@ -4129,7 +4349,7 @@ function initializePianoOctaveToggle() {
 
     if (!pianoOctaveToggleButtons.has(button)) {
       button.addEventListener("click", () => {
-        if (isGuitarMode()) {
+        if (isStringedInstrumentMode()) {
           return;
         }
 
@@ -4148,7 +4368,7 @@ function syncInstrumentRangeToggleButtons() {
       return;
     }
 
-    if (isGuitarMode()) {
+    if (isStringedInstrumentMode()) {
       syncGuitarFretToggleButton(card, button);
       return;
     }
@@ -4864,8 +5084,8 @@ function initializeHeaderDropdownMenus() {
 }
 
 function setInstrumentCardClass(card) {
-  card.classList.toggle("piano-card", !isGuitarMode());
-  card.classList.toggle("guitar-card", isGuitarMode());
+  card.classList.toggle("piano-card", !isStringedInstrumentMode());
+  card.classList.toggle("guitar-card", isStringedInstrumentMode());
 }
 
 function syncInstrumentCardClasses() {
@@ -4878,7 +5098,7 @@ function updateInstrumentLegendText() {
       return;
     }
 
-    legend.textContent = isGuitarMode() ? "Guitar voicing" : "Chord notes";
+    legend.textContent = isStringedInstrumentMode() ? `${getStringedInstrumentName()} voicing` : "Chord notes";
   });
 }
 
@@ -4890,9 +5110,13 @@ function updateInstrumentWelcomeText() {
     return;
   }
 
-  title.textContent = isGuitarMode() ? "WELCOME, GUITARIST!" : "Welcome, musician!";
-  body.textContent = isGuitarMode()
-    ? "Pick a root and chord type, then explore playable guitar voicings across the fretboard."
+  title.textContent = isStringedInstrumentMode()
+    ? isGuitarMode()
+      ? "WELCOME, GUITARIST!"
+      : `WELCOME, ${getStringedInstrumentName().toUpperCase()} PLAYER!`
+    : "Welcome, musician!";
+  body.textContent = isStringedInstrumentMode()
+    ? `Pick a root and chord type, then explore playable ${getStringedInstrumentArticle()} voicings across the fretboard.`
     : "Chord Mode lets you explore harmony fast. Pick a root note, chord type and explore related chords.";
 }
 
@@ -4932,7 +5156,7 @@ function refreshInstrumentDiagrams() {
     }
 
     if (card.dataset.root && card.dataset.quality) {
-      keyboard.setAttribute("aria-label", `${isGuitarMode() ? "Guitar chord diagram" : "Piano keys"} for ${chordTitleForCard(card)}`);
+      keyboard.setAttribute("aria-label", `${isStringedInstrumentMode() ? `${getStringedInstrumentName()} chord diagram` : "Piano keys"} for ${chordTitleForCard(card)}`);
     }
 
     renderChordCardKeyboard(card);
@@ -4965,7 +5189,7 @@ function applyInstrumentFamilyMode(family, { stopPlayback = true, persist = true
     selectedSoundModesByInstrument[normalizedFamily] = getDefaultSoundMode(normalizedFamily);
   }
   selectedSoundMode = selectedSoundModesByInstrument[normalizedFamily] || getDefaultSoundMode(normalizedFamily);
-  document.body.classList.toggle("is-guitar-mode", normalizedFamily === "guitars");
+  document.body.classList.toggle("is-guitar-mode", Boolean(getStringedInstrumentConfig(normalizedFamily)));
   document.body.dataset.instrumentFamily = normalizedFamily;
   syncInstrumentFamilyMenu(normalizedFamily);
   syncInstrumentCardClasses();
@@ -5891,9 +6115,9 @@ function renderHomeKeySelector() {
       </div>
       <aside class="progression-info-message" aria-labelledby="progression-info-title">
         <div class="progression-info-message-heading">
-          <h2 id="progression-info-title">${isGuitarMode() ? "BUILD YOUR PROGRESSION" : "Build your progression"}</h2>
+          <h2 id="progression-info-title">${isStringedInstrumentMode() ? "BUILD YOUR PROGRESSION" : "Build your progression"}</h2>
         </div>
-        <p>${isGuitarMode() ? "Create chord journeys. Practice each step." : "Create chord journeys. Practice every day."}</p>
+        <p>${isStringedInstrumentMode() ? "Create chord journeys. Practice each step." : "Create chord journeys. Practice every day."}</p>
       </aside>
       <div class="progression-builder-side">
         <section class="progression-builder-section" aria-labelledby="progression-scale-title">
@@ -6205,7 +6429,7 @@ function ensureHomeProgressionStage(chordSymbols, labels) {
   animation.dataset.symbols = chordSymbols.join(",");
   animation.dataset.displaySymbols = labels.join(",");
   animation.dataset.octaves = String(homeProgressionState.octaveCount);
-  if (isGuitarMode()) {
+  if (isStringedInstrumentMode()) {
     animation.dataset.activeIndex = String(homeProgressionState.selectedStepIndex);
   }
   keyboard.setAttribute("aria-label", `${title} ${labels.join(" - ")} progression`);
@@ -6226,7 +6450,7 @@ function renderHomePianoCard(progression, chords) {
   const labels = homeProgressionLabels(chords);
   const chordSymbols = homeProgressionSymbols(chords);
   const formula = homeProgressionFormulaLabel();
-  const guitarMode = isGuitarMode();
+  const guitarMode = isStringedInstrumentMode();
   const playStyleButtonLabel = guitarMode
     ? guitarStrumPickingLabel()
     : pianoPlayStyleLabel();
@@ -6291,13 +6515,13 @@ function renderHomePianoCard(progression, chords) {
         <button class="guitar-next-voicing" type="button" data-home-guitar-next-voicing aria-label="${guitarVoicingButtonLabel}" ${guitarVoicing.voicings.length <= 1 ? "disabled aria-disabled=\"true\"" : ""}>NEXT VOICING</button>
       </div>
     ` : ""}
-    <div class="keyboard" role="img" aria-label="${isGuitarMode() ? "Guitar chord diagram" : "Piano keys"} for ${formula} progression"></div>
+    <div class="keyboard" role="img" aria-label="${isStringedInstrumentMode() ? `${getStringedInstrumentName()} chord diagram` : "Piano keys"} for ${formula} progression"></div>
   `;
 
   pianoCard.querySelector("[data-home-progression-play]")?.addEventListener("click", playHomeSelectedProgression);
   pianoCard.querySelector("[data-home-progression-repeat]")?.addEventListener("click", startHomeProgressionLoop);
   pianoCard.querySelector("[data-home-progression-play-style-toggle]")?.addEventListener("click", () => {
-    if (isGuitarMode()) {
+    if (isStringedInstrumentMode()) {
       toggleGuitarStrumPickingMode();
       return;
     }
@@ -6306,7 +6530,7 @@ function renderHomePianoCard(progression, chords) {
     renderHomeProgressionsMode();
   });
   pianoCard.querySelector("[data-home-progression-piano-octave-toggle]")?.addEventListener("click", () => {
-    if (isGuitarMode()) {
+    if (isStringedInstrumentMode()) {
       return;
     }
 
@@ -6351,11 +6575,11 @@ function renderHomeProgressionScaleLine() {
       >
     </div>
     <div class="progression-songs-fields">
-      <p class="progression-songs-label">${isGuitarMode() ? "LEVEL:" : "SONGS:"}</p>
+      <p class="progression-songs-label">${isStringedInstrumentMode() ? "LEVEL:" : "SONGS:"}</p>
       <p class="progression-songs-list" data-home-progression-songs></p>
     </div>
   `;
-  if (isGuitarMode()) {
+  if (isStringedInstrumentMode()) {
     const difficultyLevel = getGuitarProgressionDifficulty(homeProgressionChords(), {
       formulaId: homeProgressionState.formulaId,
       formulaLabel: homeProgressionFormulaLabel(),
@@ -6366,7 +6590,7 @@ function renderHomeProgressionScaleLine() {
 
     difficultyLine.classList.add("guitar-progression-skill-level", "progression-difficulty-label");
     difficultyLine.textContent = guitarProgressionDifficultyText(difficultyLevel);
-    difficultyLine.setAttribute("aria-label", `Guitar progression skill level ${difficultyLevel}: ${getGuitarProgressionDifficultyLabel(difficultyLevel)}`);
+    difficultyLine.setAttribute("aria-label", `${getStringedInstrumentName()} progression skill level ${difficultyLevel}: ${getGuitarProgressionDifficultyLabel(difficultyLevel)}`);
     return;
   }
 
@@ -6458,7 +6682,7 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
     const chordStart = startDelay + index * progressionChordSpacing;
 
     if (arpeggio) {
-      const guitarVoicingPlayback = isGuitarMode()
+      const guitarVoicingPlayback = isStringedInstrumentMode()
         ? guitarVoicingPlaybackFromSymbol(
             chordSymbols[index],
             homeProgressionGuitarVoicingIndex(index, chordSymbols[index])
@@ -6494,7 +6718,7 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
 
   schedulePlayback(() => {
     animation.classList.remove("is-active");
-    setProgressionAnimationChord(animation, isGuitarMode() ? homeProgressionState.selectedStepIndex : 0);
+    setProgressionAnimationChord(animation, isStringedInstrumentMode() ? homeProgressionState.selectedStepIndex : 0);
   }, startDelay + chordSymbols.length * progressionChordSpacing + 0.2);
 }
 
@@ -6542,7 +6766,7 @@ function startHomeProgressionLoop(event) {
 function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
   const soundMode = getSelectedSoundMode();
-  const arpeggio = isGuitarMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
+  const arpeggio = isStringedInstrumentMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
 
   scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio });
 
@@ -6569,7 +6793,7 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
 
   chordSymbols.forEach((symbol, index) => {
     const startTime = now + index * progressionChordSpacing;
-    const guitarVoicing = isGuitarMode()
+    const guitarVoicing = isStringedInstrumentMode()
       ? homeProgressionGuitarVoicingContext(index, symbol)
       : null;
     const guitarVoicingPlayback = guitarVoicing
