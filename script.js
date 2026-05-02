@@ -1565,6 +1565,32 @@ function guitarVoicingFrettedSpan(frets) {
   return Math.max(...fretted) - Math.min(...fretted);
 }
 
+function guitarPlayedStringIndexes(frets) {
+  return frets
+    .map((fret, index) => fret === null ? null : index)
+    .filter((index) => index !== null);
+}
+
+function guitarFrettedNotes(frets) {
+  return frets
+    .map((fret, stringIndex) => {
+      if (!Number.isFinite(fret) || fret <= 0) {
+        return null;
+      }
+
+      return {
+        stringIndex,
+        fret,
+        value: normalizeValue(guitarStringTunings[stringIndex].value + fret),
+      };
+    })
+    .filter(Boolean);
+}
+
+function guitarFrettedSpan(frets) {
+  return guitarVoicingFrettedSpan(frets);
+}
+
 function guitarMutedGapCount(frets) {
   const firstPlayed = frets.findIndex((fret) => fret !== null);
   const lastPlayed = frets.length - 1 - [...frets].reverse().findIndex((fret) => fret !== null);
@@ -1574,6 +1600,227 @@ function guitarMutedGapCount(frets) {
   }
 
   return frets.slice(firstPlayed, lastPlayed + 1).filter((fret) => fret === null).length;
+}
+
+function guitarStringIndexesAreAdjacent(indexes) {
+  if (indexes.length < 2) {
+    return true;
+  }
+
+  const sorted = [...indexes].sort((a, b) => a - b);
+
+  return sorted.every((stringIndex, index) => {
+    return index === 0 || stringIndex === sorted[index - 1] + 1;
+  });
+}
+
+function guitarInferGeneratedBarre(frets) {
+  const fretted = guitarFrettedNotes(frets);
+
+  if (fretted.length < 2) {
+    return null;
+  }
+
+  const lowestFret = Math.min(...fretted.map((note) => note.fret));
+  const lowestFretStrings = fretted
+    .filter((note) => note.fret === lowestFret)
+    .map((note) => note.stringIndex)
+    .sort((a, b) => a - b);
+
+  if (lowestFretStrings.length < 2) {
+    return null;
+  }
+
+  const firstString = lowestFretStrings[0];
+  const lastString = lowestFretStrings[lowestFretStrings.length - 1];
+  const barreStrings = [];
+
+  for (let stringIndex = firstString; stringIndex <= lastString; stringIndex += 1) {
+    const fret = frets[stringIndex];
+
+    if (fret === null || !Number.isFinite(fret) || fret < lowestFret) {
+      return null;
+    }
+
+    barreStrings.push(stringIndex);
+  }
+
+  const isAdjacentPartial = guitarStringIndexesAreAdjacent(lowestFretStrings);
+  const spansContinuousShape = barreStrings.length > lowestFretStrings.length;
+
+  if (!isAdjacentPartial && !spansContinuousShape) {
+    return null;
+  }
+
+  return {
+    fret: lowestFret,
+    strings: barreStrings,
+  };
+}
+
+function guitarHasPlayableBarre(frets, barre) {
+  const normalizedBarre = normalizeGuitarBarre(barre, frets);
+
+  if (!normalizedBarre) {
+    return false;
+  }
+
+  const touchedStrings = normalizedBarre.strings.filter((stringIndex) => frets[stringIndex] === normalizedBarre.fret);
+
+  if (touchedStrings.length < 2) {
+    return false;
+  }
+
+  const isAdjacentPartial = guitarStringIndexesAreAdjacent(touchedStrings);
+  const firstString = normalizedBarre.strings[0];
+  const lastString = normalizedBarre.strings[normalizedBarre.strings.length - 1];
+  const coversPlayedGroupEdges = touchedStrings.includes(firstString) && touchedStrings.includes(lastString);
+  const coversContinuousPlayedGroup = normalizedBarre.strings.every((stringIndex) => {
+    const fret = frets[stringIndex];
+
+    return fret !== null && Number.isFinite(fret) && fret >= normalizedBarre.fret;
+  });
+
+  return coversContinuousPlayedGroup && (isAdjacentPartial || coversPlayedGroupEdges);
+}
+
+function guitarIndependentFingerCount(frets, barre = null) {
+  const hasBarre = guitarHasPlayableBarre(frets, barre);
+  const barreStringSet = hasBarre ? new Set(barre.strings) : new Set();
+  let count = hasBarre ? 1 : 0;
+
+  guitarFrettedNotes(frets).forEach((note) => {
+    if (hasBarre && note.fret === barre.fret && barreStringSet.has(note.stringIndex)) {
+      return;
+    }
+
+    count += 1;
+  });
+
+  return count;
+}
+
+function guitarHasImpossibleFingerReuse(frets, barre = null) {
+  const hasBarre = guitarHasPlayableBarre(frets, barre);
+  const barreStringSet = hasBarre ? new Set(barre.strings) : new Set();
+  const stringsByFret = new Map();
+
+  guitarFrettedNotes(frets).forEach((note) => {
+    if (hasBarre && note.fret === barre.fret && barreStringSet.has(note.stringIndex)) {
+      return;
+    }
+
+    stringsByFret.set(note.fret, [...(stringsByFret.get(note.fret) || []), note.stringIndex]);
+  });
+
+  return [...stringsByFret.values()].some((stringIndexes) => {
+    return stringIndexes.length > 1 && !guitarStringIndexesAreAdjacent(stringIndexes);
+  });
+}
+
+function guitarOpenHighPositionConflict(frets) {
+  const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+
+  if (!fretted.length || !frets.includes(0)) {
+    return false;
+  }
+
+  return Math.max(...fretted) > 5 && Math.min(...fretted) > 3;
+}
+
+function guitarBassInterval(frets, root) {
+  const rootValue = normalizeValue(noteValues[normalizeNote(root)]);
+  const firstPlayedIndex = guitarPlayedStringIndexes(frets)[0];
+
+  if (firstPlayedIndex === undefined) {
+    return 0;
+  }
+
+  return normalizeValue(guitarStringTunings[firstPlayedIndex].value + frets[firstPlayedIndex] - rootValue);
+}
+
+function guitarStringSkipPenalty(frets) {
+  const playedIndexes = guitarPlayedStringIndexes(frets);
+
+  if (playedIndexes.length < 2) {
+    return 0;
+  }
+
+  const firstPlayedIndex = playedIndexes[0];
+  const lastPlayedIndex = playedIndexes[playedIndexes.length - 1];
+  const mutedGapCount = guitarMutedGapCount(frets);
+  const outerMutedPenalty = firstPlayedIndex > 1 ? 0.8 : 0;
+
+  return mutedGapCount * 1.6 + outerMutedPenalty + Math.max(0, lastPlayedIndex - firstPlayedIndex + 1 - playedIndexes.length) * 0.45;
+}
+
+function guitarPlayabilityPenalty(frets, root, quality) {
+  const normalizedQuality = normalizeChordQuality(quality);
+  const inferredBarre = guitarInferGeneratedBarre(frets);
+  const hasBarre = guitarHasPlayableBarre(frets, inferredBarre);
+  const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+  const maxFret = Math.max(...fretted, 0);
+  const span = guitarFrettedSpan(frets);
+  const independentFingerCount = guitarIndependentFingerCount(frets, inferredBarre);
+  const openHighPenalty = guitarOpenHighPositionConflict(frets) ? 4.5 : 0;
+  const fingerPenalty = Math.max(0, independentFingerCount - 3) * 1.15 + Math.max(0, independentFingerCount - 4) * 5;
+  const bassInterval = guitarBassInterval(frets, root);
+  const simpleTriads = new Set(["Major", "Minor", "Power", "Sus2", "Sus4"]);
+  const bassPenalty = bassInterval === 0
+    ? 0
+    : simpleTriads.has(normalizedQuality)
+      ? (bassInterval === 7 ? 1.8 : 4.2)
+      : 2.4;
+  const barreCredit = hasBarre ? -1.2 : 0;
+
+  return maxFret * 0.45
+    + span * (hasBarre ? 1.05 : 1.75)
+    + guitarStringSkipPenalty(frets)
+    + bassPenalty
+    + fingerPenalty
+    + openHighPenalty
+    + barreCredit;
+}
+
+function isPlayableGeneratedGuitarVoicing(frets, root, quality) {
+  const inferredBarre = guitarInferGeneratedBarre(frets);
+  const hasBarre = guitarHasPlayableBarre(frets, inferredBarre);
+  const span = guitarFrettedSpan(frets);
+  const independentFingerCount = guitarIndependentFingerCount(frets, inferredBarre);
+  const mutedGapCount = guitarMutedGapCount(frets);
+  const playedCount = guitarPlayedStringIndexes(frets).length;
+  const bassInterval = guitarBassInterval(frets, root);
+  const simpleTriads = new Set(["Major", "Minor", "Power", "Sus2", "Sus4"]);
+
+  if (playedCount < 3) {
+    return false;
+  }
+
+  if (span > 4 && !hasBarre) {
+    return false;
+  }
+
+  if (independentFingerCount > 4) {
+    return false;
+  }
+
+  if (mutedGapCount > 1) {
+    return false;
+  }
+
+  if (guitarOpenHighPositionConflict(frets)) {
+    return false;
+  }
+
+  if (guitarHasImpossibleFingerReuse(frets, inferredBarre)) {
+    return false;
+  }
+
+  if (simpleTriads.has(normalizeChordQuality(quality)) && playedCount <= 4 && bassInterval !== 0 && bassInterval !== 7) {
+    return false;
+  }
+
+  return true;
 }
 
 function isValidGuitarVoicing(frets, root, quality) {
@@ -1709,11 +1956,9 @@ function guitarCandidateFretsForString(stringIndex, chordValues, position) {
   return [null, ...frets];
 }
 
-function scoreGuitarVoicing(frets, root) {
+function scoreGuitarVoicing(frets, root, quality = "Major") {
   const rootValue = normalizeValue(noteValues[normalizeNote(root)]);
-  const playedIndexes = frets
-    .map((fret, index) => fret === null ? null : index)
-    .filter((index) => index !== null);
+  const playedIndexes = guitarPlayedStringIndexes(frets);
   const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
   const openCount = frets.filter((fret) => fret === 0).length;
   const playedCount = playedIndexes.length;
@@ -1726,8 +1971,16 @@ function scoreGuitarVoicing(frets, root) {
   const maxFret = Math.max(...fretted, 0);
   const span = guitarVoicingFrettedSpan(frets);
   const mutedGapPenalty = guitarMutedGapCount(frets) * 1.4;
+  const playabilityPenalty = guitarPlayabilityPenalty(frets, root, quality);
 
-  return maxFret * 0.42 + span * 1.5 + distinctFrets * 0.52 + mutedGapPenalty + bassRootPenalty - openCount * 0.28 - playedCount * 0.08;
+  return maxFret * 0.34
+    + span * 1.05
+    + distinctFrets * 0.42
+    + mutedGapPenalty
+    + bassRootPenalty
+    + playabilityPenalty
+    - openCount * 0.18
+    - playedCount * 0.06;
 }
 
 function findGeneratedGuitarVoicings(root, quality) {
@@ -1751,18 +2004,25 @@ function findGeneratedGuitarVoicings(root, quality) {
           return;
         }
 
+        if (!isPlayableGeneratedGuitarVoicing(frets, root, normalizedQuality)) {
+          return;
+        }
+
         const pattern = guitarPatternForFrets(frets);
 
         if (seen.has(pattern)) {
           return;
         }
 
+        const barre = guitarInferGeneratedBarre(frets);
+
         seen.add(pattern);
         candidates.push({
           label: guitarVoicingLabel(root, normalizedQuality, "Compact Shape", candidates.length),
           frets: [...frets],
+          barre,
           source: "generated",
-          score: scoreGuitarVoicing(frets, root),
+          score: scoreGuitarVoicing(frets, root, normalizedQuality),
         });
         return;
       }
@@ -1783,6 +2043,7 @@ function findGeneratedGuitarVoicings(root, quality) {
     .map((voicing, index) => ({
       label: guitarVoicingLabel(root, normalizedQuality, "", index),
       frets: voicing.frets,
+      barre: voicing.barre,
       source: "generated",
     }));
 }
