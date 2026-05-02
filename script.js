@@ -24,14 +24,9 @@ const noteValues = {
 
 const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+const solfegeSharpNames = ["Do", "Do#", "Re", "Re#", "Mi", "Fa", "Fa#", "Sol", "Sol#", "La", "La#", "Si"];
+const solfegeFlatNames = ["Do", "Reb", "Re", "Mib", "Mi", "Fa", "Solb", "Sol", "Lab", "La", "Sib", "Si"];
 const rootSelectorNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const enharmonicRootLabels = {
-  "C#": "C#/Db",
-  "D#": "D#/Eb",
-  "F#": "F#/Gb",
-  "G#": "G#/Ab",
-  "A#": "A#/Bb",
-};
 const chordQualityCatalog = {
   Major: {
     label: "Major",
@@ -369,6 +364,8 @@ const progressionRepeatButtons = new WeakSet();
 const relatedCarouselButtons = new WeakSet();
 const pianoOctaveToggleButtons = new WeakSet();
 const pianoPlayStyleToggleButtons = new WeakSet();
+const notationToggleButtons = new WeakSet();
+const noteNameToggleButtons = new WeakSet();
 const majorChordsByRoot = Object.fromEntries(
   rootSelectorNotes.map((root) => {
     const rootValue = noteValues[root];
@@ -547,7 +544,9 @@ const keyModeConfigs = {
     progressions: minorProgressionSets,
   },
 };
-const notationStorageKey = "preferredNotation";
+const notationStorageKey = "chordysseyAccidentalMode";
+const legacyNotationStorageKey = "preferredNotation";
+const noteNameModeStorageKey = "chordysseyNoteNameMode";
 const selectedModeStorageKey = "chordyssey:selectedMode";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
 const instrumentFamilyStorageKey = "chordyssey:instrumentFamily";
@@ -729,6 +728,7 @@ let guitarDriveCurve;
 let activeTimers = [];
 let activeLoop = null;
 let preferredNotation = getStoredNotation();
+let preferredNoteNameMode = getStoredNoteNameMode();
 let homeProgressionSongFitFrame = 0;
 let homeProgressionMobileFormulaMenuOpen = false;
 const homeProgressionsPerPage = 4;
@@ -898,10 +898,23 @@ function normalizeNote(note) {
   return sharpNames[normalizeValue(noteValues[note.trim()])];
 }
 
+function normalizeAccidentalMode(mode) {
+  return mode === "flat" || mode === "flats" ? "flat" : "sharp";
+}
+
+function storedAccidentalMode(notation) {
+  return normalizeAccidentalMode(notation) === "flat" ? "flats" : "sharps";
+}
+
+function normalizeNoteNameMode(mode) {
+  return mode === "solfege" ? "solfege" : "letters";
+}
+
 function getStoredNotation() {
   try {
     const storedNotation = window.localStorage?.getItem(notationStorageKey);
-    return storedNotation === "flat" ? "flat" : "sharp";
+    const legacyNotation = window.localStorage?.getItem(legacyNotationStorageKey);
+    return normalizeAccidentalMode(storedNotation || legacyNotation);
   } catch {
     return "sharp";
   }
@@ -909,7 +922,23 @@ function getStoredNotation() {
 
 function storeNotation(notation) {
   try {
-    window.localStorage?.setItem(notationStorageKey, notation);
+    window.localStorage?.setItem(notationStorageKey, storedAccidentalMode(notation));
+  } catch {
+    // The toggle still works when storage is blocked.
+  }
+}
+
+function getStoredNoteNameMode() {
+  try {
+    return normalizeNoteNameMode(window.localStorage?.getItem(noteNameModeStorageKey));
+  } catch {
+    return "letters";
+  }
+}
+
+function storeNoteNameMode(mode) {
+  try {
+    window.localStorage?.setItem(noteNameModeStorageKey, normalizeNoteNameMode(mode));
   } catch {
     // The toggle still works when storage is blocked.
   }
@@ -1172,13 +1201,33 @@ function normalizeValue(value) {
   return ((value % 12) + 12) % 12;
 }
 
-function noteNameForValue(value, notation = preferredNotation) {
-  const names = notation === "flat" ? flatNames : sharpNames;
+function noteNamesForMode(notation = preferredNotation, noteNameMode = preferredNoteNameMode) {
+  if (normalizeNoteNameMode(noteNameMode) === "solfege") {
+    return normalizeAccidentalMode(notation) === "flat" ? solfegeFlatNames : solfegeSharpNames;
+  }
+
+  return normalizeAccidentalMode(notation) === "flat" ? flatNames : sharpNames;
+}
+
+function noteNameForValue(value, notation = preferredNotation, noteNameMode = preferredNoteNameMode) {
+  const names = noteNamesForMode(notation, noteNameMode);
   return names[normalizeValue(value)];
 }
 
+function normalizeEnharmonicNote(note) {
+  return sharpNames[normalizeValue(noteValues[String(note).trim()])];
+}
+
+function getDisplayNoteName(note, accidentalMode = preferredNotation, noteNameMode = preferredNoteNameMode) {
+  return noteNameForValue(noteValues[String(note).trim()], accidentalMode, noteNameMode);
+}
+
+function getDisplayNoteList(accidentalMode = preferredNotation, noteNameMode = preferredNoteNameMode) {
+  return rootSelectorNotes.map((note) => getDisplayNoteName(note, accidentalMode, noteNameMode));
+}
+
 function displayNoteName(note) {
-  return noteNameForValue(noteValues[note.trim()]);
+  return getDisplayNoteName(note);
 }
 
 function displayNotes(notes) {
@@ -1194,11 +1243,21 @@ function chordName(root, quality) {
 }
 
 function rootSelectorLabel(root) {
-  return enharmonicRootLabels[root] || root;
+  return displayNoteName(root);
 }
 
 function selectedChordRootName(root) {
-  return noteNameForValue(noteValues[root]);
+  return noteNameForValue(noteValues[root], preferredNotation, "letters");
+}
+
+function selectorModeRailMarkup() {
+  return `
+    <div class="selector-mode-rail notation-toggle" role="group" aria-label="Note display controls">
+      <button class="selector-rail-button" type="button" data-notation="sharp" aria-label="Use sharp note names" title="Use sharp note names" aria-pressed="${preferredNotation === "sharp" ? "true" : "false"}">&#9839;</button>
+      <button class="selector-rail-button" type="button" data-notation="flat" aria-label="Use flat note names" title="Use flat note names" aria-pressed="${preferredNotation === "flat" ? "true" : "false"}">&#9837;</button>
+      <button class="selector-rail-button selector-rail-button-wide" type="button" data-note-name-toggle aria-label="Toggle Solfège note names" title="Toggle Solfège note names" aria-pressed="${preferredNoteNameMode === "solfege" ? "true" : "false"}">${preferredNoteNameMode === "solfege" ? "♪" : "ABC"}</button>
+    </div>
+  `;
 }
 
 function normalizeChordQuality(quality) {
@@ -1231,11 +1290,10 @@ function chordIntervalsForQuality(quality) {
 function getChordForRoot(root, quality = "Major") {
   const normalizedRoot = sharpNames[normalizeValue(noteValues[root] ?? 0)];
   const rootValue = noteValues[normalizedRoot];
-  const displayRoot = selectedChordRootName(normalizedRoot);
   const normalizedQuality = normalizeChordQuality(quality);
 
   return {
-    root: displayRoot,
+    root: normalizedRoot,
     quality: normalizedQuality,
     notes: chordNotesFromRoot(rootValue, chordIntervalsForQuality(normalizedQuality)),
   };
@@ -1428,7 +1486,7 @@ function createKeyboard(notes, preserveLabels = false, isPlaying = false, octave
       label.setAttribute("class", "key-label");
       label.setAttribute("x", x + 21);
       label.setAttribute("y", 118);
-      label.textContent = activeLabels.get(noteValues[note]) || note;
+      label.textContent = activeLabels.get(noteValues[note]) || displayNoteName(note);
       svg.appendChild(label);
     });
 
@@ -4087,7 +4145,7 @@ function bindChordQualityOptionButton(button, page) {
 function updateChordRootButtons() {
   document.querySelectorAll("[data-chord-root]").forEach((button) => {
     const root = button.dataset.chordRoot;
-    const displayRoot = selectedChordRootName(root);
+    const displayRoot = displayNoteName(root);
     const label = rootSelectorLabel(root);
     const page = dynamicChordPageForElement(button);
     const quality = getChordPageQuality(page).toLowerCase();
@@ -4228,18 +4286,27 @@ function updateRootMenu() {
   document.querySelectorAll("[data-root-link]").forEach((link) => {
     const rootValue = Number(link.dataset.rootLink);
     const rootName = noteNameForValue(rootValue);
+    const rootParamName = noteNameForValue(rootValue, preferredNotation, "letters");
     const rootMenu = link.closest("[data-root-menu]");
     const page = rootMenu?.dataset.keyPage || getKeyConfig().page;
     link.textContent = rootName;
     const separator = page.includes("?") ? "&" : "?";
-    link.setAttribute("href", `${page}${separator}root=${encodeURIComponent(rootName)}`);
+    link.setAttribute("href", `${page}${separator}root=${encodeURIComponent(rootParamName)}`);
   });
 }
 
 function updateNotationButtons() {
   document.querySelectorAll("[data-notation]").forEach((button) => {
-    const isActive = button.dataset.notation === preferredNotation;
+    const isActive = normalizeAccidentalMode(button.dataset.notation) === preferredNotation;
     button.setAttribute("aria-pressed", String(isActive));
+    button.classList.toggle("is-active", isActive);
+  });
+
+  document.querySelectorAll("[data-note-name-toggle]").forEach((button) => {
+    const isSolfege = preferredNoteNameMode === "solfege";
+    button.textContent = isSolfege ? "♪" : "ABC";
+    button.setAttribute("aria-pressed", String(isSolfege));
+    button.classList.toggle("is-active", isSolfege);
   });
 }
 
@@ -4301,14 +4368,44 @@ function updateNotation() {
   updateProgressionAnimationLabels();
 }
 
+function refreshAfterNoteDisplayChange() {
+  if (homeProgressionState.mode === "progressions" && document.querySelector(".is-progressions-mode")) {
+    renderHomeProgressionsMode();
+    updateNotationButtons();
+    return;
+  }
+
+  updateNotation();
+}
+
 function initializeNotationToggle() {
   document.querySelectorAll("[data-notation]").forEach((button) => {
+    if (notationToggleButtons.has(button)) {
+      return;
+    }
+
     button.addEventListener("click", () => {
-      preferredNotation = button.dataset.notation === "flat" ? "flat" : "sharp";
+      preferredNotation = normalizeAccidentalMode(button.dataset.notation);
       storeNotation(preferredNotation);
-      updateNotation();
+      refreshAfterNoteDisplayChange();
     });
+    notationToggleButtons.add(button);
   });
+
+  document.querySelectorAll("[data-note-name-toggle]").forEach((button) => {
+    if (noteNameToggleButtons.has(button)) {
+      return;
+    }
+
+    button.addEventListener("click", () => {
+      preferredNoteNameMode = preferredNoteNameMode === "solfege" ? "letters" : "solfege";
+      storeNoteNameMode(preferredNoteNameMode);
+      refreshAfterNoteDisplayChange();
+    });
+    noteNameToggleButtons.add(button);
+  });
+
+  updateNotationButtons();
 }
 
 function initializeHeaderMenus() {
@@ -5417,36 +5514,40 @@ function renderHomeKeySelector() {
     return;
   }
 
-  selectorPanel.className = "selector-panel key-selector-panel progression-builder";
+  selectorPanel.className = "selector-panel selector-panel-with-rail key-selector-panel progression-builder";
   selectorPanel.innerHTML = `
-    <div class="progression-builder-main">
-      <section class="progression-builder-section" aria-labelledby="progression-root-title">
-        <h2 id="progression-root-title" class="selector-label">Choose Root Note</h2>
-        <div class="root-menu root-menu-centered progression-root-grid" role="group" aria-label="Choose progression root note" data-home-progression-root-menu></div>
-      </section>
-      <section class="progression-builder-section" aria-labelledby="progression-formula-title">
-        <h2 id="progression-formula-title" class="selector-label">Choose Progression</h2>
-        <div class="progression-option-grid" role="group" aria-label="Choose progression formula" data-home-progression-formula-menu></div>
-      </section>
-    </div>
-    <aside class="progression-info-message" aria-labelledby="progression-info-title">
-      <div class="progression-info-message-heading">
-        <h2 id="progression-info-title">${isGuitarMode() ? "BUILD YOUR PROGRESSION" : "Build your progression"}</h2>
+    ${selectorModeRailMarkup()}
+    <div class="selector-panel-content progression-builder-content">
+      <div class="progression-builder-main">
+        <section class="progression-builder-section" aria-labelledby="progression-root-title">
+          <h2 id="progression-root-title" class="selector-label">Choose Root Note</h2>
+          <div class="root-menu root-menu-centered progression-root-grid" role="group" aria-label="Choose progression root note" data-home-progression-root-menu></div>
+        </section>
+        <section class="progression-builder-section" aria-labelledby="progression-formula-title">
+          <h2 id="progression-formula-title" class="selector-label">Choose Progression</h2>
+          <div class="progression-option-grid" role="group" aria-label="Choose progression formula" data-home-progression-formula-menu></div>
+        </section>
       </div>
-      <p>${isGuitarMode() ? "Create chord journeys.  Practice each steps." : "Create chord journeys.  Practice every day."}</p>
-    </aside>
-    <div class="progression-builder-side">
-      <section class="progression-builder-section" aria-labelledby="progression-scale-title">
-        <h2 id="progression-scale-title" class="selector-label">Choose Scale</h2>
-        <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
+      <aside class="progression-info-message" aria-labelledby="progression-info-title">
+        <div class="progression-info-message-heading">
+          <h2 id="progression-info-title">${isGuitarMode() ? "BUILD YOUR PROGRESSION" : "Build your progression"}</h2>
+        </div>
+        <p>${isGuitarMode() ? "Create chord journeys. Practice each step." : "Create chord journeys. Practice every day."}</p>
+      </aside>
+      <div class="progression-builder-side">
+        <section class="progression-builder-section" aria-labelledby="progression-scale-title">
+          <h2 id="progression-scale-title" class="selector-label">Choose Scale</h2>
+          <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
+        </section>
+      </div>
+      <section class="progression-builder-section progression-mobile-formula-select${homeProgressionMobileFormulaMenuOpen ? " is-open" : ""}" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula>
+        <h2 id="progression-mobile-formula-title" class="selector-label">Choose Progression</h2>
+        <button class="progression-mobile-formula-button" type="button" aria-expanded="${homeProgressionMobileFormulaMenuOpen ? "true" : "false"}" aria-controls="progression-mobile-formula-list" data-home-progression-mobile-formula-toggle></button>
+        <div id="progression-mobile-formula-list" class="progression-mobile-formula-list" role="listbox" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula-list${homeProgressionMobileFormulaMenuOpen ? "" : " hidden"}></div>
       </section>
     </div>
-    <section class="progression-builder-section progression-mobile-formula-select${homeProgressionMobileFormulaMenuOpen ? " is-open" : ""}" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula>
-      <h2 id="progression-mobile-formula-title" class="selector-label">Choose Progression</h2>
-      <button class="progression-mobile-formula-button" type="button" aria-expanded="${homeProgressionMobileFormulaMenuOpen ? "true" : "false"}" aria-controls="progression-mobile-formula-list" data-home-progression-mobile-formula-toggle></button>
-      <div id="progression-mobile-formula-list" class="progression-mobile-formula-list" role="listbox" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula-list${homeProgressionMobileFormulaMenuOpen ? "" : " hidden"}></div>
-    </section>
   `;
+  initializeNotationToggle();
 
   const rootMenu = selectorPanel.querySelector("[data-home-progression-root-menu]");
   rootSelectorNotes.forEach((root) => {
@@ -5455,7 +5556,7 @@ function renderHomeKeySelector() {
 
     button.type = "button";
     button.dataset.homeProgressionRoot = root;
-    button.textContent = rootSelectorLabel(root).replace("/", " / ");
+    button.textContent = rootSelectorLabel(root);
     button.setAttribute("aria-label", `Choose ${displayNoteName(root)} progression root`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
@@ -5576,23 +5677,11 @@ function renderHomeProgressionSummary(progression, chords) {
     <div class="chord-heading-row">
       <h2 data-home-progression-title>${title}</h2>
       <p class="scale-line" data-home-progression-scale>${displayNotes(scale)}</p>
-      <div class="notation-toggle" role="group" aria-label="Choose note naming">
-        <button type="button" data-home-progression-notation="sharp" data-notation="sharp" aria-label="Use sharp note names" aria-pressed="${preferredNotation === "sharp" ? "true" : "false"}">&#9839;</button>
-        <button type="button" data-home-progression-notation="flat" data-notation="flat" aria-label="Use flat note names" aria-pressed="${preferredNotation === "flat" ? "true" : "false"}">&#9837;</button>
-      </div>
     </div>
   `;
   summaryCard.setAttribute("aria-label", `${title} ${formulaLabel} progression`);
   summaryCard.dataset.progression = homeProgressionSymbols(chords).join(",");
   summaryCard.dataset.displayProgression = labels.join(",");
-
-  summaryCard.querySelectorAll("[data-home-progression-notation]").forEach((button) => {
-    button.addEventListener("click", () => {
-      preferredNotation = button.dataset.homeProgressionNotation === "flat" ? "flat" : "sharp";
-      storeNotation(preferredNotation);
-      renderHomeProgressionsMode();
-    });
-  });
 }
 
 function renderHomeProgressionList() {

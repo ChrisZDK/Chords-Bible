@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anaheim&family=Handjet:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=30" />
+  <link rel="stylesheet" href="style.css?v=32" />
   <link rel="stylesheet" href="home-cosmos.css?v=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
@@ -86,43 +86,50 @@
       </section>
 
       <section id="major-chords" class="chord-workspace" aria-label="Chord builder" data-major-chord-page data-chord-quality="Major" data-fallback-root="C">
-        <div class="selector-panel">
-          <div class="selector-group root-selector">
-            <p class="selector-label">Root note</p>
-            <div class="root-menu root-menu-centered" role="group" aria-label="Choose chord root note" data-chord-root-menu>
-              <button class="is-active" type="button" data-chord-root="C" aria-pressed="true">C</button>
-              <button type="button" data-chord-root="C#" aria-pressed="false">C#/Db</button>
-              <button type="button" data-chord-root="D" aria-pressed="false">D</button>
-              <button type="button" data-chord-root="D#" aria-pressed="false">D#/Eb</button>
-              <button type="button" data-chord-root="E" aria-pressed="false">E</button>
-              <button type="button" data-chord-root="F" aria-pressed="false">F</button>
-              <button type="button" data-chord-root="F#" aria-pressed="false">F#/Gb</button>
-              <button type="button" data-chord-root="G" aria-pressed="false">G</button>
-              <button type="button" data-chord-root="G#" aria-pressed="false">G#/Ab</button>
-              <button type="button" data-chord-root="A" aria-pressed="false">A</button>
-              <button type="button" data-chord-root="A#" aria-pressed="false">A#/Bb</button>
-              <button type="button" data-chord-root="B" aria-pressed="false">B</button>
-            </div>
+        <div class="selector-panel selector-panel-with-rail">
+          <div class="selector-mode-rail notation-toggle" role="group" aria-label="Note display controls">
+            <button class="selector-rail-button" type="button" data-notation="sharp" aria-label="Use sharp note names" title="Use sharp note names" aria-pressed="true">&#9839;</button>
+            <button class="selector-rail-button" type="button" data-notation="flat" aria-label="Use flat note names" title="Use flat note names" aria-pressed="false">&#9837;</button>
+            <button class="selector-rail-button selector-rail-button-wide" type="button" data-note-name-toggle aria-label="Toggle Solfège note names" title="Toggle Solfège note names" aria-pressed="false">ABC</button>
           </div>
-
-          <div class="selector-group chord-type-selector">
-            <p class="selector-label">Chord type</p>
-            <nav class="category-tabs" aria-label="Chord type categories">
-              <button class="is-active" type="button" data-chord-category="basics" aria-pressed="true">Basics</button>
-              <button type="button" data-chord-category="seventh" aria-pressed="false">7th</button>
-              <button type="button" data-chord-category="extensions" aria-pressed="false">Extensions</button>
-              <button type="button" data-chord-category="altered" aria-pressed="false">Altered</button>
-              <button type="button" data-chord-category="other" aria-pressed="false">Other</button>
-            </nav>
-            <div class="type-menu" role="group" aria-label="Choose chord type" data-chord-quality-menu></div>
-          </div>
-
-          <aside class="selector-welcome" aria-labelledby="selector-welcome-title">
-            <div class="selector-welcome-heading">
-              <h2 id="selector-welcome-title">Welcome, musician!</h2>
+          <div class="selector-panel-content">
+            <div class="selector-group root-selector">
+              <p class="selector-label">Root note</p>
+              <div class="root-menu root-menu-centered" role="group" aria-label="Choose chord root note" data-chord-root-menu>
+                <button class="is-active" type="button" data-chord-root="C" aria-pressed="true">C</button>
+                <button type="button" data-chord-root="C#" aria-pressed="false">C#</button>
+                <button type="button" data-chord-root="D" aria-pressed="false">D</button>
+                <button type="button" data-chord-root="D#" aria-pressed="false">D#</button>
+                <button type="button" data-chord-root="E" aria-pressed="false">E</button>
+                <button type="button" data-chord-root="F" aria-pressed="false">F</button>
+                <button type="button" data-chord-root="F#" aria-pressed="false">F#</button>
+                <button type="button" data-chord-root="G" aria-pressed="false">G</button>
+                <button type="button" data-chord-root="G#" aria-pressed="false">G#</button>
+                <button type="button" data-chord-root="A" aria-pressed="false">A</button>
+                <button type="button" data-chord-root="A#" aria-pressed="false">A#</button>
+                <button type="button" data-chord-root="B" aria-pressed="false">B</button>
+              </div>
             </div>
-            <p>Chord Mode lets you explore harmony fast. Pick a root note, chord type and explore related chords.</p>
-          </aside>
+
+            <div class="selector-group chord-type-selector">
+              <p class="selector-label">Chord type</p>
+              <nav class="category-tabs" aria-label="Chord type categories">
+                <button class="is-active" type="button" data-chord-category="basics" aria-pressed="true">Basics</button>
+                <button type="button" data-chord-category="seventh" aria-pressed="false">7th</button>
+                <button type="button" data-chord-category="extensions" aria-pressed="false">Extensions</button>
+                <button type="button" data-chord-category="altered" aria-pressed="false">Altered</button>
+                <button type="button" data-chord-category="other" aria-pressed="false">Other</button>
+              </nav>
+              <div class="type-menu" role="group" aria-label="Choose chord type" data-chord-quality-menu></div>
+            </div>
+
+            <aside class="selector-welcome" aria-labelledby="selector-welcome-title">
+              <div class="selector-welcome-heading">
+                <h2 id="selector-welcome-title">Welcome, musician!</h2>
+              </div>
+              <p>Chord Mode lets you explore harmony fast. Pick a root note, chord type and explore related chords.</p>
+            </aside>
+          </div>
 
         </div>
 
@@ -135,10 +142,6 @@
                 </span>
                 <div class="chord-heading-row">
                   <h2 data-dynamic-chord-title>C Major</h2>
-                  <div class="notation-toggle" role="group" aria-label="Choose note naming">
-                    <button type="button" data-notation="sharp" aria-label="Use sharp note names" aria-pressed="true">&#9839;</button>
-                    <button type="button" data-notation="flat" aria-label="Use flat note names" aria-pressed="false">&#9837;</button>
-                  </div>
                 </div>
               </article>
 
@@ -324,6 +327,6 @@
     </button>
   </div>
 
-  <script src="script.js?v=26"></script>
+  <script src="script.js?v=29"></script>
 </body>
 </html>
