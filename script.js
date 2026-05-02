@@ -1234,6 +1234,28 @@ function displayNotes(notes) {
   return notes.map(displayNoteName).join(" - ");
 }
 
+function displayAccidentalSymbols(label) {
+  return String(label).replaceAll("#", "♯").replaceAll("b", "♭");
+}
+
+function displaySelectorNoteName(note) {
+  return displayAccidentalSymbols(displayNoteName(note));
+}
+
+function selectorNoteAccessibleName(note) {
+  return displaySelectorNoteName(note).replaceAll("♯", " sharp").replaceAll("♭", " flat");
+}
+
+function displaySelectorChordSymbol(symbol) {
+  const parsed = parseChordSymbol(symbol);
+
+  if (!parsed) {
+    return displayAccidentalSymbols(symbol);
+  }
+
+  return `${displaySelectorNoteName(parsed.root)}${qualitySuffix(parsed.quality)}`;
+}
+
 function getRootValue(root) {
   return noteValues[root?.trim()];
 }
@@ -1243,7 +1265,7 @@ function chordName(root, quality) {
 }
 
 function rootSelectorLabel(root) {
-  return displayNoteName(root);
+  return displaySelectorNoteName(root);
 }
 
 function selectedChordRootName(root) {
@@ -4146,13 +4168,13 @@ function bindChordQualityOptionButton(button, page) {
 function updateChordRootButtons() {
   document.querySelectorAll("[data-chord-root]").forEach((button) => {
     const root = button.dataset.chordRoot;
-    const displayRoot = displayNoteName(root);
     const label = rootSelectorLabel(root);
+    const accessibleRoot = selectorNoteAccessibleName(root);
     const page = dynamicChordPageForElement(button);
     const quality = getChordPageQuality(page).toLowerCase();
 
     button.textContent = label;
-    button.setAttribute("aria-label", `Choose ${displayRoot} ${quality} chord root`);
+    button.setAttribute("aria-label", `Choose ${accessibleRoot} ${quality} chord root`);
   });
 }
 
@@ -5405,10 +5427,10 @@ function guitarProgressionStepLabel(index, symbol) {
   const parsed = parseChordSymbol(symbol);
 
   if (!parsed) {
-    return `STEP ${index + 1}: ${displayChordSymbol(symbol).toUpperCase()}`;
+    return `STEP ${index + 1}: ${displaySelectorChordSymbol(symbol)}`;
   }
 
-  return `STEP ${index + 1}: ${displayNoteName(parsed.root).toUpperCase()} ${chordQualityInfo(parsed.quality).title.toUpperCase()}`;
+  return `STEP ${index + 1}: ${displaySelectorNoteName(parsed.root)} ${chordQualityInfo(parsed.quality).title.toUpperCase()}`;
 }
 
 function setHomeProgressionSteps(steps, formulaId = "custom", stepModes = []) {
@@ -5558,7 +5580,7 @@ function renderHomeKeySelector() {
     button.type = "button";
     button.dataset.homeProgressionRoot = root;
     button.textContent = rootSelectorLabel(root);
-    button.setAttribute("aria-label", `Choose ${displayNoteName(root)} progression root`);
+    button.setAttribute("aria-label", `Choose ${selectorNoteAccessibleName(root)} progression root`);
     button.setAttribute("aria-pressed", String(isActive));
     button.classList.toggle("is-active", isActive);
     button.addEventListener("click", () => {
