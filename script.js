@@ -763,6 +763,90 @@ const homeProgressionFormulas = [
   { id: "minor-fall", label: "vi - iii - IV - I", degrees: [5, 2, 3, 0] },
   { id: "cycle", label: "iii - vi - ii - V", degrees: [2, 5, 1, 4] },
 ];
+const guitarProgressionDifficultyLevels = [
+  { level: 1, label: "Beginner-friendly progression" },
+  { level: 2, label: "No worries it's easy" },
+  { level: 3, label: "Smooth practice" },
+  { level: 4, label: "Getting serious" },
+  { level: 5, label: "Strum it until you make it" },
+  { level: 6, label: "No pain, no gain" },
+  { level: 7, label: "Barre chord alert" },
+  { level: 8, label: "You\u2019re a Ninja" },
+  { level: 9, label: "Hardcore mode activated" },
+  { level: 10, label: "Practice at least 40 hours a day" },
+];
+const guitarProgressionBaseDifficultyByFormulaId = {
+  "pop-axis": 2,
+  "jazz-cadence": 4,
+  "sensitive-axis": 3,
+  primary: 1,
+  fifties: 3,
+  cinematic: 4,
+  lift: 4,
+  falling: 4,
+  "bright-step": 4,
+  "plagal-step": 4,
+  "minor-fall": 4,
+  cycle: 5,
+};
+const guitarProgressionBaseDifficultyByFormulaLabel = {
+  "I - IV - V": 1,
+  "I - V - vi - IV": 2,
+  "vi - IV - I - V": 3,
+  "I - vi - IV - V": 3,
+  "ii - V - I": 4,
+  "I - ii - V - I": 4,
+  "I - bVII - IV - I": 5,
+  "I - bVI - bVII - I": 6,
+  "I - V - bVII - IV": 5,
+  "I - #iv\u00b0 - V - I": 6,
+  "I - IV - iv - I": 5,
+  "I - bII - IV - I": 7,
+  "I - bIII - IV - I": 6,
+  "I - iii - IV - iv - V - I": 7,
+  "i - iv - v": 2,
+  "i - VI - III - VII": 4,
+  "i - VII - VI - VII": 4,
+  "i - iv - VII - III": 4,
+  "i - VI - iv - V": 5,
+  "i - v - VI - iv": 4,
+  "i - III - VII - iv": 4,
+  "i - bII - VII - i": 7,
+  "i - iv - bVII - VI": 5,
+  "i - ii\u00b0 - V - i": 6,
+};
+const guitarChordQualityDifficultyScores = {
+  Major: 0,
+  Minor: 0,
+  Power: 0,
+  Sus2: 0.55,
+  Sus4: 0.55,
+  6: 0.8,
+  m6: 1,
+  add9: 0.85,
+  madd9: 1,
+  Augmented: 1.15,
+  7: 1.35,
+  maj7: 1.35,
+  m7: 1.35,
+  mMaj7: 1.75,
+  aug7: 1.75,
+  Diminished: 2.1,
+  dim7: 2.45,
+  m7b5: 2.45,
+  9: 2.45,
+  maj9: 2.25,
+  m9: 2.3,
+  11: 2.8,
+  13: 3,
+  "7b5": 3,
+  "7#5": 3,
+  "7b9": 3.25,
+  "7#9": 3.25,
+  "9#11": 3.45,
+  "13b9": 3.65,
+  sus4add9: 2,
+};
 const homePianoAreaModes = new Set(["chords", "progressions"]);
 const homeProgressionSongExamples = {
   "I - V - vi - IV": ["Let It Be", "With or Without You", "No Woman, No Cry"],
@@ -5423,6 +5507,187 @@ function homeProgressionGuitarVoicingContext(index = homeProgressionState.select
   };
 }
 
+function clampGuitarProgressionDifficultyLevel(level) {
+  const parsedLevel = Number.parseInt(level, 10);
+  const safeLevel = Number.isFinite(parsedLevel) ? parsedLevel : 1;
+
+  return Math.min(Math.max(safeLevel, 1), 10);
+}
+
+function getGuitarProgressionDifficultyLabel(level) {
+  const normalizedLevel = clampGuitarProgressionDifficultyLevel(level);
+
+  return guitarProgressionDifficultyLevels.find((entry) => entry.level === normalizedLevel)?.label
+    || guitarProgressionDifficultyLevels[0].label;
+}
+
+function guitarProgressionDifficultyText(level) {
+  const normalizedLevel = clampGuitarProgressionDifficultyLevel(level);
+
+  return `${String(normalizedLevel).padStart(2, "0")} \u00b7 ${getGuitarProgressionDifficultyLabel(normalizedLevel)}`;
+}
+
+function normalizeGuitarProgressionFormulaText(formula) {
+  return String(formula || "")
+    .replace(/\s*-\s*/g, " - ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getGuitarProgressionBaseDifficulty(options = {}) {
+  const formulaId = String(options.formulaId || "");
+  const formulaLabel = normalizeGuitarProgressionFormulaText(options.formulaLabel || options.roman);
+
+  if (formulaId && formulaId !== "custom" && guitarProgressionBaseDifficultyByFormulaId[formulaId]) {
+    return guitarProgressionBaseDifficultyByFormulaId[formulaId];
+  }
+
+  return guitarProgressionBaseDifficultyByFormulaLabel[formulaLabel] || 0;
+}
+
+function guitarChordQualityDifficultyScore(quality) {
+  const normalizedQuality = normalizeChordQuality(quality);
+
+  return guitarChordQualityDifficultyScores[normalizedQuality] ?? 1.2;
+}
+
+function guitarVoicingPosition(frets = []) {
+  const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+
+  if (!fretted.length) {
+    return 0;
+  }
+
+  return fretted.reduce((sum, fret) => sum + fret, 0) / fretted.length;
+}
+
+function guitarProgressionVoicingForChord(chord, index, options = {}) {
+  if (!chord?.root) {
+    return null;
+  }
+
+  const voicings = getGuitarVoicings(chord.root, chord.quality);
+  const rawIndex = Array.isArray(options.voicingIndexes)
+    ? options.voicingIndexes[index]
+    : homeProgressionState.guitarVoicingIndexes?.[index];
+  const voicingIndex = normalizeGuitarVoicingIndex(rawIndex || 0, voicings.length);
+
+  return voicings[voicingIndex] || null;
+}
+
+function guitarProgressionVoicingDifficultyScore(voicing, previousVoicing = null) {
+  if (!voicing?.frets) {
+    return 1.1;
+  }
+
+  const frets = voicing.frets;
+  const playedCount = guitarPlayedStringIndexes(frets).length;
+  const mutedCount = frets.filter((fret) => fret === null).length;
+  const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+  const frettedCount = fretted.length;
+  const maxFret = Math.max(...fretted, 0);
+  const span = guitarVoicingFrettedSpan(frets);
+  const hasBarre = guitarHasPlayableBarre(frets, voicing.barre);
+  const barreSize = hasBarre ? voicing.barre.strings.length : 0;
+  const independentFingerCount = guitarIndependentFingerCount(frets, voicing.barre);
+  const previousPosition = previousVoicing?.frets ? guitarVoicingPosition(previousVoicing.frets) : null;
+  const positionJump = previousPosition === null ? 0 : Math.abs(guitarVoicingPosition(frets) - previousPosition);
+
+  return Math.min(7, Math.max(0,
+    (hasBarre ? 1.55 : 0)
+    + Math.max(0, barreSize - 3) * 0.22
+    + mutedCount * 0.22
+    + Math.max(0, span - 2) * 0.48
+    + Math.max(0, maxFret - 4) * 0.18
+    + Math.max(0, frettedCount - 3) * 0.38
+    + Math.max(0, playedCount - 4) * 0.14
+    + Math.max(0, independentFingerCount - 3) * 0.55
+    + Math.max(0, positionJump - 3) * 0.22
+  ));
+}
+
+function guitarProgressionHarmonicDifficultyScore(options = {}) {
+  const formulaLabel = normalizeGuitarProgressionFormulaText(options.formulaLabel || options.roman);
+  const tokens = formulaLabel ? formulaLabel.split(" - ") : [];
+  const scaleMode = options.scaleMode === "minor" ? "minor" : "major";
+  let score = 0;
+
+  tokens.forEach((token) => {
+    if (/bII/.test(token)) {
+      score += 1.8;
+    } else if (/bIII|bVI|bVII/.test(token)) {
+      score += 1.15;
+    }
+
+    if (/#/.test(token)) {
+      score += 1.1;
+    }
+
+    if (/[°ø]/.test(token)) {
+      score += 1.35;
+    }
+
+    if (scaleMode === "major" && token === "iv") {
+      score += 1.2;
+    }
+
+    if (scaleMode === "minor" && token === "V") {
+      score += 0.95;
+    }
+
+    if (scaleMode === "major" && token === "ii") {
+      score += 0.55;
+    }
+  });
+
+  return Math.min(score, 4);
+}
+
+function getGuitarProgressionDifficulty(progressionChords, options = {}) {
+  const chords = Array.isArray(progressionChords) ? progressionChords.filter(Boolean) : [];
+
+  if (!chords.length) {
+    return 1;
+  }
+
+  const baseDifficulty = getGuitarProgressionBaseDifficulty(options);
+  const uniqueChordCount = new Set(chords.map((chord) => chord.symbol || `${chord.root}:${chord.quality}`)).size;
+  const qualityScores = chords.map((chord) => guitarChordQualityDifficultyScore(chord.quality));
+  const maxQualityScore = Math.max(...qualityScores, 0);
+  const averageQualityScore = qualityScores.reduce((sum, score) => sum + score, 0) / qualityScores.length;
+  let previousVoicing = null;
+  const voicingScores = chords.map((chord, index) => {
+    const voicing = guitarProgressionVoicingForChord(chord, index, options);
+    const score = guitarProgressionVoicingDifficultyScore(voicing, previousVoicing);
+    previousVoicing = voicing;
+
+    return score;
+  });
+  const maxVoicingScore = Math.max(...voicingScores, 0);
+  const averageVoicingScore = voicingScores.reduce((sum, score) => sum + score, 0) / voicingScores.length;
+  const structureScore = Math.max(0, chords.length - 3) * 0.48
+    + Math.max(0, uniqueChordCount - 3) * 0.34
+    + Math.max(0, chords.length - 5) * 0.42;
+  const harmonicScore = guitarProgressionHarmonicDifficultyScore(options);
+  const rawDifficulty = baseDifficulty
+    ? baseDifficulty
+      + Math.max(0, averageQualityScore - 0.45) * 0.32
+      + Math.max(0, maxQualityScore - 1.2) * 0.2
+      + averageVoicingScore * 0.36
+      + Math.max(0, maxVoicingScore - 2.4) * 0.18
+      + Math.max(0, harmonicScore - 1) * 0.24
+      + Math.max(0, chords.length - 4) * 0.28
+    : 1
+      + structureScore
+      + averageQualityScore * 0.48
+      + maxQualityScore * 0.34
+      + averageVoicingScore * 0.5
+      + maxVoicingScore * 0.28
+      + harmonicScore;
+
+  return clampGuitarProgressionDifficultyLevel(Math.round(rawDifficulty));
+}
+
 function guitarProgressionStepLabel(index, symbol) {
   const parsed = parseChordSymbol(symbol);
 
@@ -6018,7 +6283,17 @@ function renderHomeProgressionScaleLine() {
     </div>
   `;
   if (isGuitarMode()) {
-    infoCard.querySelector("[data-home-progression-songs]").textContent = "Beginner-friendly guitar progression";
+    const difficultyLevel = getGuitarProgressionDifficulty(homeProgressionChords(), {
+      formulaId: homeProgressionState.formulaId,
+      formulaLabel: homeProgressionFormulaLabel(),
+      scaleMode: homeProgressionState.scaleMode,
+      voicingIndexes: homeProgressionState.guitarVoicingIndexes,
+    });
+    const difficultyLine = infoCard.querySelector("[data-home-progression-songs]");
+
+    difficultyLine.classList.add("guitar-progression-skill-level", "progression-difficulty-label");
+    difficultyLine.textContent = guitarProgressionDifficultyText(difficultyLevel);
+    difficultyLine.setAttribute("aria-label", `Guitar progression skill level ${difficultyLevel}: ${getGuitarProgressionDifficultyLabel(difficultyLevel)}`);
     return;
   }
 
