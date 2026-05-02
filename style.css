@@ -10592,3 +10592,117 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
     font-size: 0.82rem;
   }
 }
+
+@media (max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0.38rem;
+    width: 100%;
+    min-width: 0;
+    padding: 0.38rem;
+    overflow-x: hidden;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .selector-mode-rail {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: 1fr;
+    gap: 0.22rem;
+    justify-self: start;
+    width: auto;
+    min-width: 0;
+    padding: 0.22rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .selector-mode-rail button {
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+    min-height: 2rem;
+    padding: 0;
+    font-size: 1.06rem;
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .selector-mode-rail .selector-rail-button-wide {
+    width: 2rem;
+    min-width: 2rem;
+    font-size: 0.66rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .selector-panel-content {
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.34rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .selector-welcome {
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .selector-group {
+    gap: 0.22rem;
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .chord-type-selector {
+    margin-top: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .selector-label {
+    margin: 0;
+    font-size: clamp(0.64rem, 2.4vw, 0.78rem);
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .root-selector .root-menu,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .category-tabs,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .type-menu {
+    display: grid;
+    justify-content: stretch;
+    gap: 0.16rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .root-selector .root-menu {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .category-tabs {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .type-menu {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .root-selector .root-menu button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .category-tabs button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .type-menu button {
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 1.75rem;
+    padding: 0.14rem 0.16rem;
+    overflow-wrap: anywhere;
+    font-size: clamp(0.58rem, 2vw, 0.72rem);
+    line-height: 1.08;
+    white-space: normal;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .root-selector .root-menu button {
+    min-height: 1.68rem;
+    font-size: clamp(0.66rem, 2.35vw, 0.82rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .category-tabs button {
+    min-height: 1.62rem;
+    padding-inline: 0.08rem;
+    font-size: clamp(0.46rem, 1.65vw, 0.62rem);
+  }
+}
