@@ -2755,25 +2755,33 @@ function resetChordPlaybackKeyboards() {
   });
 }
 
-function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true, noteSequence = notes) {
+function chordNoteSequenceStartOffset(includeNoteSequence = true) {
+  return includeNoteSequence ? 0 : chordNoteStartOffset;
+}
+
+function chordStartOffset() {
+  return isGuitarMode() ? startDelay : 0;
+}
+
+function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true, noteSequence = notes, { playbackStartOffset = startDelay, noteSequenceStartOffset = chordNoteStartOffset } = {}) {
   if (!card) {
     return;
   }
 
   if (!includeNoteSequence) {
-    schedulePlayback(() => renderChordCardKeyboard(card, notes, true), startDelay);
-    schedulePlayback(() => renderChordCardKeyboard(card), startDelay + chordDuration);
+    schedulePlayback(() => renderChordCardKeyboard(card, notes, true), playbackStartOffset);
+    schedulePlayback(() => renderChordCardKeyboard(card), playbackStartOffset + chordDuration);
     return;
   }
 
   if (isGuitarMode()) {
-    schedulePlayback(() => renderChordCardKeyboard(card, notes, true), startDelay);
+    schedulePlayback(() => renderChordCardKeyboard(card, notes, true), playbackStartOffset);
   } else {
-    schedulePlayback(() => renderChordCardKeyboard(card, [], true), startDelay);
+    schedulePlayback(() => renderChordCardKeyboard(card, [], true), playbackStartOffset);
   }
 
   noteSequence.forEach((note, index) => {
-    const noteStart = startDelay + chordNoteStartOffset + index * chordNoteSpacing;
+    const noteStart = playbackStartOffset + noteSequenceStartOffset + index * chordNoteSpacing;
     schedulePlayback(() => {
       if (isGuitarMode()) {
         renderChordCardKeyboard(card, notes, true, [note]);
@@ -2784,15 +2792,18 @@ function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true, 
     }, noteStart);
   });
 
-  schedulePlayback(() => renderChordCardKeyboard(card), chordPlaybackDuration(notes.length));
+  schedulePlayback(() => renderChordCardKeyboard(card), chordPlaybackDuration(noteSequence.length, includeNoteSequence, {
+    playbackStartOffset,
+    noteSequenceStartOffset,
+  }));
 }
 
-function chordPlaybackDuration(noteCount = 3, includeNoteSequence = true) {
+function chordPlaybackDuration(noteCount = 3, includeNoteSequence = true, { playbackStartOffset = startDelay, noteSequenceStartOffset = chordNoteStartOffset } = {}) {
   if (!includeNoteSequence) {
-    return startDelay + chordDuration + 0.35;
+    return playbackStartOffset + chordDuration + 0.35;
   }
 
-  return startDelay + chordNoteStartOffset + Math.max(noteCount - 1, 0) * chordNoteSpacing + chordNoteDuration + 0.1;
+  return playbackStartOffset + noteSequenceStartOffset + Math.max(noteCount - 1, 0) * chordNoteSpacing + chordNoteDuration + 0.1;
 }
 
 function shouldUsePianoSampler() {
@@ -2993,6 +3004,10 @@ function createPsycheEchoBus(destination) {
   return input;
 }
 
+function createGuitarPlaybackOutput(destination, mode = "acoustic") {
+  return mode === "psyche" ? createPsycheEchoBus(destination) : destination;
+}
+
 function playGuitarPluck(frequency, startTime, duration = 1.1, destination = audioContext.destination, mode = "acoustic", velocity = 1) {
   const filter = audioContext.createBiquadFilter();
   const noteGain = audioContext.createGain();
@@ -3055,12 +3070,24 @@ function playGuitarPluck(frequency, startTime, duration = 1.1, destination = aud
 }
 
 function playGuitarChordSound(frequencies, startTime, duration, destination, mode = "acoustic", { preserveOrder = false } = {}) {
-  const output = mode === "psyche" ? createPsycheEchoBus(destination) : destination;
+  const output = createGuitarPlaybackOutput(destination, mode);
   const playableFrequencies = preserveOrder ? [...frequencies] : [...frequencies].sort((a, b) => a - b);
   const strumSpacing = mode === "electric" ? 0.012 : 0.024;
 
   playableFrequencies.forEach((frequency, index) => {
     playGuitarPluck(frequency, startTime + index * strumSpacing, duration, output, mode, 0.9);
+  });
+}
+
+function playGuitarSingleNoteSound(frequency, startTime, duration, destination, mode = "acoustic") {
+  playGuitarPluck(frequency, startTime, duration, destination, mode, 0.9);
+}
+
+function playGuitarPickedNoteSequence(frequencies, startTime, spacing, duration, destination, mode = "acoustic") {
+  const output = createGuitarPlaybackOutput(destination, mode);
+
+  frequencies.forEach((frequency, index) => {
+    playGuitarSingleNoteSound(frequency, startTime + index * spacing, duration, output, mode);
   });
 }
 
@@ -3090,8 +3117,8 @@ function playNativeChordSound(frequencies, startTime, duration, destination, mod
 
 function playNativeSingleNote(frequency, startTime, duration, destination, mode = getSelectedSoundMode()) {
   if (soundModePresets.guitars[mode]) {
-    const output = mode === "psyche" ? createPsycheEchoBus(destination) : destination;
-    playGuitarPluck(frequency, startTime, duration, output, mode, 0.96);
+    const output = createGuitarPlaybackOutput(destination, mode);
+    playGuitarSingleNoteSound(frequency, startTime, duration, output, mode);
     return;
   }
 
@@ -3118,8 +3145,13 @@ function playChord(notes, card, { includeNoteSequence, keepLoop = false } = {}) 
   const playNoteSequence = typeof includeNoteSequence === "boolean"
     ? includeNoteSequence
     : isGuitarMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
+  const playbackStartOffset = chordStartOffset(playNoteSequence);
+  const noteSequenceStartOffset = chordNoteSequenceStartOffset(playNoteSequence);
 
-  scheduleChordKeyboardPlayback(card, notes, playNoteSequence, noteSequence);
+  scheduleChordKeyboardPlayback(card, notes, playNoteSequence, noteSequence, {
+    playbackStartOffset,
+    noteSequenceStartOffset,
+  });
 
   if (shouldUsePianoSampler()) {
     Tone.start();
@@ -3128,23 +3160,28 @@ function playChord(notes, card, { includeNoteSequence, keepLoop = false } = {}) 
       noteNames.forEach((noteName, index) => {
         schedulePlayback(() => {
           pianoSampler.triggerAttackRelease(noteName, chordNoteDuration, undefined, 0.78);
-        }, startDelay + chordNoteStartOffset + index * chordNoteSpacing);
+        }, playbackStartOffset + noteSequenceStartOffset + index * chordNoteSpacing);
       });
     } else {
       schedulePlayback(() => {
         pianoSampler.triggerAttackRelease(noteNames, chordDuration, undefined, 0.75);
-      }, startDelay);
+      }, playbackStartOffset);
     }
 
     return;
   }
 
-  const now = audioContext.currentTime + startDelay;
-  const noteStart = audioContext.currentTime + startDelay + chordNoteStartOffset;
+  const now = audioContext.currentTime + playbackStartOffset;
+  const noteStart = audioContext.currentTime + playbackStartOffset + noteSequenceStartOffset;
   if (playNoteSequence && !isGuitarMode()) {
     frequencies.forEach((frequency, index) => {
       playNativeSingleNote(frequency, noteStart + index * chordNoteSpacing, chordNoteDuration, playbackOutput, soundMode);
     });
+    return;
+  }
+
+  if (playNoteSequence && isGuitarMode()) {
+    playGuitarPickedNoteSequence(frequencies, noteStart, chordNoteSpacing, chordNoteDuration, playbackOutput, soundMode);
     return;
   }
 
@@ -3186,7 +3223,10 @@ function startChordLoop(notes, card, button) {
       : notes.length;
 
     playChord(notes, card, { includeNoteSequence, keepLoop: true });
-    activeLoop.timerId = window.setTimeout(runLoop, chordPlaybackDuration(noteCount, includeNoteSequence) * 1000);
+    activeLoop.timerId = window.setTimeout(runLoop, chordPlaybackDuration(noteCount, includeNoteSequence, {
+      playbackStartOffset: chordStartOffset(includeNoteSequence),
+      noteSequenceStartOffset: chordNoteSequenceStartOffset(includeNoteSequence),
+    }) * 1000);
   };
 
   runLoop();
