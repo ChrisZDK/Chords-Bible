@@ -1915,7 +1915,7 @@ function guitarVoicingLabel(root, quality, sourceLabel, index = 0) {
     return formatGuitarVoicingLabel(`${rootLabel} ${sourceLabel}`);
   }
 
-  return formatGuitarVoicingLabel(`${rootLabel} ${qualityLabel} Shape ${index + 1}`);
+  return formatGuitarVoicingLabel(`${rootLabel} ${qualityLabel} Voicing ${index + 1}`);
 }
 
 function normalizeGuitarVoicing(root, quality, voicing, index = 0) {
@@ -2061,7 +2061,7 @@ function findGeneratedGuitarVoicings(root, quality) {
 
         seen.add(pattern);
         candidates.push({
-          label: guitarVoicingLabel(root, normalizedQuality, "Compact Shape", candidates.length),
+          label: guitarVoicingLabel(root, normalizedQuality, "Compact Voicing", candidates.length),
           frets: [...frets],
           barre,
           source: "generated",
@@ -2607,7 +2607,20 @@ function removeGuitarChordControls(card) {
   card.querySelectorAll("[data-guitar-voicing-control]").forEach((control) => control.remove());
 }
 
+function isHomeProgressionsCard(card) {
+  return Boolean(
+    card?.matches?.("[data-major-chord-card]")
+    && homeProgressionState.mode === "progressions"
+    && card.closest("[data-major-chord-page]")?.classList.contains("is-progressions-mode")
+  );
+}
+
 function syncGuitarChordControls(card) {
+  if (isHomeProgressionsCard(card)) {
+    removeGuitarChordControls(card);
+    return;
+  }
+
   const instrumentCard = card.querySelector(".guitar-card");
 
   if (!instrumentCard) {
@@ -2670,6 +2683,12 @@ function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying =
   const keyboard = card.querySelector(".keyboard");
 
   if (!keyboard) {
+    return;
+  }
+
+  if (isHomeProgressionsCard(card)) {
+    removeGuitarChordControls(card);
+    updateProgressionAnimationLabels();
     return;
   }
 
@@ -3265,6 +3284,9 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
   const labelText = isHomeGuitarProgression
     ? guitarProgressionStepLabel(index, symbol)
     : displaySymbols[index] || displayChordSymbol(symbol);
+  const guitarVoicing = isHomeGuitarProgression
+    ? homeProgressionGuitarVoicingContext(index, symbol)
+    : null;
 
   animation.dataset.activeIndex = String(index);
   label.textContent = labelText;
@@ -3282,7 +3304,7 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
     isGuitarMode()
       ? {
           symbol,
-          voicingIndex: isHomeGuitarProgression ? homeProgressionGuitarVoicingIndex(index, symbol) : 0,
+          voicingIndex: guitarVoicing ? guitarVoicing.voicingIndex : 0,
         }
       : {}
   ));
@@ -5114,6 +5136,35 @@ function setHomeProgressionGuitarVoicingIndex(index, value) {
   homeProgressionState.guitarVoicingIndexes[index] = Math.max(Number.parseInt(value, 10) || 0, 0);
 }
 
+function homeProgressionGuitarVoicingContext(index = homeProgressionState.selectedStepIndex, symbol = "") {
+  const selectedIndex = Math.min(Math.max(Number(index) || 0, 0), homeProgressionState.steps.length - 1);
+  const selectedSymbol = symbol || homeProgressionSymbols(homeProgressionChords())[selectedIndex] || "";
+  const parsed = parseChordSymbol(selectedSymbol);
+  const notes = selectedSymbol ? chordNotesFromSymbol(selectedSymbol) : [];
+  const voicings = parsed ? getGuitarVoicings(parsed.root, parsed.quality) : [];
+  const voicingIndex = homeProgressionGuitarVoicingIndex(selectedIndex, selectedSymbol);
+  const voicing = parsed
+    ? guitarRenderContext(notes, {
+        symbol: selectedSymbol,
+        voicingIndex,
+        showFingering: true,
+      })
+    : null;
+  const voicingLabel = voicing?.label || voicings[voicingIndex]?.label || "Voicing coming soon";
+
+  setHomeProgressionGuitarVoicingIndex(selectedIndex, voicingIndex);
+
+  return {
+    selectedIndex,
+    symbol: selectedSymbol,
+    parsed,
+    voicings,
+    voicingIndex,
+    voicingLabel,
+    voicing,
+  };
+}
+
 function guitarProgressionStepLabel(index, symbol) {
   const parsed = parseChordSymbol(symbol);
 
@@ -5596,20 +5647,8 @@ function toggleHomeProgressionArpeggio(event) {
 function homeGuitarVoicingControlData(chordSymbols) {
   const selectedIndex = homeProgressionState.selectedStepIndex;
   const symbol = chordSymbols[selectedIndex] || chordSymbols[0] || "";
-  const parsed = parseChordSymbol(symbol);
-  const voicings = parsed ? getGuitarVoicings(parsed.root, parsed.quality) : [];
-  const voicingIndex = homeProgressionGuitarVoicingIndex(selectedIndex, symbol);
-  const voicingLabel = voicings[voicingIndex]?.label || "Voicing coming soon";
 
-  setHomeProgressionGuitarVoicingIndex(selectedIndex, voicingIndex);
-
-  return {
-    selectedIndex,
-    symbol,
-    voicings,
-    voicingIndex,
-    voicingLabel,
-  };
+  return homeProgressionGuitarVoicingContext(selectedIndex, symbol);
 }
 
 function renderHomePianoCard(progression, chords) {
@@ -5942,8 +5981,11 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
 
   chordSymbols.forEach((symbol, index) => {
     const startTime = now + index * progressionChordSpacing;
-    const guitarVoicingPlayback = isGuitarMode()
-      ? guitarVoicingPlaybackFromSymbol(symbol, homeProgressionGuitarVoicingIndex(index, symbol))
+    const guitarVoicing = isGuitarMode()
+      ? homeProgressionGuitarVoicingContext(index, symbol)
+      : null;
+    const guitarVoicingPlayback = guitarVoicing
+      ? guitarVoicingPlaybackFromSymbol(symbol, guitarVoicing.voicingIndex)
       : null;
     const frequencies = guitarVoicingPlayback?.frequencies || frequenciesFromChordSymbol(symbol);
 
