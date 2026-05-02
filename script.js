@@ -688,7 +688,7 @@ let pianoReady = false;
 let selectedInstrumentFamily = "keyboards";
 let selectedSoundMode = "grand-piano";
 const guitarState = {
-  fretRange: guitarFretRanges.compact,
+  fretRange: guitarFretRanges.extended,
   chordVoicingIndex: 0,
 };
 const guitarVoicingCache = new Map();
@@ -1831,11 +1831,11 @@ function normalizeGuitarVoicingIndex(index, voicingCount) {
 }
 
 function getGuitarFretRange() {
-  return guitarState.fretRange === guitarFretRanges.extended ? guitarFretRanges.extended : guitarFretRanges.compact;
+  return guitarFretRanges.extended;
 }
 
 function setGuitarFretRange(range) {
-  guitarState.fretRange = range === guitarFretRanges.extended ? guitarFretRanges.extended : guitarFretRanges.compact;
+  guitarState.fretRange = guitarFretRanges.extended;
 }
 
 function guitarRenderContext(notes, options = {}) {
@@ -1892,25 +1892,11 @@ function guitarRenderContext(notes, options = {}) {
   };
 }
 
-function guitarVisibleFretWindow(strings, fretRange = getGuitarFretRange()) {
-  const fretted = strings
-    .map((string) => string.fret)
-    .filter((fret) => Number.isFinite(fret) && fret > 0);
-  const maxFret = Math.max(...fretted, 0);
-  const minFret = fretted.length ? Math.min(...fretted) : 1;
-
-  if (fretRange === guitarFretRanges.extended || maxFret <= guitarFretRanges.compact) {
-    return {
-      startFret: 1,
-      fretCount: fretRange,
-      showNut: true,
-    };
-  }
-
+function guitarVisibleFretWindow() {
   return {
-    startFret: Math.max(1, Math.min(minFret, maxFret - guitarFretRanges.compact + 1)),
-    fretCount: guitarFretRanges.compact,
-    showNut: false,
+    startFret: 1,
+    fretCount: guitarFretRanges.extended,
+    showNut: true,
   };
 }
 
@@ -2205,6 +2191,41 @@ function currentGuitarChordVoicing(card) {
   return guitarRenderContext(chordCardNotes(card), guitarChordRenderOptions(card));
 }
 
+function guitarStrumPickingLabel() {
+  return homeProgressionState.arpeggio ? "PCK" : "STR";
+}
+
+function guitarStrumPickingModeName() {
+  return homeProgressionState.arpeggio ? "Picking" : "Strum";
+}
+
+function guitarStrumPickingAriaLabel() {
+  return `Toggle guitar play mode. Current mode: ${guitarStrumPickingModeName()}`;
+}
+
+function syncGuitarStrumPickingToggle(button) {
+  if (!button) {
+    return;
+  }
+
+  button.textContent = guitarStrumPickingLabel();
+  button.setAttribute("aria-pressed", String(homeProgressionState.arpeggio));
+  button.setAttribute("aria-label", guitarStrumPickingAriaLabel());
+}
+
+function syncGuitarStrumPickingToggles() {
+  if (!isGuitarMode()) {
+    return;
+  }
+
+  document.querySelectorAll("[data-octave-toggle], [data-home-progression-octave-toggle]").forEach(syncGuitarStrumPickingToggle);
+}
+
+function toggleGuitarStrumPickingMode() {
+  homeProgressionState.arpeggio = !homeProgressionState.arpeggio;
+  syncGuitarStrumPickingToggles();
+}
+
 function syncGuitarFretToggleButton(card, button) {
   if (!button) {
     return;
@@ -2214,12 +2235,7 @@ function syncGuitarFretToggleButton(card, button) {
 
   card.dataset.guitarFretRange = String(fretRange);
   card.classList.toggle("is-twelve-frets", fretRange === guitarFretRanges.extended);
-  button.textContent = fretRange === guitarFretRanges.extended ? "12F" : "5F";
-  button.setAttribute("aria-pressed", String(fretRange === guitarFretRanges.extended));
-  button.setAttribute(
-    "aria-label",
-    fretRange === guitarFretRanges.extended ? "Show compact 5-fret guitar view" : "Show extended 12-fret guitar view"
-  );
+  syncGuitarStrumPickingToggle(button);
 }
 
 function setGuitarFretRangeMode(card, button, fretRange) {
@@ -2670,11 +2686,15 @@ function playNativeSingleNote(frequency, startTime, duration, destination, mode 
   playSynthNote(frequency, startTime, duration, destination);
 }
 
-function playChord(notes, card, { includeNoteSequence = true, keepLoop = false } = {}) {
+function playChord(notes, card, { includeNoteSequence, keepLoop = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
   const noteNames = chordNoteNames(notes);
   const soundMode = getSelectedSoundMode();
-  scheduleChordKeyboardPlayback(card, notes, includeNoteSequence);
+  const playNoteSequence = typeof includeNoteSequence === "boolean"
+    ? includeNoteSequence
+    : !isGuitarMode() || homeProgressionState.arpeggio;
+
+  scheduleChordKeyboardPlayback(card, notes, playNoteSequence);
 
   if (shouldUsePianoSampler()) {
     Tone.start();
@@ -2683,7 +2703,7 @@ function playChord(notes, card, { includeNoteSequence = true, keepLoop = false }
       pianoSampler.triggerAttackRelease(noteNames, chordDuration, undefined, 0.75);
     }, startDelay);
 
-    if (includeNoteSequence) {
+    if (playNoteSequence) {
       noteNames.forEach((noteName, index) => {
         schedulePlayback(() => {
           pianoSampler.triggerAttackRelease(noteName, chordNoteDuration, undefined, 0.78);
@@ -2699,7 +2719,7 @@ function playChord(notes, card, { includeNoteSequence = true, keepLoop = false }
   const noteStart = audioContext.currentTime + startDelay + chordNoteStartOffset;
   playNativeChordSound(frequencies, now, chordDuration, playbackOutput, soundMode);
 
-  if (includeNoteSequence) {
+  if (playNoteSequence) {
     frequencies.forEach((frequency, index) => {
       playNativeSingleNote(frequency, noteStart + index * chordNoteSpacing, chordNoteDuration, playbackOutput, soundMode);
     });
@@ -2727,8 +2747,10 @@ function startChordLoop(notes, card, button) {
       return;
     }
 
-    playChord(notes, card, { includeNoteSequence: false, keepLoop: true });
-    activeLoop.timerId = window.setTimeout(runLoop, chordPlaybackDuration(notes.length, false) * 1000);
+    const includeNoteSequence = isGuitarMode() ? homeProgressionState.arpeggio : false;
+
+    playChord(notes, card, { includeNoteSequence, keepLoop: true });
+    activeLoop.timerId = window.setTimeout(runLoop, chordPlaybackDuration(notes.length, includeNoteSequence) * 1000);
   };
 
   runLoop();
@@ -3359,7 +3381,7 @@ function initializeChordCard(card) {
 
 function setPianoOctaveMode(card, button, octaveCount) {
   if (isGuitarMode()) {
-    setGuitarFretRangeMode(card, button, getGuitarFretRange());
+    syncGuitarFretToggleButton(card, button);
     return;
   }
 
@@ -3393,11 +3415,7 @@ function initializePianoOctaveToggle() {
     if (!pianoOctaveToggleButtons.has(button)) {
       button.addEventListener("click", () => {
         if (isGuitarMode()) {
-          setGuitarFretRangeMode(
-            card,
-            button,
-            getGuitarFretRange() === guitarFretRanges.extended ? guitarFretRanges.compact : guitarFretRanges.extended
-          );
+          toggleGuitarStrumPickingMode();
           return;
         }
 
@@ -5156,6 +5174,11 @@ function ensureHomeProgressionStage(chordSymbols, labels) {
 }
 
 function toggleHomeProgressionArpeggio(event) {
+  if (isGuitarMode()) {
+    toggleGuitarStrumPickingMode();
+    return;
+  }
+
   homeProgressionState.arpeggio = !homeProgressionState.arpeggio;
 
   const button = event?.currentTarget;
@@ -5164,35 +5187,8 @@ function toggleHomeProgressionArpeggio(event) {
     return;
   }
 
-  if (isGuitarMode()) {
-    syncGuitarPlayModeToggle(button);
-    return;
-  }
-
   button.textContent = homeProgressionState.arpeggio ? "No Arpeggio" : "Arpeggio";
   button.setAttribute("aria-pressed", String(homeProgressionState.arpeggio));
-}
-
-function guitarPlayModeToggleMarkup() {
-  return `
-    <span>PLAY MODE:</span>
-    <strong class="${homeProgressionState.arpeggio ? "" : "is-active"}">STRUM</strong>
-    <span aria-hidden="true">/</span>
-    <strong class="${homeProgressionState.arpeggio ? "is-active" : ""}">ARPEGGIO</strong>
-  `;
-}
-
-function syncGuitarPlayModeToggle(button) {
-  if (!button || !isGuitarMode()) {
-    return;
-  }
-
-  button.innerHTML = guitarPlayModeToggleMarkup();
-  button.setAttribute("aria-pressed", String(homeProgressionState.arpeggio));
-  button.setAttribute(
-    "aria-label",
-    `Toggle guitar play mode. Current mode: ${homeProgressionState.arpeggio ? "Arpeggio" : "Strum"}`
-  );
 }
 
 function homeGuitarVoicingControlData(chordSymbols) {
@@ -5221,13 +5217,15 @@ function renderHomePianoCard(progression, chords) {
   const formula = homeProgressionFormulaLabel();
   const guitarMode = isGuitarMode();
   const arpeggioLabel = homeProgressionState.arpeggio ? "No Arpeggio" : "Arpeggio";
-  const fretRange = getGuitarFretRange();
   const rangeButtonLabel = guitarMode
-    ? fretRange === guitarFretRanges.extended ? "12F" : "5F"
+    ? guitarStrumPickingLabel()
     : homeProgressionState.octaveCount === 2 ? "-OCT" : "+OCT";
   const rangePressed = guitarMode
-    ? fretRange === guitarFretRanges.extended
+    ? homeProgressionState.arpeggio
     : homeProgressionState.octaveCount === 2;
+  const rangeButtonAriaLabel = guitarMode
+    ? guitarStrumPickingAriaLabel()
+    : homeProgressionState.octaveCount === 2 ? "Show one octave piano" : "Show two octave piano";
   const guitarVoicing = guitarMode ? homeGuitarVoicingControlData(chordSymbols) : null;
   const guitarVoicingButtonLabel = guitarMode
     ? guitarVoicing.voicings.length > 1
@@ -5268,11 +5266,11 @@ function renderHomePianoCard(progression, chords) {
           <p data-progression-chords>${labels.join(" - ")}</p>
         </div>
       </div>
-      <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${rangePressed ? "true" : "false"}" aria-label="${guitarMode ? fretRange === guitarFretRanges.extended ? "Show compact 5-fret guitar view" : "Show extended 12-fret guitar view" : homeProgressionState.octaveCount === 2 ? "Show one octave piano" : "Show two octave piano"}">${rangeButtonLabel}</button>
+      <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${rangePressed ? "true" : "false"}" aria-label="${rangeButtonAriaLabel}">${rangeButtonLabel}</button>
     </div>
     <div class="keyboard-legend-row">
       <p class="keyboard-legend">${guitarMode ? `<span data-home-progression-step-label>${selectedStepLabel}</span>` : `STEPS: <span data-home-progression-step-label></span>`}</p>
-      <button class="arpeggio-toggle${guitarMode ? " guitar-play-mode-toggle" : ""}" type="button" aria-pressed="${homeProgressionState.arpeggio ? "true" : "false"}" data-home-progression-arpeggio>${guitarMode ? guitarPlayModeToggleMarkup() : arpeggioLabel}</button>
+      ${guitarMode ? "" : `<button class="arpeggio-toggle" type="button" aria-pressed="${homeProgressionState.arpeggio ? "true" : "false"}" data-home-progression-arpeggio>${arpeggioLabel}</button>`}
     </div>
     ${guitarMode ? `
       <div class="guitar-voicing-control guitar-voicing-control--progression" data-home-guitar-voicing-control>
@@ -5289,8 +5287,7 @@ function renderHomePianoCard(progression, chords) {
   pianoCard.querySelector("[data-home-progression-arpeggio]")?.addEventListener("click", toggleHomeProgressionArpeggio);
   pianoCard.querySelector("[data-home-progression-octave-toggle]")?.addEventListener("click", () => {
     if (isGuitarMode()) {
-      setGuitarFretRange(getGuitarFretRange() === guitarFretRanges.extended ? guitarFretRanges.compact : guitarFretRanges.extended);
-      renderHomeProgressionsMode();
+      toggleGuitarStrumPickingMode();
       return;
     }
 
