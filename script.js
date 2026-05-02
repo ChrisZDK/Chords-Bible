@@ -2550,7 +2550,7 @@ function guitarVoicingPlaybackFromSymbol(symbol, voicingIndex = 0) {
 }
 
 function guitarStrumPickingLabel() {
-  return homeProgressionState.arpeggio ? "PCK" : "STR";
+  return homeProgressionState.arpeggio ? "PICK" : "STRUM";
 }
 
 function guitarStrumPickingModeName() {
@@ -5293,9 +5293,9 @@ function renderHomeKeySelector() {
     </div>
     <aside class="progression-info-message" aria-labelledby="progression-info-title">
       <div class="progression-info-message-heading">
-        <h2 id="progression-info-title">${isGuitarMode() ? "BUILD YOUR GUITAR PROGRESSION" : "Build your progression"}</h2>
+        <h2 id="progression-info-title">${isGuitarMode() ? "BUILD YOUR PROGRESSION" : "Build your progression"}</h2>
       </div>
-      <p>${isGuitarMode() ? "Create chord journeys, switch steps, and practice each shape with strum or arpeggio mode." : "Create chord journeys. Customize progressions."}</p>
+      <p>${isGuitarMode() ? "Create chord journeys.  Practice each steps." : "Create chord journeys.  Practice every day."}</p>
     </aside>
     <div class="progression-builder-side">
       <section class="progression-builder-section" aria-labelledby="progression-scale-title">
