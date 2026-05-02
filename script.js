@@ -364,6 +364,7 @@ const progressionRepeatButtons = new WeakSet();
 const relatedCarouselButtons = new WeakSet();
 const pianoOctaveToggleButtons = new WeakSet();
 const pianoPlayStyleToggleButtons = new WeakSet();
+const guitarNextVoicingButtons = new WeakSet();
 const notationToggleButtons = new WeakSet();
 const noteNameToggleButtons = new WeakSet();
 const majorChordsByRoot = Object.fromEntries(
@@ -2310,6 +2311,24 @@ function normalizeGuitarVoicingIndex(index, voicingCount) {
   return ((safeIndex % voicingCount) + voicingCount) % voicingCount;
 }
 
+function getAvailableGuitarVoicings(root, quality) {
+  return getGuitarVoicings(root, quality);
+}
+
+function syncCurrentGuitarVoicing(root, quality, requestedIndex = guitarState.chordVoicingIndex) {
+  const voicings = getAvailableGuitarVoicings(root, quality);
+  const voicingIndex = normalizeGuitarVoicingIndex(requestedIndex, voicings.length);
+  const currentGuitarVoicing = voicings[voicingIndex] || null;
+
+  guitarState.chordVoicingIndex = voicingIndex;
+
+  return {
+    voicings,
+    voicingIndex,
+    currentGuitarVoicing,
+  };
+}
+
 function getGuitarFretRange() {
   return guitarFretRanges.extended;
 }
@@ -2659,10 +2678,12 @@ function guitarReadableNoteList(notes) {
 }
 
 function guitarChordRenderOptions(card) {
+  const { voicingIndex } = syncCurrentGuitarVoicing(card.dataset.root, card.dataset.quality);
+
   return {
     root: card.dataset.root,
     quality: card.dataset.quality,
-    voicingIndex: guitarState.chordVoicingIndex,
+    voicingIndex,
     showFingering: true,
   };
 }
@@ -2829,14 +2850,12 @@ function syncGuitarChordControls(card) {
     return;
   }
 
-  const voicings = getGuitarVoicings(card.dataset.root, card.dataset.quality);
-  const nextIndex = normalizeGuitarVoicingIndex(guitarState.chordVoicingIndex, voicings.length);
-  const voicingLabel = voicings[nextIndex]?.label || "Voicing coming soon";
+  const { voicings, currentGuitarVoicing } = syncCurrentGuitarVoicing(card.dataset.root, card.dataset.quality);
+  const voicingLabel = currentGuitarVoicing?.label || "Voicing coming soon";
   let control = instrumentCard.querySelector("[data-guitar-voicing-control]");
   const legendRow = instrumentCard.querySelector(".keyboard-legend-row");
   const legend = instrumentCard.querySelector(".keyboard-legend");
 
-  guitarState.chordVoicingIndex = nextIndex;
   syncGuitarFretToggleButton(card, card.querySelector("[data-piano-play-style-toggle]"));
 
   if (!control) {
@@ -2866,20 +2885,28 @@ function syncGuitarChordControls(card) {
   button.setAttribute("aria-disabled", String(!canCycle));
   button.setAttribute("aria-label", canCycle ? `Next voicing after ${voicingLabel}` : `${voicingLabel} is the only voicing`);
 
-  if (!button.dataset.guitarVoicingBound) {
-    button.addEventListener("click", () => {
-      const currentVoicings = getGuitarVoicings(card.dataset.root, card.dataset.quality);
+  if (!guitarNextVoicingButtons.has(button)) {
+    button.addEventListener("click", (event) => {
+      const currentCard = event.currentTarget.closest("[data-dynamic-chord-card], [data-major-chord-card]");
+
+      if (!currentCard) {
+        return;
+      }
+
+      const { voicings: currentVoicings, voicingIndex } = syncCurrentGuitarVoicing(
+        currentCard.dataset.root,
+        currentCard.dataset.quality
+      );
 
       if (currentVoicings.length <= 1) {
         return;
       }
 
-      guitarState.chordVoicingIndex = normalizeGuitarVoicingIndex(guitarState.chordVoicingIndex + 1, currentVoicings.length);
-      syncGuitarChordControls(card);
-      renderChordCardKeyboard(card);
-      syncGuitarChordAboutElements(card);
+      guitarState.chordVoicingIndex = normalizeGuitarVoicingIndex(voicingIndex + 1, currentVoicings.length);
+      renderChordCardKeyboard(currentCard);
+      syncGuitarChordAboutElements(currentCard);
     });
-    button.dataset.guitarVoicingBound = "true";
+    guitarNextVoicingButtons.add(button);
   }
 }
 
