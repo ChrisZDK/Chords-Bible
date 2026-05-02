@@ -10678,7 +10678,11 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .type-menu {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: clamp(0.08rem, 0.65vw, 0.16rem);
+    overflow: visible;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .root-selector .root-menu button,
@@ -10704,6 +10708,17 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
     min-height: 1.62rem;
     padding-inline: 0.08rem;
     font-size: clamp(0.46rem, 1.65vw, 0.62rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .chord-type-selector .type-menu button {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: clamp(1.62rem, 7.3vw, 1.9rem);
+    padding-inline: clamp(0.04rem, 0.8vw, 0.16rem);
+    overflow-wrap: normal;
+    font-size: clamp(0.44rem, 1.75vw, 0.58rem);
+    line-height: 1;
+    white-space: nowrap;
   }
 
   body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"] #major-chords.chord-workspace:not([data-chord-type-menu-expanded="true"]) > .selector-panel.selector-panel-with-rail .chord-type-selector .type-menu {
@@ -10856,5 +10871,19 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
     min-width: 0;
     overflow-x: hidden;
     padding: clamp(0.18rem, 0.7svh, 0.28rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .root-selector .root-menu button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .chord-type-selector .category-tabs button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"]:not(.is-home-progressions-mode) #major-chords > .selector-panel.selector-panel-with-rail .chord-type-selector .type-menu button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-root-grid button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu.progression-root-grid button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-scale-toggle button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select .progression-mobile-formula-button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select.is-open .progression-mobile-formula-button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-button {
+    font-size: 0.7rem;
+    font-weight: 500;
   }
 }
