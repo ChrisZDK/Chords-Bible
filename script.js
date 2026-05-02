@@ -549,6 +549,7 @@ const keyModeConfigs = {
 const notationStorageKey = "preferredNotation";
 const selectedModeStorageKey = "chordyssey:selectedMode";
 const pianoValleyThemeStorageKey = "pianoValleyTheme";
+const instrumentFamilyStorageKey = "chordyssey:instrumentFamily";
 const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
 const instrumentFamilies = new Set(["keyboards", "guitars"]);
 const soundModePresets = {
@@ -566,6 +567,30 @@ const soundModePresets = {
 const defaultSoundModes = {
   keyboards: "grand-piano",
   guitars: "acoustic",
+};
+const instrumentThemeVisuals = {
+  dark: {
+    keyboards: {
+      banner: {
+        src: "assets/themes/dark/theme-dark-banner.webp",
+        alt: "Pixel-art Piano scene with floating islands, robots, and a piano path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/dark/robot-keyboard.webp",
+        alt: "",
+      },
+    },
+    guitars: {
+      banner: {
+        src: "assets/themes/dark/theme-dark-banner-guitar.webp",
+        alt: "Pixel-art guitar scene with floating islands, robots, and a guitar path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/dark/robot-guitar.webp",
+        alt: "",
+      },
+    },
+  },
 };
 const guitarStringTunings = [
   { label: "E", value: 4, octave: 2 },
@@ -898,6 +923,24 @@ function getSelectedInstrumentFamily() {
 
 function isGuitarMode() {
   return getSelectedInstrumentFamily() === "guitars";
+}
+
+function getStoredInstrumentFamily() {
+  try {
+    const storedFamily = window.localStorage?.getItem(instrumentFamilyStorageKey);
+
+    return instrumentFamilies.has(storedFamily) ? storedFamily : "";
+  } catch {
+    return "";
+  }
+}
+
+function storeInstrumentFamily(family) {
+  try {
+    window.localStorage?.setItem(instrumentFamilyStorageKey, normalizeInstrumentFamily(family));
+  } catch {
+    // Instrument switching still works when storage is blocked.
+  }
 }
 
 function getSoundModeLabels(family = getSelectedInstrumentFamily()) {
@@ -4416,6 +4459,27 @@ function updateInstrumentWelcomeText() {
     : "Chord Mode lets you explore harmony fast. Pick a root note, chord type and explore related chords.";
 }
 
+function updateInstrumentThemeVisuals() {
+  const theme = document.body.dataset.theme || "dark";
+  const family = getSelectedInstrumentFamily();
+  const visuals = instrumentThemeVisuals[theme]?.[family];
+
+  if (!visuals) {
+    return;
+  }
+
+  document.querySelectorAll("[data-instrument-theme-visual]").forEach((image) => {
+    const visual = visuals[image.dataset.instrumentThemeVisual];
+
+    if (!visual) {
+      return;
+    }
+
+    image.src = visual.src;
+    image.alt = visual.alt;
+  });
+}
+
 function refreshInstrumentDiagrams() {
   if (homeProgressionState.mode === "progressions" && document.querySelector(".is-progressions-mode")) {
     renderHomeProgressionsMode();
@@ -4452,11 +4516,14 @@ function syncInstrumentFamilyMenu(mode = getSelectedInstrumentFamily()) {
   menu.dispatchEvent(new Event("header-menu-sync"));
 }
 
-function applyInstrumentFamilyMode(family, { stopPlayback = true } = {}) {
+function applyInstrumentFamilyMode(family, { stopPlayback = true, persist = true } = {}) {
   const normalizedFamily = normalizeInstrumentFamily(family);
   const familyChanged = normalizedFamily !== getSelectedInstrumentFamily();
 
   selectedInstrumentFamily = normalizedFamily;
+  if (persist) {
+    storeInstrumentFamily(normalizedFamily);
+  }
   if (familyChanged) {
     selectedSoundModesByInstrument[normalizedFamily] = getDefaultSoundMode(normalizedFamily);
   }
@@ -4469,6 +4536,7 @@ function applyInstrumentFamilyMode(family, { stopPlayback = true } = {}) {
   renderSoundOptions(normalizedFamily);
   initializeSoundSelector();
   setSoundMode(selectedSoundMode, document, { stopPlayback });
+  updateInstrumentThemeVisuals();
   refreshInstrumentDiagrams();
 }
 
@@ -4488,7 +4556,10 @@ function initializeInstrumentFamilyMenu() {
     applyInstrumentFamilyMode(menu.value);
   });
 
-  applyInstrumentFamilyMode(menu.value || "keyboards", { stopPlayback: false });
+  applyInstrumentFamilyMode(getStoredInstrumentFamily() || menu.value || "keyboards", {
+    stopPlayback: false,
+    persist: false,
+  });
 }
 
 function initializeInstrumentSwitchers() {
@@ -4554,12 +4625,14 @@ function initializePianoValleyTheme() {
 
   page.dataset.theme = initialTheme;
   themeMenu.value = initialTheme;
+  updateInstrumentThemeVisuals();
 
   themeMenu.addEventListener("change", () => {
     const nextTheme = isAvailableTheme(themeMenu.value) ? themeMenu.value : "dark";
 
     page.dataset.theme = nextTheme;
     themeMenu.value = nextTheme;
+    updateInstrumentThemeVisuals();
 
     try {
       localStorage.setItem(pianoValleyThemeStorageKey, nextTheme);
