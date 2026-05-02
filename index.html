@@ -194,9 +194,24 @@
                     <p data-dynamic-chord-notes data-dynamic-chord-notes-inline>C &bull; E &bull; G</p>
                   </div>
                 </div>
-                <button class="octave-toggle" type="button" data-octave-toggle aria-pressed="false">+OCT</button>
+                <button
+                  class="octave-toggle"
+                  type="button"
+                  data-piano-play-style-toggle
+                  aria-pressed="false"
+                  aria-label="Toggle piano play style. Current mode: Block"
+                >BLOCK</button>
               </div>
-              <p class="keyboard-legend">Chord notes</p>
+              <div class="keyboard-legend-row">
+                <p class="keyboard-legend">Chord notes</p>
+                <button
+                  class="arpeggio-toggle piano-octave-text-toggle"
+                  type="button"
+                  data-piano-octave-toggle
+                  aria-pressed="false"
+                  aria-label="Show two octave piano"
+                >+OCT</button>
+              </div>
               <div class="keyboard" role="img" aria-label="Piano keys for C Major chord"></div>
             </article>
           </div>
