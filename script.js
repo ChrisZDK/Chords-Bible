@@ -5808,7 +5808,7 @@ function renderHomeKeySelector() {
     <div class="selector-panel-content progression-builder-content">
       <div class="progression-builder-main">
         <section class="progression-builder-section" aria-labelledby="progression-root-title">
-          <h2 id="progression-root-title" class="selector-label">Choose Root Note</h2>
+          <h2 id="progression-root-title" class="selector-label">Choose Note</h2>
           <div class="root-menu root-menu-centered progression-root-grid" role="group" aria-label="Choose progression root note" data-home-progression-root-menu></div>
         </section>
         <section class="progression-builder-section" aria-labelledby="progression-formula-title">
@@ -5831,9 +5831,9 @@ function renderHomeKeySelector() {
       <section class="progression-builder-section progression-mobile-formula-select${homeProgressionMobileFormulaMenuOpen ? " is-open" : ""}" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula>
         <h2 id="progression-mobile-formula-title" class="selector-label">Choose Progression</h2>
         <button class="progression-mobile-formula-button" type="button" aria-expanded="${homeProgressionMobileFormulaMenuOpen ? "true" : "false"}" aria-controls="progression-mobile-formula-list" data-home-progression-mobile-formula-toggle></button>
-        <div id="progression-mobile-formula-list" class="progression-mobile-formula-list" role="listbox" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula-list${homeProgressionMobileFormulaMenuOpen ? "" : " hidden"}></div>
       </section>
     </div>
+    <div id="progression-mobile-formula-list" class="progression-mobile-formula-list" role="listbox" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula-list${homeProgressionMobileFormulaMenuOpen ? "" : " hidden"}></div>
   `;
   initializeNotationToggle();
 

@@ -10706,3 +10706,151 @@ body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-pr
     font-size: clamp(0.46rem, 1.65vw, 0.62rem);
   }
 }
+
+@media (max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder.selector-panel-with-rail {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(0.32rem, 1.3vw, 0.46rem);
+    width: 100%;
+    min-width: 0;
+    padding: clamp(0.22rem, 0.85svh, 0.36rem);
+    overflow-x: hidden;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder.selector-panel-with-rail .selector-mode-rail {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: 1fr;
+    gap: 0.18rem;
+    align-self: start;
+    justify-self: start;
+    width: auto;
+    min-width: 0;
+    padding: 0.2rem;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder.selector-panel-with-rail .selector-mode-rail button {
+    width: clamp(1.78rem, 8vw, 2rem);
+    min-width: clamp(1.78rem, 8vw, 2rem);
+    height: clamp(1.78rem, 8vw, 2rem);
+    min-height: clamp(1.78rem, 8vw, 2rem);
+    font-size: clamp(0.98rem, 4.2vw, 1.12rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder.selector-panel-with-rail .selector-mode-rail .selector-rail-button-wide {
+    font-size: clamp(0.58rem, 2.6vw, 0.68rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder.selector-panel-with-rail .selector-panel-content.progression-builder-content {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(6.4rem, 1fr);
+    gap: clamp(0.18rem, 0.8vw, 0.28rem);
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder-main {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    gap: clamp(0.16rem, 0.7vw, 0.24rem);
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder-main .progression-builder-section {
+    gap: clamp(0.14rem, 0.6vw, 0.22rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode #progression-formula-title,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-option-grid {
+    display: none;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-root-grid,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu.progression-root-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.12rem, 0.55vw, 0.18rem);
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-root-grid button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .root-menu.progression-root-grid button {
+    width: auto;
+    min-width: 0;
+    min-height: clamp(1.5rem, 5.8vw, 1.78rem);
+    padding: 0.08rem 0.1rem;
+    font-size: clamp(0.62rem, 2.5vw, 0.76rem);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder-side {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: stretch;
+    gap: clamp(0.12rem, 0.55vw, 0.2rem);
+    min-width: 0;
+    padding: clamp(0.18rem, 0.7svh, 0.28rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: stretch;
+    gap: clamp(0.12rem, 0.55vw, 0.2rem);
+    min-width: 0;
+    padding: clamp(0.18rem, 0.7svh, 0.28rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-scale-toggle {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.12rem, 0.55vw, 0.18rem);
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder .selector-label {
+    margin: 0;
+    font-size: clamp(0.5rem, 1.9vw, 0.62rem);
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-scale-toggle button,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-button {
+    min-width: 0;
+    min-height: clamp(1.48rem, 5.6vw, 1.76rem);
+    padding: 0.08rem 0.12rem;
+    line-height: 1;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-button {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select.is-open {
+    display: grid;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select.is-open .selector-label,
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-mobile-formula-select.is-open .progression-mobile-formula-button {
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
+  }
+
+  body.home-dashboard-page[data-page="piano-valley"][data-theme="dark"].is-home-progressions-mode .progression-builder.selector-panel-with-rail > .progression-mobile-formula-list {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.12rem, 0.55vw, 0.18rem);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    padding: clamp(0.18rem, 0.7svh, 0.28rem);
+  }
+}
