@@ -575,7 +575,111 @@ const guitarStringTunings = [
   { label: "B", value: 11, octave: 3 },
   { label: "E", value: 4, octave: 4 },
 ];
-const guitarFretCount = 5;
+const guitarFretRanges = {
+  compact: 5,
+  extended: 12,
+};
+const guitarVoicingCatalog = {
+  "C:Major": [
+    { label: "Open C", frets: [null, 3, 2, 0, 1, 0], fingers: [null, 3, 2, null, 1, null] },
+    { label: "C A-shape Barre", frets: [null, 3, 5, 5, 5, 3], fingers: [null, 1, 3, 3, 3, 1], barre: { fret: 3, strings: [1, 2, 3, 4, 5] } },
+  ],
+  "D:Major": [
+    { label: "Open D", frets: [null, null, 0, 2, 3, 2], fingers: [null, null, null, 1, 3, 2] },
+  ],
+  "E:Major": [
+    { label: "Open E", frets: [0, 2, 2, 1, 0, 0], fingers: [null, 2, 3, 1, null, null] },
+  ],
+  "F:Major": [
+    { label: "F E-shape Barre", frets: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1], barre: { fret: 1, strings: [0, 1, 2, 3, 4, 5] } },
+    { label: "Small F", frets: [null, null, 3, 2, 1, 1], fingers: [null, null, 3, 2, 1, 1], barre: { fret: 1, strings: [4, 5] } },
+  ],
+  "G:Major": [
+    { label: "Open G", frets: [3, 2, 0, 0, 0, 3], fingers: [2, 1, null, null, null, 3] },
+    { label: "Open G Alt", frets: [3, 2, 0, 0, 3, 3], fingers: [2, 1, null, null, 3, 4] },
+  ],
+  "A:Major": [
+    { label: "Open A", frets: [null, 0, 2, 2, 2, 0], fingers: [null, null, 1, 2, 3, null] },
+  ],
+  "B:Major": [
+    { label: "B A-shape Barre", frets: [null, 2, 4, 4, 4, 2], fingers: [null, 1, 3, 3, 3, 1], barre: { fret: 2, strings: [1, 2, 3, 4, 5] } },
+  ],
+  "A:Minor": [
+    { label: "Open Am", frets: [null, 0, 2, 2, 1, 0], fingers: [null, null, 2, 3, 1, null] },
+    { label: "A E-minor Barre", frets: [5, 7, 7, 5, 5, 5], fingers: [1, 3, 4, 1, 1, 1], barre: { fret: 5, strings: [0, 1, 2, 3, 4, 5] } },
+  ],
+  "B:Minor": [
+    { label: "B A-minor Barre", frets: [null, 2, 4, 4, 3, 2], fingers: [null, 1, 3, 4, 2, 1], barre: { fret: 2, strings: [1, 2, 3, 4, 5] } },
+  ],
+  "C:Minor": [
+    { label: "C A-minor Barre", frets: [null, 3, 5, 5, 4, 3], fingers: [null, 1, 3, 4, 2, 1], barre: { fret: 3, strings: [1, 2, 3, 4, 5] } },
+  ],
+  "D:Minor": [
+    { label: "Open Dm", frets: [null, null, 0, 2, 3, 1], fingers: [null, null, null, 2, 3, 1] },
+  ],
+  "E:Minor": [
+    { label: "Open Em", frets: [0, 2, 2, 0, 0, 0], fingers: [null, 2, 3, null, null, null] },
+  ],
+  "G:Minor": [
+    { label: "G E-minor Barre", frets: [3, 5, 5, 3, 3, 3], fingers: [1, 3, 4, 1, 1, 1], barre: { fret: 3, strings: [0, 1, 2, 3, 4, 5] } },
+  ],
+};
+const guitarMovableVoicingTemplates = [
+  { qualities: ["Major"], label: "E-shape Barre", rootString: 0, offsets: [0, 2, 2, 1, 0, 0], fingers: [1, 3, 4, 2, 1, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["Major"], label: "A-shape Barre", rootString: 1, offsets: [null, 0, 2, 2, 2, 0], fingers: [null, 1, 3, 3, 3, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["Minor"], label: "E-minor Barre", rootString: 0, offsets: [0, 2, 2, 0, 0, 0], fingers: [1, 3, 4, 1, 1, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["Minor"], label: "A-minor Barre", rootString: 1, offsets: [null, 0, 2, 2, 1, 0], fingers: [null, 1, 3, 4, 2, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["Power"], label: "E-string Power", rootString: 0, offsets: [0, 2, 2, null, null, null] },
+  { qualities: ["Power"], label: "A-string Power", rootString: 1, offsets: [null, 0, 2, 2, null, null] },
+  { qualities: ["Sus2"], label: "A-shape Sus2", rootString: 1, offsets: [null, 0, 2, 2, 0, 0], fingers: [null, 1, 3, 4, 1, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["Sus4"], label: "E-shape Sus4", rootString: 0, offsets: [0, 2, 2, 2, 0, 0], fingers: [1, 2, 3, 4, 1, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["Sus4"], label: "A-shape Sus4", rootString: 1, offsets: [null, 0, 2, 2, 3, 0], fingers: [null, 1, 2, 3, 4, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["7"], label: "E-shape 7", rootString: 0, offsets: [0, 2, 0, 1, 0, 0], fingers: [1, 3, 1, 2, 1, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["7"], label: "A-shape 7", rootString: 1, offsets: [null, 0, 2, 0, 2, 0], fingers: [null, 1, 3, 1, 4, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["maj7"], label: "E-shape maj7", rootString: 0, offsets: [0, 2, 1, 1, 0, 0], fingers: [1, 4, 2, 3, 1, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["maj7"], label: "A-shape maj7", rootString: 1, offsets: [null, 0, 2, 1, 2, 0], fingers: [null, 1, 3, 2, 4, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["m7"], label: "E-shape m7", rootString: 0, offsets: [0, 2, 0, 0, 0, 0], fingers: [1, 3, 1, 1, 1, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["m7"], label: "A-shape m7", rootString: 1, offsets: [null, 0, 2, 0, 1, 0], fingers: [null, 1, 3, 1, 2, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["6"], label: "E-shape 6", rootString: 0, offsets: [0, 2, 2, 1, 2, 0], fingers: [1, 3, 3, 2, 4, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["6"], label: "A-shape 6", rootString: 1, offsets: [null, 0, 2, 2, 2, 2], fingers: [null, 1, 3, 3, 3, 3], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["m6"], label: "E-shape m6", rootString: 0, offsets: [0, 2, 2, 0, 2, 0], fingers: [1, 2, 3, 1, 4, 1], barre: { offset: 0, strings: [0, 1, 2, 3, 4, 5] } },
+  { qualities: ["m6"], label: "A-shape m6", rootString: 1, offsets: [null, 0, 2, 2, 1, 2], fingers: [null, 1, 3, 4, 2, 3], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["add9"], label: "A-shape add9", rootString: 1, offsets: [null, 0, 2, 2, 0, 0], fingers: [null, 1, 3, 4, 1, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+  { qualities: ["madd9"], label: "A-shape madd9", rootString: 1, offsets: [null, 0, 2, 4, 1, 0], fingers: [null, 1, 2, 4, 1, 1], barre: { offset: 0, strings: [1, 2, 3, 4, 5] } },
+];
+const guitarEssentialIntervalsByQuality = {
+  Major: [0, 4, 7],
+  Minor: [0, 3, 7],
+  Power: [0, 7],
+  Sus2: [0, 2, 7],
+  Sus4: [0, 5, 7],
+  Augmented: [0, 4, 8],
+  Diminished: [0, 3, 6],
+  maj7: [0, 4, 11],
+  m7: [0, 3, 10],
+  7: [0, 4, 10],
+  dim7: [0, 3, 6, 9],
+  m7b5: [0, 3, 6, 10],
+  mMaj7: [0, 3, 11],
+  aug7: [0, 4, 8, 10],
+  6: [0, 4, 9],
+  m6: [0, 3, 9],
+  9: [0, 4, 10, 14],
+  maj9: [0, 4, 11, 14],
+  m9: [0, 3, 10, 14],
+  11: [0, 4, 10, 17],
+  13: [0, 4, 10, 21],
+  "7b5": [0, 4, 6, 10],
+  "7#5": [0, 4, 8, 10],
+  "7b9": [0, 4, 10, 13],
+  "7#9": [0, 4, 10, 15],
+  "9#11": [0, 4, 10, 14, 18],
+  "13b9": [0, 4, 10, 13, 21],
+  add9: [0, 4, 7, 14],
+  madd9: [0, 3, 7, 14],
+  sus4add9: [0, 5, 7, 14],
+};
+const guitarGeneratedVoicingLimit = 5;
 
 let audioContext;
 let activePlaybackOutput;
@@ -583,6 +687,11 @@ let pianoSampler;
 let pianoReady = false;
 let selectedInstrumentFamily = "keyboards";
 let selectedSoundMode = "grand-piano";
+const guitarState = {
+  fretRange: guitarFretRanges.compact,
+  chordVoicingIndex: 0,
+};
+const guitarVoicingCache = new Map();
 const selectedSoundModesByInstrument = {
   keyboards: "grand-piano",
   guitars: "acoustic",
@@ -610,6 +719,7 @@ const homeProgressionState = {
   page: 0,
   octaveCount: 1,
   arpeggio: false,
+  guitarVoicingIndexes: [],
   chordSnapshot: null,
 };
 const homeProgressionFormulas = [
@@ -1289,44 +1399,580 @@ function createKeyboard(notes, preserveLabels = false, isPlaying = false, octave
   return svg;
 }
 
-function buildGuitarVoicing(notes) {
-  const normalizedNotes = notes.map(normalizeNote);
-  const activeValues = new Set(normalizedNotes.map((note) => normalizeValue(noteValues[note])));
-  const rootValue = normalizeValue(noteValues[normalizedNotes[0]] ?? 0);
+function guitarVoicingKey(root, quality) {
+  if (!root || !Number.isInteger(noteValues[String(root).trim()])) {
+    return "";
+  }
 
-  return guitarStringTunings.map((string, stringIndex) => {
-    const candidates = Array.from({ length: guitarFretCount + 1 }, (_, fret) => {
-      const value = normalizeValue(string.value + fret);
+  return `${normalizeNote(root)}:${normalizeChordQuality(quality)}`;
+}
 
-      if (!activeValues.has(value)) {
-        return null;
-      }
+function guitarChordValueSet(root, quality) {
+  const rootValue = normalizeValue(noteValues[normalizeNote(root)] ?? 0);
 
-      const chordIndex = normalizedNotes.findIndex((note) => normalizeValue(noteValues[note]) === value);
-      const note = sharpNames[value];
-      const octave = string.octave + Math.floor((string.value + fret) / 12);
-      const score =
-        (chordIndex < 0 ? normalizedNotes.length : chordIndex) * 0.55 +
-        fret * 0.12 +
-        (value === rootValue ? -0.32 : 0) +
-        (fret === 0 ? -0.16 : 0) +
-        stringIndex * 0.015;
+  return new Set(chordIntervalsForQuality(quality).map((interval) => normalizeValue(rootValue + interval)));
+}
 
-      return { fret, note, value, octave, score };
-    }).filter(Boolean);
+function guitarEssentialValueSet(root, quality) {
+  const rootValue = normalizeValue(noteValues[normalizeNote(root)] ?? 0);
+  const normalizedQuality = normalizeChordQuality(quality);
+  const intervals = guitarEssentialIntervalsByQuality[normalizedQuality] || chordIntervalsForQuality(normalizedQuality);
 
-    if (!candidates.length) {
-      return { ...string, fret: null, note: "", value: null, octave: string.octave };
+  return new Set(intervals.map((interval) => normalizeValue(rootValue + interval)));
+}
+
+function guitarPatternForFrets(frets = []) {
+  return frets.map((fret) => fret === null ? "x" : String(fret)).join("");
+}
+
+function formatGuitarVoicingLabel(label) {
+  return String(label || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^([A-G](?:#|b)?)(?=(?:[EA]-shape|[EA]-minor|Compact|Barre))/i, "$1 ")
+    .replace(/\b([A-G])\s*-\s*shape\b/gi, "$1-shape")
+    .replace(/\b([EA])\s*-\s*minor\b/gi, "$1-minor");
+}
+
+function guitarVoicingLabelForSentence(label) {
+  return formatGuitarVoicingLabel(label)
+    .replace(/\bBarre\b/g, "barre")
+    .replace(/\bShape\b/g, "shape");
+}
+
+function normalizeGuitarBarre(barre, frets) {
+  if (!barre || typeof barre !== "object") {
+    return null;
+  }
+
+  const fret = Number.parseInt(barre.fret, 10);
+  const strings = Array.isArray(barre.strings)
+    ? barre.strings
+        .map((stringIndex) => Number.parseInt(stringIndex, 10))
+        .filter((stringIndex, index, all) => {
+          return stringIndex >= 0
+            && stringIndex < guitarStringTunings.length
+            && all.indexOf(stringIndex) === index;
+        })
+    : [];
+
+  if (!Number.isFinite(fret) || fret <= 0 || strings.length < 2) {
+    return null;
+  }
+
+  const hasPlayedBarreNote = strings.some((stringIndex) => frets[stringIndex] === fret);
+
+  if (!hasPlayedBarreNote) {
+    return null;
+  }
+
+  return {
+    fret,
+    strings: strings.sort((a, b) => a - b),
+  };
+}
+
+function inferGuitarFingers(frets, barre = null) {
+  const fretted = [...new Set(frets.filter((fret) => Number.isFinite(fret) && fret > 0))].sort((a, b) => a - b);
+  const fingerByFret = new Map();
+  const nonBarreFrets = barre ? fretted.filter((fret) => fret !== barre.fret) : fretted;
+
+  if (barre) {
+    fingerByFret.set(barre.fret, 1);
+  }
+
+  nonBarreFrets.forEach((fret, index) => {
+    fingerByFret.set(fret, Math.min(index + (barre ? 2 : 1), 4));
+  });
+
+  return frets.map((fret) => {
+    if (!Number.isFinite(fret) || fret <= 0) {
+      return null;
     }
 
-    candidates.sort((a, b) => a.score - b.score);
-
-    return { ...string, ...candidates[0] };
+    return fingerByFret.get(fret) || null;
   });
 }
 
-function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = false, currentNotes = null) {
-  const voicing = buildGuitarVoicing(notes);
+function normalizeGuitarFingers(fingers, frets, barre = null) {
+  if (!Array.isArray(fingers) || fingers.length !== guitarStringTunings.length) {
+    return inferGuitarFingers(frets, barre);
+  }
+
+  return fingers.map((finger, index) => {
+    if (!Number.isFinite(frets[index]) || frets[index] <= 0) {
+      return null;
+    }
+
+    const parsed = Number.parseInt(finger, 10);
+
+    return parsed >= 1 && parsed <= 4 ? parsed : null;
+  });
+}
+
+function guitarStringNote(string, fret) {
+  if (fret === null || !Number.isFinite(fret)) {
+    return {
+      fret: null,
+      note: "",
+      value: null,
+      octave: string.octave,
+      state: "muted",
+    };
+  }
+
+  const value = normalizeValue(string.value + fret);
+  const octave = string.octave + Math.floor((string.value + fret) / 12);
+
+  return {
+    fret,
+    note: sharpNames[value],
+    value,
+    octave,
+    state: fret === 0 ? "open" : "fretted",
+  };
+}
+
+function guitarVoicingValues(frets) {
+  return frets
+    .map((fret, index) => {
+      if (fret === null || !Number.isFinite(fret)) {
+        return null;
+      }
+
+      return normalizeValue(guitarStringTunings[index].value + fret);
+    })
+    .filter((value) => value !== null);
+}
+
+function guitarVoicingFrettedSpan(frets) {
+  const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+
+  if (!fretted.length) {
+    return 0;
+  }
+
+  return Math.max(...fretted) - Math.min(...fretted);
+}
+
+function guitarMutedGapCount(frets) {
+  const firstPlayed = frets.findIndex((fret) => fret !== null);
+  const lastPlayed = frets.length - 1 - [...frets].reverse().findIndex((fret) => fret !== null);
+
+  if (firstPlayed < 0 || lastPlayed < firstPlayed) {
+    return 0;
+  }
+
+  return frets.slice(firstPlayed, lastPlayed + 1).filter((fret) => fret === null).length;
+}
+
+function isValidGuitarVoicing(frets, root, quality) {
+  if (!Array.isArray(frets) || frets.length !== guitarStringTunings.length) {
+    return false;
+  }
+
+  const normalizedRoot = normalizeNote(root);
+  const rootValue = normalizeValue(noteValues[normalizedRoot]);
+  const chordValues = guitarChordValueSet(normalizedRoot, quality);
+  const essentialValues = guitarEssentialValueSet(normalizedRoot, quality);
+  const playedValues = guitarVoicingValues(frets);
+  const uniqueValues = new Set(playedValues);
+  const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+  const playedCount = playedValues.length;
+
+  if (!playedCount || !uniqueValues.has(rootValue)) {
+    return false;
+  }
+
+  if (Math.max(...fretted, 0) > guitarFretRanges.extended) {
+    return false;
+  }
+
+  if (guitarVoicingFrettedSpan(frets) > 5) {
+    return false;
+  }
+
+  if (playedValues.some((value) => !chordValues.has(value))) {
+    return false;
+  }
+
+  if ([...essentialValues].some((value) => !uniqueValues.has(value))) {
+    return false;
+  }
+
+  return playedCount >= Math.min(essentialValues.size, guitarStringTunings.length);
+}
+
+function guitarVoicingLabel(root, quality, sourceLabel, index = 0) {
+  const rootLabel = displayNoteName(normalizeNote(root));
+  const qualityLabel = chordQualityInfo(quality).label;
+
+  if (sourceLabel) {
+    if (/^([A-G](?:#|b)?)(?=\s|$)/.test(sourceLabel)) {
+      return formatGuitarVoicingLabel(sourceLabel.replace(/^([A-G](?:#|b)?)(?=\s|$)/, rootLabel));
+    }
+
+    return formatGuitarVoicingLabel(`${rootLabel} ${sourceLabel}`);
+  }
+
+  return formatGuitarVoicingLabel(`${rootLabel} ${qualityLabel} Shape ${index + 1}`);
+}
+
+function normalizeGuitarVoicing(root, quality, voicing, index = 0) {
+  const frets = Array.isArray(voicing?.frets) ? voicing.frets.map((fret) => fret === null ? null : Number(fret)) : [];
+
+  if (!isValidGuitarVoicing(frets, root, quality)) {
+    return null;
+  }
+
+  const barre = normalizeGuitarBarre(voicing.barre, frets);
+  const fingers = normalizeGuitarFingers(voicing.fingers, frets, barre);
+
+  return {
+    label: formatGuitarVoicingLabel(voicing.label || guitarVoicingLabel(root, quality, "", index)),
+    frets,
+    fingers,
+    barre,
+    source: voicing.source || "curated",
+  };
+}
+
+function guitarRootFretCandidates(root, stringIndex) {
+  const rootValue = normalizeValue(noteValues[normalizeNote(root)]);
+  const stringValue = guitarStringTunings[stringIndex]?.value ?? guitarStringTunings[0].value;
+
+  return Array.from({ length: guitarFretRanges.extended + 1 }, (_, fret) => fret)
+    .filter((fret) => normalizeValue(stringValue + fret) === rootValue);
+}
+
+function buildMovableGuitarVoicings(root, quality) {
+  const normalizedQuality = normalizeChordQuality(quality);
+  const templates = guitarMovableVoicingTemplates.filter((template) => template.qualities.includes(normalizedQuality));
+
+  return templates.flatMap((template) => {
+    return guitarRootFretCandidates(root, template.rootString)
+      .map((rootFret) => {
+        const frets = template.offsets.map((offset) => {
+          if (offset === null) {
+            return null;
+          }
+
+          const fret = rootFret + offset;
+
+          return fret >= 0 && fret <= guitarFretRanges.extended ? fret : Number.NaN;
+        });
+
+        if (frets.some((fret) => Number.isNaN(fret))) {
+          return null;
+        }
+
+        const barre = template.barre
+          ? {
+              fret: rootFret + (Number.parseInt(template.barre.offset, 10) || 0),
+              strings: template.barre.strings,
+            }
+          : null;
+
+        return {
+          label: guitarVoicingLabel(root, normalizedQuality, template.label),
+          frets,
+          fingers: template.fingers,
+          barre,
+          source: "movable",
+        };
+      })
+      .filter(Boolean);
+  });
+}
+
+function guitarCandidateFretsForString(stringIndex, chordValues, position) {
+  const frets = [];
+
+  for (let fret = 0; fret <= guitarFretRanges.extended; fret += 1) {
+    const inPosition = fret === 0 || (fret >= position && fret <= position + 4);
+
+    if (inPosition && chordValues.has(normalizeValue(guitarStringTunings[stringIndex].value + fret))) {
+      frets.push(fret);
+    }
+  }
+
+  return [null, ...frets];
+}
+
+function scoreGuitarVoicing(frets, root) {
+  const rootValue = normalizeValue(noteValues[normalizeNote(root)]);
+  const playedIndexes = frets
+    .map((fret, index) => fret === null ? null : index)
+    .filter((index) => index !== null);
+  const fretted = frets.filter((fret) => Number.isFinite(fret) && fret > 0);
+  const openCount = frets.filter((fret) => fret === 0).length;
+  const playedCount = playedIndexes.length;
+  const distinctFrets = new Set(fretted).size;
+  const firstPlayedIndex = playedIndexes[0] ?? 0;
+  const bassValue = frets[firstPlayedIndex] === null
+    ? rootValue
+    : normalizeValue(guitarStringTunings[firstPlayedIndex].value + frets[firstPlayedIndex]);
+  const bassRootPenalty = bassValue === rootValue ? 0 : 2.6;
+  const maxFret = Math.max(...fretted, 0);
+  const span = guitarVoicingFrettedSpan(frets);
+  const mutedGapPenalty = guitarMutedGapCount(frets) * 1.4;
+
+  return maxFret * 0.42 + span * 1.5 + distinctFrets * 0.52 + mutedGapPenalty + bassRootPenalty - openCount * 0.28 - playedCount * 0.08;
+}
+
+function findGeneratedGuitarVoicings(root, quality) {
+  const normalizedQuality = normalizeChordQuality(quality);
+  const chordValues = guitarChordValueSet(root, normalizedQuality);
+  const candidates = [];
+  const seen = new Set();
+
+  for (let position = 1; position <= 8; position += 1) {
+    const stringCandidates = guitarStringTunings.map((_, index) => {
+      return guitarCandidateFretsForString(index, chordValues, position);
+    });
+
+    const walk = (stringIndex, frets) => {
+      if (candidates.length > 180) {
+        return;
+      }
+
+      if (stringIndex >= guitarStringTunings.length) {
+        if (!isValidGuitarVoicing(frets, root, normalizedQuality)) {
+          return;
+        }
+
+        const pattern = guitarPatternForFrets(frets);
+
+        if (seen.has(pattern)) {
+          return;
+        }
+
+        seen.add(pattern);
+        candidates.push({
+          label: guitarVoicingLabel(root, normalizedQuality, "Compact Shape", candidates.length),
+          frets: [...frets],
+          source: "generated",
+          score: scoreGuitarVoicing(frets, root),
+        });
+        return;
+      }
+
+      stringCandidates[stringIndex].forEach((fret) => {
+        frets.push(fret);
+        walk(stringIndex + 1, frets);
+        frets.pop();
+      });
+    };
+
+    walk(0, []);
+  }
+
+  return candidates
+    .sort((a, b) => a.score - b.score)
+    .slice(0, guitarGeneratedVoicingLimit)
+    .map((voicing, index) => ({
+      label: guitarVoicingLabel(root, normalizedQuality, "", index),
+      frets: voicing.frets,
+      source: "generated",
+    }));
+}
+
+function uniqueGuitarVoicings(voicings) {
+  const seen = new Set();
+
+  return voicings.filter((voicing) => {
+    const pattern = guitarPatternForFrets(voicing.frets);
+
+    if (seen.has(pattern)) {
+      return false;
+    }
+
+    seen.add(pattern);
+    return true;
+  });
+}
+
+function getGuitarVoicings(root, quality) {
+  const key = guitarVoicingKey(root, quality);
+  const normalizedRoot = key.split(":")[0] || normalizeNote(root || "C");
+  const normalizedQuality = normalizeChordQuality(quality);
+  const cacheKey = `${normalizedRoot}:${normalizedQuality}:${preferredNotation}`;
+
+  if (guitarVoicingCache.has(cacheKey)) {
+    return guitarVoicingCache.get(cacheKey);
+  }
+
+  const curated = (guitarVoicingCatalog[key] || [])
+    .map((voicing, index) => normalizeGuitarVoicing(normalizedRoot, normalizedQuality, voicing, index))
+    .filter(Boolean);
+  const movable = buildMovableGuitarVoicings(normalizedRoot, normalizedQuality)
+    .map((voicing, index) => normalizeGuitarVoicing(normalizedRoot, normalizedQuality, voicing, curated.length + index))
+    .filter(Boolean);
+  const generated = findGeneratedGuitarVoicings(normalizedRoot, normalizedQuality)
+    .map((voicing, index) => normalizeGuitarVoicing(normalizedRoot, normalizedQuality, voicing, curated.length + movable.length + index))
+    .filter(Boolean);
+
+  const voicings = uniqueGuitarVoicings([...curated, ...movable, ...generated]);
+
+  guitarVoicingCache.set(cacheKey, voicings);
+
+  return voicings;
+}
+
+function normalizeGuitarVoicingIndex(index, voicingCount) {
+  if (!voicingCount) {
+    return 0;
+  }
+
+  const parsedIndex = Number.parseInt(index, 10);
+  const safeIndex = Number.isNaN(parsedIndex) ? 0 : parsedIndex;
+
+  return ((safeIndex % voicingCount) + voicingCount) % voicingCount;
+}
+
+function getGuitarFretRange() {
+  return guitarState.fretRange === guitarFretRanges.extended ? guitarFretRanges.extended : guitarFretRanges.compact;
+}
+
+function setGuitarFretRange(range) {
+  guitarState.fretRange = range === guitarFretRanges.extended ? guitarFretRanges.extended : guitarFretRanges.compact;
+}
+
+function guitarRenderContext(notes, options = {}) {
+  const parsed = options.symbol ? parseChordSymbol(options.symbol) : null;
+  const root = parsed?.root || options.root || notes[0] || "C";
+  const quality = parsed?.quality || options.quality || "Major";
+  const normalizedQuality = normalizeChordQuality(quality);
+  const voicings = getGuitarVoicings(root, quality);
+  const voicingIndex = normalizeGuitarVoicingIndex(options.voicingIndex, voicings.length);
+  const voicing = voicings[voicingIndex] || null;
+  const normalizedNotes = notes.map((note) => normalizeNote(note));
+
+  if (!voicing) {
+    return {
+      supported: false,
+      label: "Voicing coming soon",
+      pattern: "",
+      root,
+      quality: normalizedQuality,
+      notes: normalizedNotes,
+      strings: guitarStringTunings.map((string) => ({
+        ...string,
+        ...guitarStringNote(string, null),
+        finger: null,
+      })),
+      barre: null,
+      compact: false,
+      voicingCount: 0,
+      voicingIndex: 0,
+    };
+  }
+
+  const strings = guitarStringTunings.map((string, index) => ({
+    ...string,
+    ...guitarStringNote(string, voicing.frets[index]),
+    finger: voicing.fingers?.[index] || null,
+  }));
+  const playedValues = new Set(strings.map((string) => string.value).filter((value) => value !== null));
+  const compact = [...guitarChordValueSet(root, normalizedQuality)].some((value) => !playedValues.has(value));
+
+  return {
+    supported: true,
+    label: voicing.label,
+    pattern: guitarPatternForFrets(voicing.frets),
+    root,
+    quality: normalizedQuality,
+    notes: normalizedNotes,
+    strings,
+    fingers: voicing.fingers || [],
+    barre: voicing.barre || null,
+    compact,
+    voicingCount: voicings.length,
+    voicingIndex,
+  };
+}
+
+function guitarVisibleFretWindow(strings, fretRange = getGuitarFretRange()) {
+  const fretted = strings
+    .map((string) => string.fret)
+    .filter((fret) => Number.isFinite(fret) && fret > 0);
+  const maxFret = Math.max(...fretted, 0);
+  const minFret = fretted.length ? Math.min(...fretted) : 1;
+
+  if (fretRange === guitarFretRanges.extended || maxFret <= guitarFretRanges.compact) {
+    return {
+      startFret: 1,
+      fretCount: fretRange,
+      showNut: true,
+    };
+  }
+
+  return {
+    startFret: Math.max(1, Math.min(minFret, maxFret - guitarFretRanges.compact + 1)),
+    fretCount: guitarFretRanges.compact,
+    showNut: false,
+  };
+}
+
+function shouldShowGuitarFretLabel(fret, fretCount) {
+  return fretCount <= guitarFretRanges.compact || [3, 5, 7, 9, 12].includes(fret);
+}
+
+function guitarActiveFretRange(strings) {
+  const fretted = strings
+    .map((string) => string.fret)
+    .filter((fret) => Number.isFinite(fret) && fret > 0);
+
+  if (!fretted.length) {
+    return null;
+  }
+
+  return {
+    min: Math.min(...fretted),
+    max: Math.max(...fretted),
+  };
+}
+
+function guitarBarreGeometry(voicing, fretWindow, left, top, stringGap, fretWidth) {
+  const barre = voicing.barre;
+
+  if (!barre) {
+    return null;
+  }
+
+  const visibleFretIndex = barre.fret - fretWindow.startFret;
+
+  if (visibleFretIndex < 0 || visibleFretIndex >= fretWindow.fretCount) {
+    return null;
+  }
+
+  const strings = barre.strings.filter((stringIndex) => stringIndex >= 0 && stringIndex < guitarStringTunings.length);
+
+  if (strings.length < 2) {
+    return null;
+  }
+
+  return {
+    x: left + (visibleFretIndex + 0.5) * fretWidth,
+    y1: top + Math.min(...strings) * stringGap,
+    y2: top + Math.max(...strings) * stringGap,
+    label: `BARRE ${barre.fret}F`,
+  };
+}
+
+function createSvgText(className, x, y, textContent) {
+  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+  text.setAttribute("class", className);
+  text.setAttribute("x", x);
+  text.setAttribute("y", y);
+  text.textContent = textContent;
+
+  return text;
+}
+
+function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = false, currentNotes = null, options = {}) {
+  const voicing = guitarRenderContext(notes, options);
   const currentValues = currentNotes
     ? new Set(currentNotes.map((note) => normalizeValue(noteValues[normalizeNote(note)])))
     : null;
@@ -1336,42 +1982,82 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
       : []
   );
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  const left = 64;
-  const right = 500;
+  const fretWindow = guitarVisibleFretWindow(voicing.strings);
+  const left = 78;
+  const right = 510;
   const top = 44;
   const stringGap = 26;
-  const fretWidth = (right - left) / guitarFretCount;
+  const fretWidth = (right - left) / fretWindow.fretCount;
   const bottom = top + stringGap * (guitarStringTunings.length - 1);
+  const showFingering = Boolean(options.showFingering);
+  const activeFretRange = showFingering ? guitarActiveFretRange(voicing.strings) : null;
+  const noteMarkers = [];
 
-  svg.setAttribute("class", `guitar-svg${isPlaying ? " is-playing" : ""}${currentValues ? " has-current-note" : ""}`);
-  svg.setAttribute("viewBox", "0 0 540 220");
+  svg.setAttribute("class", `guitar-svg${isPlaying ? " is-playing" : ""}${currentValues ? " has-current-note" : ""}${voicing.supported ? "" : " is-fallback"}${fretWindow.fretCount === guitarFretRanges.extended ? " is-extended" : ""}`);
+  svg.setAttribute("viewBox", "0 0 560 232");
   svg.setAttribute("aria-hidden", "true");
+  svg.dataset.voicing = voicing.pattern;
+  svg.dataset.voicingLabel = voicing.label;
 
-  Array.from({ length: guitarFretCount + 1 }).forEach((_, fret) => {
-    const x = left + fret * fretWidth;
+  if (activeFretRange) {
+    const highlightStart = Math.max(activeFretRange.min, fretWindow.startFret);
+    const highlightEnd = Math.min(activeFretRange.max, fretWindow.startFret + fretWindow.fretCount - 1);
+
+    if (highlightEnd >= highlightStart) {
+      const highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+
+      highlight.setAttribute("class", "guitar-active-fret-range");
+      highlight.setAttribute("x", left + (highlightStart - fretWindow.startFret) * fretWidth + 3);
+      highlight.setAttribute("y", top - 12);
+      highlight.setAttribute("width", (highlightEnd - highlightStart + 1) * fretWidth - 6);
+      highlight.setAttribute("height", bottom - top + 24);
+      highlight.setAttribute("rx", 8);
+      svg.appendChild(highlight);
+    }
+  }
+
+  Array.from({ length: fretWindow.fretCount + 1 }).forEach((_, fretIndex) => {
+    const x = left + fretIndex * fretWidth;
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const actualFret = fretWindow.startFret + fretIndex - 1;
+    const isNut = fretWindow.showNut && fretIndex === 0;
+    const fretLineNumber = fretWindow.startFret + fretIndex - 1;
+    const isActiveFretLine = activeFretRange
+      && fretIndex > 0
+      && fretLineNumber >= activeFretRange.min
+      && fretLineNumber <= activeFretRange.max;
 
-    line.setAttribute("class", fret === 0 ? "guitar-nut" : "guitar-fret");
+    line.setAttribute("class", `${isNut ? "guitar-nut" : "guitar-fret"}${isActiveFretLine ? " is-active-fret" : ""}`);
     line.setAttribute("x1", x);
     line.setAttribute("x2", x);
     line.setAttribute("y1", top - 10);
     line.setAttribute("y2", bottom + 10);
     svg.appendChild(line);
 
-    if (fret > 0) {
-      label.setAttribute("class", "guitar-fret-label");
-      label.setAttribute("x", x - fretWidth / 2);
-      label.setAttribute("y", top - 22);
-      label.textContent = String(fret);
-      svg.appendChild(label);
+    if (fretIndex > 0) {
+      const fretNumber = fretWindow.startFret + fretIndex - 1;
+
+      if ([3, 5, 7, 9, 12].includes(fretNumber)) {
+        const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+
+        marker.setAttribute("class", "guitar-fret-marker");
+        marker.setAttribute("cx", x - fretWidth / 2);
+        marker.setAttribute("cy", bottom + 25);
+        marker.setAttribute("r", fretNumber === 12 ? 4.5 : 3.2);
+        svg.appendChild(marker);
+      }
+
+      if (shouldShowGuitarFretLabel(fretNumber, fretWindow.fretCount)) {
+        svg.appendChild(createSvgText("guitar-fret-label", x - fretWidth / 2, top - 22, String(fretNumber)));
+      }
+    } else if (!fretWindow.showNut) {
+      svg.appendChild(createSvgText("guitar-base-fret-label", left - 28, top - 22, `${actualFret + 1}fr`));
     }
   });
 
-  voicing.forEach((string, index) => {
+  voicing.strings.forEach((string, index) => {
     const y = top + index * stringGap;
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    const stringLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
 
     line.setAttribute("class", "guitar-string");
     line.setAttribute("x1", left);
@@ -1380,49 +2066,98 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
     line.setAttribute("y2", y);
     svg.appendChild(line);
 
-    stringLabel.setAttribute("class", "guitar-string-label");
-    stringLabel.setAttribute("x", left - 36);
-    stringLabel.setAttribute("y", y + 5);
-    stringLabel.textContent = string.label;
-    svg.appendChild(stringLabel);
+    svg.appendChild(createSvgText("guitar-string-label", left - 54, y + 5, string.label));
 
     if (string.fret === null) {
-      const muted = document.createElementNS("http://www.w3.org/2000/svg", "text");
-
-      muted.setAttribute("class", "guitar-muted");
-      muted.setAttribute("x", left - 16);
-      muted.setAttribute("y", y + 6);
-      muted.textContent = "x";
-      svg.appendChild(muted);
+      if (voicing.supported) {
+        svg.appendChild(createSvgText("guitar-string-indicator guitar-muted", left - 24, y + 6, "X"));
+      }
       return;
     }
 
-    const x = string.fret === 0 ? left - 16 : left + (string.fret - 0.5) * fretWidth;
-    const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    const noteText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const isOpen = string.fret === 0;
+    const visibleFretIndex = string.fret - fretWindow.startFret;
+    const x = isOpen ? left + 15 : left + (visibleFretIndex + 0.5) * fretWidth;
+
+    if (isOpen) {
+      svg.appendChild(createSvgText("guitar-string-indicator guitar-open-indicator", left - 24, y + 6, "O"));
+    }
+
+    if (!voicing.supported || (!isOpen && (visibleFretIndex < 0 || visibleFretIndex >= fretWindow.fretCount))) {
+      return;
+    }
+
     const isCurrentNote = currentValues?.has(string.value);
+    const finger = showFingering && !isOpen ? string.finger : null;
+
+    noteMarkers.push({
+      x,
+      y,
+      isOpen,
+      isCurrentNote,
+      value: string.value,
+      finger,
+    });
+  });
+
+  if (showFingering && voicing.supported) {
+    const barre = guitarBarreGeometry(voicing, fretWindow, left, top, stringGap, fretWidth);
+
+    if (barre) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      const labelWidth = Math.max(58, barre.label.length * 6.2);
+      const labelBackground = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+
+      line.setAttribute("class", "guitar-barre-line");
+      line.setAttribute("x1", barre.x);
+      line.setAttribute("x2", barre.x);
+      line.setAttribute("y1", barre.y1 - 11);
+      line.setAttribute("y2", barre.y2 + 11);
+      svg.appendChild(line);
+
+      labelBackground.setAttribute("class", "guitar-barre-label-bg");
+      labelBackground.setAttribute("x", barre.x - labelWidth / 2);
+      labelBackground.setAttribute("y", top - 18);
+      labelBackground.setAttribute("width", labelWidth);
+      labelBackground.setAttribute("height", 16);
+      labelBackground.setAttribute("rx", 4);
+      svg.appendChild(labelBackground);
+      svg.appendChild(createSvgText("guitar-barre-label", barre.x, top - 6, barre.label));
+    }
+  }
+
+  noteMarkers.forEach((markerData) => {
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     const markerClasses = [
       "guitar-note",
-      string.fret === 0 ? "guitar-open-note" : "",
-      currentValues ? (isCurrentNote ? "is-current-note" : "is-held-note") : "",
+      markerData.isOpen ? "guitar-open-note" : "",
+      markerData.finger ? "has-finger-number" : "",
+      currentValues ? (markerData.isCurrentNote ? "is-current-note" : "is-held-note") : "",
     ].filter(Boolean);
     const labelClasses = [
       "guitar-note-label",
-      currentValues ? (isCurrentNote ? "is-current-note-label" : "is-held-note-label") : "",
+      markerData.finger ? "guitar-finger-label" : "",
+      currentValues ? (markerData.isCurrentNote ? "is-current-note-label" : "is-held-note-label") : "",
     ].filter(Boolean);
 
     marker.setAttribute("class", markerClasses.join(" "));
-    marker.setAttribute("cx", x);
-    marker.setAttribute("cy", y);
-    marker.setAttribute("r", string.fret === 0 ? 9 : 13);
+    marker.setAttribute("cx", markerData.x);
+    marker.setAttribute("cy", markerData.y);
+    marker.setAttribute("r", markerData.isOpen ? 9 : fretWindow.fretCount === guitarFretRanges.extended ? 10.5 : 13);
     svg.appendChild(marker);
 
-    noteText.setAttribute("class", labelClasses.join(" "));
-    noteText.setAttribute("x", x);
-    noteText.setAttribute("y", y + 5);
-    noteText.textContent = activeLabels.get(string.value) || noteLabelForValue(string.value);
-    svg.appendChild(noteText);
+    svg.appendChild(createSvgText(
+      labelClasses.join(" "),
+      markerData.x,
+      markerData.y + 5,
+      markerData.finger ? String(markerData.finger) : activeLabels.get(markerData.value) || noteLabelForValue(markerData.value)
+    ));
   });
+
+  if (!voicing.supported) {
+    svg.appendChild(createSvgText("guitar-fallback-title", (left + right) / 2, bottom + 33, "Voicing coming soon"));
+    svg.appendChild(createSvgText("guitar-fallback-notes", (left + right) / 2, bottom + 53, displayChordNotesInline(notes, " - ")));
+  }
 
   return svg;
 }
@@ -1431,9 +2166,9 @@ function noteLabelForValue(value) {
   return displayNoteName(sharpNames[normalizeValue(value)]);
 }
 
-function createInstrumentDiagram(notes, preserveLabels = false, isPlaying = false, octaveCount = 1, currentNotes = null) {
+function createInstrumentDiagram(notes, preserveLabels = false, isPlaying = false, octaveCount = 1, currentNotes = null, options = {}) {
   if (isGuitarMode()) {
-    return createGuitarChordDiagram(notes, preserveLabels, isPlaying, currentNotes);
+    return createGuitarChordDiagram(notes, preserveLabels, isPlaying, currentNotes, options);
   }
 
   return createKeyboard(notes, preserveLabels, isPlaying, octaveCount);
@@ -1447,6 +2182,116 @@ function chordCardOctaveCount(card) {
   return card.querySelector("[data-octave-toggle]") && card.dataset.octaves === "2" ? 2 : 1;
 }
 
+function guitarReadableNoteList(notes) {
+  const labels = notes.map(displayNoteName);
+
+  if (labels.length <= 2) {
+    return labels.join(" and ");
+  }
+
+  return `${labels.slice(0, -1).join(", ")}, and ${labels[labels.length - 1]}`;
+}
+
+function guitarChordRenderOptions(card) {
+  return {
+    root: card.dataset.root,
+    quality: card.dataset.quality,
+    voicingIndex: guitarState.chordVoicingIndex,
+    showFingering: true,
+  };
+}
+
+function currentGuitarChordVoicing(card) {
+  return guitarRenderContext(chordCardNotes(card), guitarChordRenderOptions(card));
+}
+
+function syncGuitarFretToggleButton(card, button) {
+  if (!button) {
+    return;
+  }
+
+  const fretRange = getGuitarFretRange();
+
+  card.dataset.guitarFretRange = String(fretRange);
+  card.classList.toggle("is-twelve-frets", fretRange === guitarFretRanges.extended);
+  button.textContent = fretRange === guitarFretRanges.extended ? "12F" : "5F";
+  button.setAttribute("aria-pressed", String(fretRange === guitarFretRanges.extended));
+  button.setAttribute(
+    "aria-label",
+    fretRange === guitarFretRanges.extended ? "Show compact 5-fret guitar view" : "Show extended 12-fret guitar view"
+  );
+}
+
+function setGuitarFretRangeMode(card, button, fretRange) {
+  setGuitarFretRange(fretRange);
+  syncGuitarFretToggleButton(card, button);
+  renderChordCardKeyboard(card);
+  updateProgressionAnimationLabels();
+}
+
+function removeGuitarChordControls(card) {
+  card.querySelectorAll("[data-guitar-voicing-control]").forEach((control) => control.remove());
+}
+
+function syncGuitarChordControls(card) {
+  const instrumentCard = card.querySelector(".guitar-card");
+
+  if (!instrumentCard) {
+    removeGuitarChordControls(card);
+    return;
+  }
+
+  const voicings = getGuitarVoicings(card.dataset.root, card.dataset.quality);
+  const nextIndex = normalizeGuitarVoicingIndex(guitarState.chordVoicingIndex, voicings.length);
+  const voicingLabel = voicings[nextIndex]?.label || "Voicing coming soon";
+  let control = instrumentCard.querySelector("[data-guitar-voicing-control]");
+  const legend = instrumentCard.querySelector(".keyboard-legend");
+
+  guitarState.chordVoicingIndex = nextIndex;
+  syncGuitarFretToggleButton(card, card.querySelector("[data-octave-toggle]"));
+
+  if (!control) {
+    control = document.createElement("div");
+    control.className = "guitar-voicing-control";
+    control.dataset.guitarVoicingControl = "";
+    control.innerHTML = `
+      <span class="guitar-voicing-kicker">VOICING</span>
+      <strong data-guitar-voicing-name></strong>
+      <button class="guitar-next-voicing" type="button" data-guitar-next-voicing>NEXT VOICING</button>
+    `;
+    if (legend) {
+      legend.insertAdjacentElement("afterend", control);
+    } else {
+      instrumentCard.appendChild(control);
+    }
+  }
+
+  control.querySelector("[data-guitar-voicing-name]").textContent = voicingLabel;
+
+  const button = control.querySelector("[data-guitar-next-voicing]");
+  const canCycle = voicings.length > 1;
+
+  button.disabled = !canCycle;
+  button.setAttribute("aria-disabled", String(!canCycle));
+  button.setAttribute("aria-label", canCycle ? `Next voicing after ${voicingLabel}` : `${voicingLabel} is the only voicing`);
+
+  if (!button.dataset.guitarVoicingBound) {
+    button.addEventListener("click", () => {
+      const currentVoicings = getGuitarVoicings(card.dataset.root, card.dataset.quality);
+
+      if (currentVoicings.length <= 1) {
+        return;
+      }
+
+      guitarState.chordVoicingIndex = normalizeGuitarVoicingIndex(guitarState.chordVoicingIndex + 1, currentVoicings.length);
+      syncGuitarChordControls(card);
+      renderChordCardKeyboard(card);
+      syncGuitarChordAboutElements(card);
+    });
+    button.dataset.guitarVoicingBound = "true";
+  }
+}
+
 function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying = false, currentNotes = null) {
   const keyboard = card.querySelector(".keyboard");
 
@@ -1454,6 +2299,20 @@ function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying =
     return;
   }
 
+  if (isGuitarMode()) {
+    syncGuitarChordControls(card);
+    keyboard.replaceChildren(createInstrumentDiagram(
+      notes,
+      card.hasAttribute("data-preserve-spelling"),
+      isPlaying,
+      chordCardOctaveCount(card),
+      currentNotes,
+      guitarChordRenderOptions(card)
+    ));
+    return;
+  }
+
+  removeGuitarChordControls(card);
   keyboard.replaceChildren(createInstrumentDiagram(notes, card.hasAttribute("data-preserve-spelling"), isPlaying, chordCardOctaveCount(card), currentNotes));
 }
 
@@ -2006,6 +2865,7 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
   const symbols = animation.dataset.symbols?.split(",").filter(Boolean) || [];
   const symbol = symbols[index] || symbols[0];
   const step = animation.querySelector(".progression-step");
+  const isHomeGuitarProgression = isGuitarMode() && animation.hasAttribute("data-home-progression-animation");
 
   if (!symbol || !step) {
     return;
@@ -2015,15 +2875,30 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
   const keyboard = step.querySelector("div");
   const notes = chordNotesFromSymbol(symbol);
   const displaySymbols = animation.dataset.displaySymbols?.split(",").filter(Boolean) || [];
+  const labelText = isHomeGuitarProgression
+    ? guitarProgressionStepLabel(index, symbol)
+    : displaySymbols[index] || displayChordSymbol(symbol);
 
   animation.dataset.activeIndex = String(index);
-  label.textContent = displaySymbols[index] || displayChordSymbol(symbol);
+  label.textContent = labelText;
   animation.closest(".piano-card, .guitar-card")?.querySelectorAll("[data-home-progression-step-label]").forEach((element) => {
-    element.textContent = label.textContent;
+    element.textContent = labelText;
   });
   keyboard.className = "progression-keyboard";
   keyboard.setAttribute("aria-hidden", "true");
-  keyboard.replaceChildren(createInstrumentDiagram(activeNotes || notes, false, isPlaying, Number(animation.dataset.octaves) === 2 ? 2 : 1));
+  keyboard.replaceChildren(createInstrumentDiagram(
+    isGuitarMode() ? notes : activeNotes || notes,
+    false,
+    isPlaying,
+    Number(animation.dataset.octaves) === 2 ? 2 : 1,
+    isGuitarMode() ? activeNotes : null,
+    isGuitarMode()
+      ? {
+          symbol,
+          voicingIndex: isHomeGuitarProgression ? homeProgressionGuitarVoicingIndex(index, symbol) : 0,
+        }
+      : {}
+  ));
   animation.classList.toggle("is-active", isPlaying);
 }
 
@@ -2227,6 +3102,48 @@ function chordAboutText(chordNameText, notes, quality) {
   return `${chordNameText} uses ${noteList}. ${info.description}`;
 }
 
+function guitarChordAboutText(chordNameText, notes, quality, card) {
+  const voicing = card ? currentGuitarChordVoicing(card) : guitarRenderContext(notes, { quality });
+  const noteList = guitarReadableNoteList(notes);
+
+  if (!voicing.supported) {
+    return `${chordNameText} uses ${noteList}. Voicing coming soon; use these notes while this shape is added.`;
+  }
+
+  const voicingName = guitarVoicingLabelForSentence(voicing.label);
+  const usesOpenStrings = voicing.strings.some((string) => string.state === "open");
+  const usesMutedStrings = voicing.strings.some((string) => string.state === "muted");
+  const markerText = [
+    usesOpenStrings ? "Open strings are marked with O." : "",
+    usesMutedStrings ? "Muted strings are marked with X." : "",
+  ].filter(Boolean).join(" ");
+  const fingeringText = voicing.barre
+    ? `This voicing is a ${voicingName} chord with an index barre at fret ${voicing.barre.fret}. Finger numbers show suggested fingering across the fretboard.`
+    : voicing.compact
+      ? `This ${voicingName} voicing keeps the essential chord tones in a playable guitar shape. Finger numbers show suggested fingering.`
+      : `This ${voicingName} voicing shows a playable guitar shape across the fretboard. Finger numbers show suggested fingering.`;
+
+  return `${chordNameText} uses ${noteList}. ${fingeringText}${markerText ? ` ${markerText}` : ""}`;
+}
+
+function syncGuitarChordAboutElements(card) {
+  if (!card || !isGuitarMode()) {
+    return;
+  }
+
+  const notes = chordCardNotes(card);
+  const quality = normalizeChordQuality(card.dataset.quality);
+  const displayedChordName = card.hasAttribute("data-preserve-spelling")
+    ? card.dataset.displayTitle
+    : card.dataset.root && card.dataset.quality
+      ? chordTitleForCard(card)
+      : displayNotes(notes);
+
+  card.querySelectorAll("[data-dynamic-chord-about]").forEach((element) => {
+    element.textContent = guitarChordAboutText(displayedChordName, notes, quality, card);
+  });
+}
+
 function changeRelatedChordPage(card, direction) {
   const currentPage = Number.parseInt(card.dataset.relatedPage || "0", 10);
   const nextPage = (Number.isNaN(currentPage) ? 0 : currentPage) + direction;
@@ -2391,7 +3308,9 @@ function updateChordCardText(card) {
   });
 
   card.querySelectorAll("[data-dynamic-chord-about]").forEach((element) => {
-    element.textContent = chordAboutText(displayedChordName, notes, quality);
+    element.textContent = isGuitarMode()
+      ? guitarChordAboutText(displayedChordName, notes, quality, card)
+      : chordAboutText(displayedChordName, notes, quality);
   });
 
   if (noteText && !noteText.hasAttribute("data-dynamic-chord-notes-inline")) {
@@ -2439,6 +3358,11 @@ function initializeChordCard(card) {
 }
 
 function setPianoOctaveMode(card, button, octaveCount) {
+  if (isGuitarMode()) {
+    setGuitarFretRangeMode(card, button, getGuitarFretRange());
+    return;
+  }
+
   const visibleOctaves = octaveCount === 2 ? 2 : 1;
 
   card.dataset.octaves = String(visibleOctaves);
@@ -2460,14 +3384,44 @@ function initializePianoOctaveToggle() {
       return;
     }
 
-    setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 2 : 1);
+    if (isGuitarMode()) {
+      syncGuitarFretToggleButton(card, button);
+    } else {
+      setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 2 : 1);
+    }
 
     if (!pianoOctaveToggleButtons.has(button)) {
       button.addEventListener("click", () => {
+        if (isGuitarMode()) {
+          setGuitarFretRangeMode(
+            card,
+            button,
+            getGuitarFretRange() === guitarFretRanges.extended ? guitarFretRanges.compact : guitarFretRanges.extended
+          );
+          return;
+        }
+
         setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 1 : 2);
       });
       pianoOctaveToggleButtons.add(button);
     }
+  });
+}
+
+function syncInstrumentRangeToggleButtons() {
+  document.querySelectorAll("[data-octave-toggle]").forEach((button) => {
+    const card = button.closest("[data-dynamic-chord-card], [data-major-chord-card]");
+
+    if (!card) {
+      return;
+    }
+
+    if (isGuitarMode()) {
+      syncGuitarFretToggleButton(card, button);
+      return;
+    }
+
+    setPianoOctaveMode(card, button, card.dataset.octaves === "2" ? 2 : 1);
   });
 }
 
@@ -2621,6 +3575,7 @@ function setDynamicChordRoot(root, page = dynamicChordPageForElement()) {
   }
 
   stopActiveLoop();
+  guitarState.chordVoicingIndex = 0;
   const quality = getChordPageQuality(page);
   const chord = getChordForRoot(root, quality);
   card.dataset.root = chord.root;
@@ -3100,10 +4055,24 @@ function updateInstrumentLegendText() {
   });
 }
 
+function updateInstrumentWelcomeText() {
+  const title = document.querySelector("#selector-welcome-title");
+  const body = document.querySelector(".selector-welcome p");
+
+  if (!title || !body) {
+    return;
+  }
+
+  title.textContent = isGuitarMode() ? "WELCOME, GUITARIST!" : "Welcome, musician!";
+  body.textContent = isGuitarMode()
+    ? "Pick a root and chord type, then explore playable guitar voicings across the fretboard."
+    : "Chord Mode lets you explore harmony fast. Pick a root note, chord type and explore related chords.";
+}
+
 function refreshInstrumentDiagrams() {
   if (homeProgressionState.mode === "progressions" && document.querySelector(".is-progressions-mode")) {
-    updateProgressionAnimationLabels();
-    updateInstrumentLegendText();
+    renderHomeProgressionsMode();
+    updateInstrumentWelcomeText();
     return;
   }
 
@@ -3122,6 +4091,7 @@ function refreshInstrumentDiagrams() {
   });
   updateProgressionAnimationLabels();
   updateInstrumentLegendText();
+  updateInstrumentWelcomeText();
 }
 
 function syncInstrumentFamilyMenu(mode = getSelectedInstrumentFamily()) {
@@ -3148,6 +4118,7 @@ function applyInstrumentFamilyMode(family, { stopPlayback = true } = {}) {
   document.body.dataset.instrumentFamily = normalizedFamily;
   syncInstrumentFamilyMenu(normalizedFamily);
   syncInstrumentCardClasses();
+  syncInstrumentRangeToggleButtons();
   renderSoundOptions(normalizedFamily);
   initializeSoundSelector();
   setSoundMode(selectedSoundMode, document, { stopPlayback });
@@ -3642,6 +4613,14 @@ function normalizeHomeProgressionState() {
   homeProgressionState.stepModes = homeProgressionState.steps.map((_, index) => {
     return normalizeHomeProgressionChordMode(currentStepModes[index] || fallbackMode);
   });
+  const currentGuitarVoicingIndexes = Array.isArray(homeProgressionState.guitarVoicingIndexes)
+    ? homeProgressionState.guitarVoicingIndexes
+    : [];
+  homeProgressionState.guitarVoicingIndexes = homeProgressionState.steps.map((_, index) => {
+    const value = Number.parseInt(currentGuitarVoicingIndexes[index], 10);
+
+    return Number.isNaN(value) ? 0 : Math.max(value, 0);
+  });
 
   homeProgressionState.selectedStepIndex = Math.min(
     Math.max(Number(homeProgressionState.selectedStepIndex) || 0, 0),
@@ -3700,6 +4679,31 @@ function homeProgressionSymbols(chords) {
   return chords.map((chord) => chord.symbol);
 }
 
+function resetHomeProgressionGuitarVoicings() {
+  homeProgressionState.guitarVoicingIndexes = homeProgressionState.steps.map(() => 0);
+}
+
+function homeProgressionGuitarVoicingIndex(index = homeProgressionState.selectedStepIndex, symbol = "") {
+  const parsed = symbol ? parseChordSymbol(symbol) : null;
+  const voicingCount = parsed ? getGuitarVoicings(parsed.root, parsed.quality).length : 0;
+
+  return normalizeGuitarVoicingIndex(homeProgressionState.guitarVoicingIndexes?.[index] || 0, voicingCount);
+}
+
+function setHomeProgressionGuitarVoicingIndex(index, value) {
+  homeProgressionState.guitarVoicingIndexes[index] = Math.max(Number.parseInt(value, 10) || 0, 0);
+}
+
+function guitarProgressionStepLabel(index, symbol) {
+  const parsed = parseChordSymbol(symbol);
+
+  if (!parsed) {
+    return `STEP ${index + 1}: ${displayChordSymbol(symbol).toUpperCase()}`;
+  }
+
+  return `STEP ${index + 1}: ${displayNoteName(parsed.root).toUpperCase()} ${chordQualityInfo(parsed.quality).title.toUpperCase()}`;
+}
+
 function setHomeProgressionSteps(steps, formulaId = "custom", stepModes = []) {
   homeProgressionState.steps = steps.map((degree) => Math.min(Math.max(Number(degree) || 0, 0), 6)).slice(0, 8);
   homeProgressionState.stepModes = homeProgressionState.steps.map((_, index) => {
@@ -3708,6 +4712,7 @@ function setHomeProgressionSteps(steps, formulaId = "custom", stepModes = []) {
   homeProgressionState.formulaId = formulaId;
   homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
   homeProgressionState.chordMode = homeProgressionSelectedStepMode();
+  resetHomeProgressionGuitarVoicings();
 }
 
 function homeProgressionMobileFormulaOptions() {
@@ -3737,6 +4742,7 @@ function resetHomeProgressionDefaults() {
   homeProgressionState.octaveCount = 1;
   homeProgressionState.selectedIndex = 0;
   homeProgressionState.page = 0;
+  resetHomeProgressionGuitarVoicings();
 }
 
 function handleHomeProgressionUtility(action) {
@@ -3748,6 +4754,7 @@ function handleHomeProgressionUtility(action) {
     stopActiveLoop();
     homeProgressionState.steps.push(homeProgressionState.steps[homeProgressionState.selectedStepIndex] ?? 0);
     homeProgressionState.stepModes.push(homeProgressionSelectedStepMode());
+    homeProgressionState.guitarVoicingIndexes.push(0);
     homeProgressionState.selectedStepIndex = homeProgressionState.steps.length - 1;
     homeProgressionState.chordMode = homeProgressionSelectedStepMode();
     homeProgressionState.formulaId = "custom";
@@ -3763,6 +4770,7 @@ function handleHomeProgressionUtility(action) {
     stopActiveLoop();
     homeProgressionState.steps.splice(homeProgressionState.selectedStepIndex, 1);
     homeProgressionState.stepModes.splice(homeProgressionState.selectedStepIndex, 1);
+    homeProgressionState.guitarVoicingIndexes.splice(homeProgressionState.selectedStepIndex, 1);
     homeProgressionState.selectedStepIndex = Math.min(homeProgressionState.selectedStepIndex, homeProgressionState.steps.length - 1);
     homeProgressionState.chordMode = homeProgressionSelectedStepMode();
     homeProgressionState.formulaId = "custom";
@@ -3814,9 +4822,9 @@ function renderHomeKeySelector() {
     </div>
     <aside class="progression-info-message" aria-labelledby="progression-info-title">
       <div class="progression-info-message-heading">
-        <h2 id="progression-info-title">Build your progression</h2>
+        <h2 id="progression-info-title">${isGuitarMode() ? "BUILD YOUR GUITAR PROGRESSION" : "Build your progression"}</h2>
       </div>
-      <p>Create chord journeys. Customize progressions.</p>
+      <p>${isGuitarMode() ? "Create chord journeys, switch steps, and practice each shape with strum or arpeggio mode." : "Create chord journeys. Customize progressions."}</p>
     </aside>
     <div class="progression-builder-side">
       <section class="progression-builder-section" aria-labelledby="progression-scale-title">
@@ -3847,6 +4855,7 @@ function renderHomeKeySelector() {
       homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.root = root;
       homeProgressionState.key = root;
+      resetHomeProgressionGuitarVoicings();
       renderHomeProgressionsMode();
     });
     rootMenu.appendChild(button);
@@ -3870,6 +4879,7 @@ function renderHomeKeySelector() {
       stopActiveLoop();
       homeProgressionMobileFormulaMenuOpen = false;
       homeProgressionState.scaleMode = mode;
+      resetHomeProgressionGuitarVoicings();
       renderHomeProgressionsMode();
     });
     scaleMenu.appendChild(button);
@@ -4043,6 +5053,7 @@ function renderHomeProgressionList() {
     button.addEventListener("click", () => {
       stopActiveLoop();
       homeProgressionState.steps[homeProgressionState.selectedStepIndex] = index;
+      setHomeProgressionGuitarVoicingIndex(homeProgressionState.selectedStepIndex, 0);
       homeProgressionState.formulaId = "custom";
       renderHomeProgressionsMode();
     });
@@ -4066,6 +5077,7 @@ function renderHomeProgressionList() {
     button.addEventListener("click", () => {
       stopActiveLoop();
       homeProgressionState.stepModes[homeProgressionState.selectedStepIndex] = mode;
+      setHomeProgressionGuitarVoicingIndex(homeProgressionState.selectedStepIndex, 0);
       homeProgressionState.chordMode = mode;
       homeProgressionState.formulaId = "custom";
       renderHomeProgressionsMode();
@@ -4134,6 +5146,9 @@ function ensureHomeProgressionStage(chordSymbols, labels) {
   animation.dataset.symbols = chordSymbols.join(",");
   animation.dataset.displaySymbols = labels.join(",");
   animation.dataset.octaves = String(homeProgressionState.octaveCount);
+  if (isGuitarMode()) {
+    animation.dataset.activeIndex = String(homeProgressionState.selectedStepIndex);
+  }
   keyboard.setAttribute("aria-label", `${title} ${labels.join(" - ")} progression`);
   updateProgressionAnimation(animation);
 
@@ -4149,8 +5164,54 @@ function toggleHomeProgressionArpeggio(event) {
     return;
   }
 
+  if (isGuitarMode()) {
+    syncGuitarPlayModeToggle(button);
+    return;
+  }
+
   button.textContent = homeProgressionState.arpeggio ? "No Arpeggio" : "Arpeggio";
   button.setAttribute("aria-pressed", String(homeProgressionState.arpeggio));
+}
+
+function guitarPlayModeToggleMarkup() {
+  return `
+    <span>PLAY MODE:</span>
+    <strong class="${homeProgressionState.arpeggio ? "" : "is-active"}">STRUM</strong>
+    <span aria-hidden="true">/</span>
+    <strong class="${homeProgressionState.arpeggio ? "is-active" : ""}">ARPEGGIO</strong>
+  `;
+}
+
+function syncGuitarPlayModeToggle(button) {
+  if (!button || !isGuitarMode()) {
+    return;
+  }
+
+  button.innerHTML = guitarPlayModeToggleMarkup();
+  button.setAttribute("aria-pressed", String(homeProgressionState.arpeggio));
+  button.setAttribute(
+    "aria-label",
+    `Toggle guitar play mode. Current mode: ${homeProgressionState.arpeggio ? "Arpeggio" : "Strum"}`
+  );
+}
+
+function homeGuitarVoicingControlData(chordSymbols) {
+  const selectedIndex = homeProgressionState.selectedStepIndex;
+  const symbol = chordSymbols[selectedIndex] || chordSymbols[0] || "";
+  const parsed = parseChordSymbol(symbol);
+  const voicings = parsed ? getGuitarVoicings(parsed.root, parsed.quality) : [];
+  const voicingIndex = homeProgressionGuitarVoicingIndex(selectedIndex, symbol);
+  const voicingLabel = voicings[voicingIndex]?.label || "Voicing coming soon";
+
+  setHomeProgressionGuitarVoicingIndex(selectedIndex, voicingIndex);
+
+  return {
+    selectedIndex,
+    symbol,
+    voicings,
+    voicingIndex,
+    voicingLabel,
+  };
 }
 
 function renderHomePianoCard(progression, chords) {
@@ -4158,7 +5219,24 @@ function renderHomePianoCard(progression, chords) {
   const labels = homeProgressionLabels(chords);
   const chordSymbols = homeProgressionSymbols(chords);
   const formula = homeProgressionFormulaLabel();
+  const guitarMode = isGuitarMode();
   const arpeggioLabel = homeProgressionState.arpeggio ? "No Arpeggio" : "Arpeggio";
+  const fretRange = getGuitarFretRange();
+  const rangeButtonLabel = guitarMode
+    ? fretRange === guitarFretRanges.extended ? "12F" : "5F"
+    : homeProgressionState.octaveCount === 2 ? "-OCT" : "+OCT";
+  const rangePressed = guitarMode
+    ? fretRange === guitarFretRanges.extended
+    : homeProgressionState.octaveCount === 2;
+  const guitarVoicing = guitarMode ? homeGuitarVoicingControlData(chordSymbols) : null;
+  const guitarVoicingButtonLabel = guitarMode
+    ? guitarVoicing.voicings.length > 1
+      ? `Next voicing after ${guitarVoicing.voicingLabel}`
+      : `${guitarVoicing.voicingLabel} is the only voicing`
+    : "";
+  const selectedStepLabel = guitarMode
+    ? guitarProgressionStepLabel(homeProgressionState.selectedStepIndex, chordSymbols[homeProgressionState.selectedStepIndex] || chordSymbols[0])
+    : "";
 
   if (!pianoCard) {
     return;
@@ -4190,12 +5268,19 @@ function renderHomePianoCard(progression, chords) {
           <p data-progression-chords>${labels.join(" - ")}</p>
         </div>
       </div>
-      <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${homeProgressionState.octaveCount === 2 ? "true" : "false"}">${homeProgressionState.octaveCount === 2 ? "-OCT" : "+OCT"}</button>
+      <button class="octave-toggle" type="button" data-home-progression-octave-toggle aria-pressed="${rangePressed ? "true" : "false"}" aria-label="${guitarMode ? fretRange === guitarFretRanges.extended ? "Show compact 5-fret guitar view" : "Show extended 12-fret guitar view" : homeProgressionState.octaveCount === 2 ? "Show one octave piano" : "Show two octave piano"}">${rangeButtonLabel}</button>
     </div>
     <div class="keyboard-legend-row">
-      <p class="keyboard-legend">STEPS: <span data-home-progression-step-label></span></p>
-      <button class="arpeggio-toggle" type="button" aria-pressed="${homeProgressionState.arpeggio ? "true" : "false"}" data-home-progression-arpeggio>${arpeggioLabel}</button>
+      <p class="keyboard-legend">${guitarMode ? `<span data-home-progression-step-label>${selectedStepLabel}</span>` : `STEPS: <span data-home-progression-step-label></span>`}</p>
+      <button class="arpeggio-toggle${guitarMode ? " guitar-play-mode-toggle" : ""}" type="button" aria-pressed="${homeProgressionState.arpeggio ? "true" : "false"}" data-home-progression-arpeggio>${guitarMode ? guitarPlayModeToggleMarkup() : arpeggioLabel}</button>
     </div>
+    ${guitarMode ? `
+      <div class="guitar-voicing-control guitar-voicing-control--progression" data-home-guitar-voicing-control>
+        <span class="guitar-voicing-kicker">VOICING</span>
+        <strong data-home-guitar-voicing-name>${guitarVoicing.voicingLabel}</strong>
+        <button class="guitar-next-voicing" type="button" data-home-guitar-next-voicing aria-label="${guitarVoicingButtonLabel}" ${guitarVoicing.voicings.length <= 1 ? "disabled aria-disabled=\"true\"" : ""}>NEXT VOICING</button>
+      </div>
+    ` : ""}
     <div class="keyboard" role="img" aria-label="${isGuitarMode() ? "Guitar chord diagram" : "Piano keys"} for ${formula} progression"></div>
   `;
 
@@ -4203,7 +5288,26 @@ function renderHomePianoCard(progression, chords) {
   pianoCard.querySelector("[data-home-progression-repeat]")?.addEventListener("click", startHomeProgressionLoop);
   pianoCard.querySelector("[data-home-progression-arpeggio]")?.addEventListener("click", toggleHomeProgressionArpeggio);
   pianoCard.querySelector("[data-home-progression-octave-toggle]")?.addEventListener("click", () => {
+    if (isGuitarMode()) {
+      setGuitarFretRange(getGuitarFretRange() === guitarFretRanges.extended ? guitarFretRanges.compact : guitarFretRanges.extended);
+      renderHomeProgressionsMode();
+      return;
+    }
+
     homeProgressionState.octaveCount = homeProgressionState.octaveCount === 2 ? 1 : 2;
+    renderHomeProgressionsMode();
+  });
+  pianoCard.querySelector("[data-home-guitar-next-voicing]")?.addEventListener("click", () => {
+    const currentVoicing = homeGuitarVoicingControlData(chordSymbols);
+
+    if (currentVoicing.voicings.length <= 1) {
+      return;
+    }
+
+    setHomeProgressionGuitarVoicingIndex(
+      currentVoicing.selectedIndex,
+      normalizeGuitarVoicingIndex(currentVoicing.voicingIndex + 1, currentVoicing.voicings.length)
+    );
     renderHomeProgressionsMode();
   });
   ensureHomeProgressionStage(chordSymbols, labels);
@@ -4231,10 +5335,15 @@ function renderHomeProgressionScaleLine() {
       >
     </div>
     <div class="progression-songs-fields">
-      <p class="progression-songs-label">SONGS:</p>
+      <p class="progression-songs-label">${isGuitarMode() ? "LEVEL:" : "SONGS:"}</p>
       <p class="progression-songs-list" data-home-progression-songs></p>
     </div>
   `;
+  if (isGuitarMode()) {
+    infoCard.querySelector("[data-home-progression-songs]").textContent = "Beginner-friendly guitar progression";
+    return;
+  }
+
   fitHomeProgressionSongLine(infoCard, songs);
 }
 
@@ -4352,7 +5461,7 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
 
   schedulePlayback(() => {
     animation.classList.remove("is-active");
-    setProgressionAnimationChord(animation, 0);
+    setProgressionAnimationChord(animation, isGuitarMode() ? homeProgressionState.selectedStepIndex : 0);
   }, startDelay + chordSymbols.length * progressionChordSpacing + 0.2);
 }
 
