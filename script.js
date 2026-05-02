@@ -1330,6 +1330,16 @@ function chordFrequencies(notes) {
   });
 }
 
+function frequencyFromNoteValueOctave(value, octave) {
+  if (!Number.isFinite(value) || !Number.isFinite(octave)) {
+    return null;
+  }
+
+  const midiNumber = 12 * (octave + 1) + value;
+
+  return 440 * 2 ** ((midiNumber - 69) / 12);
+}
+
 function chordNoteNames(notes) {
   const rootValue = noteValues[notes[0]];
 
@@ -2191,6 +2201,50 @@ function currentGuitarChordVoicing(card) {
   return guitarRenderContext(chordCardNotes(card), guitarChordRenderOptions(card));
 }
 
+function guitarVoicingPlayedStrings(context) {
+  if (!context?.supported || !Array.isArray(context.strings)) {
+    return [];
+  }
+
+  return context.strings.filter((string) => {
+    return string.state !== "muted"
+      && string.fret !== null
+      && Number.isFinite(string.value)
+      && Number.isFinite(string.octave);
+  });
+}
+
+function guitarVoicingFrequenciesFromContext(context) {
+  return guitarVoicingPlayedStrings(context)
+    .map((string) => frequencyFromNoteValueOctave(string.value, string.octave))
+    .filter((frequency) => Number.isFinite(frequency));
+}
+
+function guitarVoicingNoteNamesFromContext(context) {
+  return guitarVoicingPlayedStrings(context).map((string) => string.note);
+}
+
+function guitarVoicingPlaybackFromContext(context) {
+  const frequencies = guitarVoicingFrequenciesFromContext(context);
+  const notes = guitarVoicingNoteNamesFromContext(context);
+
+  return frequencies.length ? { frequencies, notes } : null;
+}
+
+function guitarVoicingPlaybackFromCard(card) {
+  return card ? guitarVoicingPlaybackFromContext(currentGuitarChordVoicing(card)) : null;
+}
+
+function guitarVoicingPlaybackFromSymbol(symbol, voicingIndex = 0) {
+  const notes = chordNotesFromSymbol(symbol);
+
+  if (!notes.length) {
+    return null;
+  }
+
+  return guitarVoicingPlaybackFromContext(guitarRenderContext(notes, { symbol, voicingIndex }));
+}
+
 function guitarStrumPickingLabel() {
   return homeProgressionState.arpeggio ? "PCK" : "STR";
 }
@@ -2338,7 +2392,7 @@ function resetChordPlaybackKeyboards() {
   });
 }
 
-function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true) {
+function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true, noteSequence = notes) {
   if (!card) {
     return;
   }
@@ -2350,7 +2404,7 @@ function scheduleChordKeyboardPlayback(card, notes, includeNoteSequence = true) 
     return;
   }
 
-  notes.forEach((note, index) => {
+  noteSequence.forEach((note, index) => {
     const noteStart = startDelay + chordNoteStartOffset + index * chordNoteSpacing;
     schedulePlayback(() => {
       if (isGuitarMode()) {
@@ -2632,19 +2686,19 @@ function playGuitarPluck(frequency, startTime, duration = 1.1, destination = aud
   noteGain.connect(destination);
 }
 
-function playGuitarChordSound(frequencies, startTime, duration, destination, mode = "acoustic") {
+function playGuitarChordSound(frequencies, startTime, duration, destination, mode = "acoustic", { preserveOrder = false } = {}) {
   const output = mode === "psyche" ? createPsycheEchoBus(destination) : destination;
-  const sortedFrequencies = [...frequencies].sort((a, b) => a - b);
+  const playableFrequencies = preserveOrder ? [...frequencies] : [...frequencies].sort((a, b) => a - b);
   const strumSpacing = mode === "electric" ? 0.012 : 0.024;
 
-  sortedFrequencies.forEach((frequency, index) => {
+  playableFrequencies.forEach((frequency, index) => {
     playGuitarPluck(frequency, startTime + index * strumSpacing, duration, output, mode, 0.9);
   });
 }
 
-function playNativeChordSound(frequencies, startTime, duration, destination, mode = getSelectedSoundMode()) {
+function playNativeChordSound(frequencies, startTime, duration, destination, mode = getSelectedSoundMode(), options = {}) {
   if (soundModePresets.guitars[mode]) {
-    playGuitarChordSound(frequencies, startTime, duration, destination, mode);
+    playGuitarChordSound(frequencies, startTime, duration, destination, mode, options);
     return;
   }
 
@@ -2690,11 +2744,14 @@ function playChord(notes, card, { includeNoteSequence, keepLoop = false } = {}) 
   const playbackOutput = startNewPlayback({ keepLoop });
   const noteNames = chordNoteNames(notes);
   const soundMode = getSelectedSoundMode();
+  const guitarVoicingPlayback = isGuitarMode() ? guitarVoicingPlaybackFromCard(card) : null;
+  const frequencies = guitarVoicingPlayback?.frequencies || chordFrequencies(notes);
+  const noteSequence = guitarVoicingPlayback?.notes || notes;
   const playNoteSequence = typeof includeNoteSequence === "boolean"
     ? includeNoteSequence
     : !isGuitarMode() || homeProgressionState.arpeggio;
 
-  scheduleChordKeyboardPlayback(card, notes, playNoteSequence);
+  scheduleChordKeyboardPlayback(card, notes, playNoteSequence, noteSequence);
 
   if (shouldUsePianoSampler()) {
     Tone.start();
@@ -2715,9 +2772,10 @@ function playChord(notes, card, { includeNoteSequence, keepLoop = false } = {}) 
   }
 
   const now = audioContext.currentTime + startDelay;
-  const frequencies = chordFrequencies(notes);
   const noteStart = audioContext.currentTime + startDelay + chordNoteStartOffset;
-  playNativeChordSound(frequencies, now, chordDuration, playbackOutput, soundMode);
+  playNativeChordSound(frequencies, now, chordDuration, playbackOutput, soundMode, {
+    preserveOrder: Boolean(guitarVoicingPlayback),
+  });
 
   if (playNoteSequence) {
     frequencies.forEach((frequency, index) => {
@@ -2748,9 +2806,12 @@ function startChordLoop(notes, card, button) {
     }
 
     const includeNoteSequence = isGuitarMode() ? homeProgressionState.arpeggio : false;
+    const noteCount = isGuitarMode()
+      ? guitarVoicingPlaybackFromCard(card)?.frequencies.length || notes.length
+      : notes.length;
 
     playChord(notes, card, { includeNoteSequence, keepLoop: true });
-    activeLoop.timerId = window.setTimeout(runLoop, chordPlaybackDuration(notes.length, includeNoteSequence) * 1000);
+    activeLoop.timerId = window.setTimeout(runLoop, chordPlaybackDuration(noteCount, includeNoteSequence) * 1000);
   };
 
   runLoop();
@@ -2940,7 +3001,9 @@ function scheduleProgressionAnimation(item, chordSymbols, { arpeggio = false } =
     const chordStart = startDelay + index * progressionChordSpacing;
 
     if (arpeggio) {
-      const notes = upDownArpeggioSequence(chordNotesFromSymbol(chordSymbols[index]));
+      const guitarVoicingPlayback = isGuitarMode() ? guitarVoicingPlaybackFromSymbol(chordSymbols[index], 0) : null;
+      const sourceNotes = guitarVoicingPlayback?.notes || chordNotesFromSymbol(chordSymbols[index]);
+      const notes = guitarVoicingPlayback ? sourceNotes : upDownArpeggioSequence(sourceNotes);
 
       notes.forEach((note, noteIndex) => {
         schedulePlayback(() => {
@@ -3008,10 +3071,13 @@ function playProgression(chordSymbols, item, { keepLoop = false, arpeggio = fals
 
   chordSymbols.forEach((symbol, index) => {
     const startTime = now + index * progressionChordSpacing;
-    const chordFrequencies = frequenciesFromChordSymbol(symbol);
+    const guitarVoicingPlayback = isGuitarMode() ? guitarVoicingPlaybackFromSymbol(symbol, 0) : null;
+    const chordFrequencies = guitarVoicingPlayback?.frequencies || frequenciesFromChordSymbol(symbol);
 
     if (arpeggio) {
-      upDownArpeggioSequence(chordFrequencies).forEach((frequency, noteIndex) => {
+      const noteFrequencies = guitarVoicingPlayback ? chordFrequencies : upDownArpeggioSequence(chordFrequencies);
+
+      noteFrequencies.forEach((frequency, noteIndex) => {
         playNativeSingleNote(
           frequency,
           startTime + noteIndex * progressionArpeggioNoteSpacing,
@@ -3023,7 +3089,9 @@ function playProgression(chordSymbols, item, { keepLoop = false, arpeggio = fals
       return;
     }
 
-    playNativeChordSound(chordFrequencies, startTime, progressionChordDuration, playbackOutput, soundMode);
+    playNativeChordSound(chordFrequencies, startTime, progressionChordDuration, playbackOutput, soundMode, {
+      preserveOrder: Boolean(guitarVoicingPlayback),
+    });
   });
   return progressionPlaybackDuration(chordSymbols);
 }
@@ -5429,7 +5497,14 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
     const chordStart = startDelay + index * progressionChordSpacing;
 
     if (arpeggio) {
-      const notes = upDownArpeggioSequence(chordNotesFromSymbol(chordSymbols[index]));
+      const guitarVoicingPlayback = isGuitarMode()
+        ? guitarVoicingPlaybackFromSymbol(
+            chordSymbols[index],
+            homeProgressionGuitarVoicingIndex(index, chordSymbols[index])
+          )
+        : null;
+      const sourceNotes = guitarVoicingPlayback?.notes || chordNotesFromSymbol(chordSymbols[index]);
+      const notes = guitarVoicingPlayback ? sourceNotes : upDownArpeggioSequence(sourceNotes);
 
       notes.forEach((note, noteIndex) => {
         schedulePlayback(() => {
@@ -5533,10 +5608,15 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
 
   chordSymbols.forEach((symbol, index) => {
     const startTime = now + index * progressionChordSpacing;
-    const frequencies = frequenciesFromChordSymbol(symbol);
+    const guitarVoicingPlayback = isGuitarMode()
+      ? guitarVoicingPlaybackFromSymbol(symbol, homeProgressionGuitarVoicingIndex(index, symbol))
+      : null;
+    const frequencies = guitarVoicingPlayback?.frequencies || frequenciesFromChordSymbol(symbol);
 
     if (arpeggio) {
-      upDownArpeggioSequence(frequencies).forEach((frequency, noteIndex) => {
+      const noteFrequencies = guitarVoicingPlayback ? frequencies : upDownArpeggioSequence(frequencies);
+
+      noteFrequencies.forEach((frequency, noteIndex) => {
         playNativeSingleNote(
           frequency,
           startTime + noteIndex * progressionArpeggioNoteSpacing,
@@ -5548,7 +5628,9 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
       return;
     }
 
-    playNativeChordSound(frequencies, startTime, progressionChordDuration, playbackOutput, soundMode);
+    playNativeChordSound(frequencies, startTime, progressionChordDuration, playbackOutput, soundMode, {
+      preserveOrder: Boolean(guitarVoicingPlayback),
+    });
   });
 }
 
