@@ -673,6 +673,86 @@ const instrumentThemeVisuals = {
       },
     },
   },
+  blessed: {
+    keyboards: {
+      banner: {
+        src: "assets/themes/blessed/blessed-banner.webp",
+        alt: "Pixel-art Blessed Piano Valley scene with pink clouds, angels, crystals, and a piano path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/blessed/blessed-robot-keyboard.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/blessed/blessed-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/blessed/blessed-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/blessed/blessed-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/blessed/blessed-robot-floating.webp",
+        alt: "",
+      },
+    },
+    guitars: {
+      banner: {
+        src: "assets/themes/blessed/blessed-banner-guitar.webp",
+        alt: "Pixel-art Blessed guitar scene with pink clouds, angels, crystals, and a guitar path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/blessed/blessed-robot-guitar.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/blessed/blessed-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/blessed/blessed-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/blessed/blessed-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/blessed/blessed-robot-floating.webp",
+        alt: "",
+      },
+    },
+    ukulele: {
+      banner: {
+        src: "assets/themes/blessed/blessed-banner-ukulele.webp",
+        alt: "Pixel-art Blessed ukulele scene with pink clouds, angels, crystals, and a ukulele path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/blessed/blessed-robot-ukulele.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/blessed/blessed-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/blessed/blessed-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/blessed/blessed-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/blessed/blessed-robot-floating.webp",
+        alt: "",
+      },
+    },
+  },
 };
 const guitarStringTunings = [
   { label: "E", value: 4, octave: 2 },
@@ -5340,6 +5420,13 @@ function initializePianoTheme() {
     .map((option) => option.value);
 
   const isAvailableTheme = (theme) => availableThemes.includes(theme);
+  const normalizeStoredTheme = (theme) => {
+    if (theme === "kawaii") {
+      return isAvailableTheme("blessed") ? "blessed" : "dark";
+    }
+
+    return isAvailableTheme(theme) ? theme : "dark";
+  };
   let storedTheme = "";
 
   try {
@@ -5349,7 +5436,7 @@ function initializePianoTheme() {
       const legacyStoredTheme = localStorage.getItem(legacyPianoThemeStorageKey) || "";
 
       if (legacyStoredTheme) {
-        storedTheme = isAvailableTheme(legacyStoredTheme) ? legacyStoredTheme : "dark";
+        storedTheme = normalizeStoredTheme(legacyStoredTheme);
         localStorage.setItem(pianoThemeStorageKey, storedTheme);
         localStorage.removeItem(legacyPianoThemeStorageKey);
       }
@@ -5358,11 +5445,19 @@ function initializePianoTheme() {
     storedTheme = "";
   }
 
-  const initialTheme = isAvailableTheme(storedTheme) ? storedTheme : "dark";
+  const initialTheme = normalizeStoredTheme(storedTheme);
 
   page.dataset.theme = initialTheme;
   themeMenu.value = initialTheme;
   updateInstrumentThemeVisuals();
+
+  if (storedTheme && storedTheme !== initialTheme) {
+    try {
+      localStorage.setItem(pianoThemeStorageKey, initialTheme);
+    } catch (error) {
+      // Theme migration still works for this session if storage is unavailable.
+    }
+  }
 
   themeMenu.addEventListener("change", () => {
     const nextTheme = isAvailableTheme(themeMenu.value) ? themeMenu.value : "dark";
