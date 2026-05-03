@@ -578,31 +578,31 @@ const instrumentThemeVisuals = {
   dark: {
     keyboards: {
       banner: {
-        src: "assets/themes/dark/theme-dark-banner.webp",
+        src: "assets/themes/dark/dark-banner.webp",
         alt: "Pixel-art Piano scene with floating islands, robots, and a piano path.",
       },
       "sound-robot": {
-        src: "assets/themes/dark/robot-keyboard.webp",
+        src: "assets/themes/dark/dark-robot-keyboard.webp",
         alt: "",
       },
     },
     guitars: {
       banner: {
-        src: "assets/themes/dark/theme-dark-banner-guitar.webp",
+        src: "assets/themes/dark/dark-banner-guitar.webp",
         alt: "Pixel-art guitar scene with floating islands, robots, and a guitar path.",
       },
       "sound-robot": {
-        src: "assets/themes/dark/robot-guitar.webp",
+        src: "assets/themes/dark/dark-robot-guitar.webp",
         alt: "",
       },
     },
     ukulele: {
       banner: {
-        src: "assets/themes/dark/theme-dark-banner-ukulele.webp",
+        src: "assets/themes/dark/dark-banner-ukulele.webp",
         alt: "Pixel-art ukulele scene with floating islands, robots, and a ukulele path.",
       },
       "sound-robot": {
-        src: "assets/themes/dark/robot-ukulele.webp",
+        src: "assets/themes/dark/dark-robot-ukulele.webp",
         alt: "",
       },
     },
@@ -6478,7 +6478,7 @@ function renderHomePianoCard(progression, chords) {
     <div class="piano-card-header">
       <button class="play-button" type="button" aria-label="Play ${formula} progression" data-home-progression-play>
         <img
-          src="assets/themes/dark/play-button.webp"
+          src="assets/themes/dark/dark-play-button.webp"
           alt=""
           width="256"
           height="256"
@@ -6564,7 +6564,7 @@ function renderHomeProgressionScaleLine() {
     <div class="future-illustration-slot" aria-hidden="true">
       <img
         class="info-card-robot"
-        src="assets/themes/dark/robot-floating.webp"
+        src="assets/themes/dark/dark-robot-floating.webp"
         alt=""
         width="320"
         height="320"
