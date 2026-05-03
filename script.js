@@ -5111,10 +5111,8 @@ function updateInstrumentWelcomeText() {
   }
 
   title.textContent = isStringedInstrumentMode()
-    ? isGuitarMode()
-      ? "WELCOME, GUITARIST!"
-      : `WELCOME, ${getStringedInstrumentName().toUpperCase()} PLAYER!`
-    : "Welcome, musician!";
+    ? "WELCOME MUSICIAN!"
+    : "WELCOME MUSICIAN!";
   body.textContent = isStringedInstrumentMode()
     ? `Pick a root and chord type, then explore playable ${getStringedInstrumentArticle()} voicings across the fretboard.`
     : "Chord Mode lets you explore harmony fast. Pick a root note, chord type and explore related chords.";
