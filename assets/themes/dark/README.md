@@ -18,10 +18,6 @@ Runtime files:
 - `dark-repeat-button-hover.webp` - 256x256, repeat button hover state.
 - `dark-repeat-button-active.webp` - 256x256, repeat button active/looping state.
 
-Source/backups:
-
-- Original PNG files and retired artwork are archived under the root `Backup/` folder.
-
 Notes:
 
 - Runtime artwork is WebP for smaller downloads.
