@@ -598,11 +598,11 @@ const instrumentThemeVisuals = {
     },
     ukulele: {
       banner: {
-        src: "assets/themes/dark/theme-dark-banner-guitar.webp",
-        alt: "Pixel-art ukulele scene with floating islands, robots, and a stringed-instrument path.",
+        src: "assets/themes/dark/theme-dark-banner-ukulele.webp",
+        alt: "Pixel-art ukulele scene with floating islands, robots, and a ukulele path.",
       },
       "sound-robot": {
-        src: "assets/themes/dark/robot-guitar.webp",
+        src: "assets/themes/dark/robot-ukulele.webp",
         alt: "",
       },
     },
