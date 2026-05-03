@@ -625,6 +625,54 @@ const instrumentThemeVisuals = {
       },
     },
   },
+  holy: {
+    keyboards: {
+      banner: {
+        src: "assets/themes/holy/holy-banner.webp",
+        alt: "Pixel-art Piano scene with heavenly sky, golden light, robots, and a piano path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/holy/holy-robot-keyboard.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/holy/holy-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/holy/holy-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/holy/holy-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/holy/holy-robot-floating.webp",
+        alt: "",
+      },
+    },
+    guitars: {
+      banner: {
+        src: "assets/themes/holy/holy-banner-guitar.webp",
+        alt: "Pixel-art guitar scene with heavenly sky, golden light, robots, and a guitar path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/holy/holy-robot-guitar.webp",
+        alt: "",
+      },
+    },
+    ukulele: {
+      banner: {
+        src: "assets/themes/holy/holy-banner-ukulele.webp",
+        alt: "Pixel-art ukulele scene with heavenly sky, golden light, robots, and a ukulele path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/holy/holy-robot-ukulele.webp",
+        alt: "",
+      },
+    },
+  },
 };
 const guitarStringTunings = [
   { label: "E", value: 4, octave: 2 },
