@@ -549,7 +549,8 @@ const notationStorageKey = "chordysseyAccidentalMode";
 const legacyNotationStorageKey = "preferredNotation";
 const noteNameModeStorageKey = "chordysseyNoteNameMode";
 const selectedModeStorageKey = "chordyssey:selectedMode";
-const pianoValleyThemeStorageKey = "pianoValleyTheme";
+const pianoThemeStorageKey = "chordyssey:pianoTheme";
+const legacyPianoThemeStorageKey = "pianoValleyTheme";
 const instrumentFamilyStorageKey = "chordyssey:instrumentFamily";
 const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
 const instrumentFamilies = new Set(["keyboards", "guitars", "ukulele"]);
@@ -5258,8 +5259,8 @@ function initializeInstrumentSwitchers() {
   });
 }
 
-function initializePianoValleyTheme() {
-  const page = document.querySelector('[data-page="piano-valley"]');
+function initializePianoTheme() {
+  const page = document.querySelector('[data-page="piano"]');
   const themeMenu = page?.querySelector("#theme-menu");
 
   if (!page || !themeMenu) {
@@ -5275,7 +5276,17 @@ function initializePianoValleyTheme() {
   let storedTheme = "";
 
   try {
-    storedTheme = localStorage.getItem(pianoValleyThemeStorageKey) || "";
+    storedTheme = localStorage.getItem(pianoThemeStorageKey) || "";
+
+    if (!storedTheme) {
+      const legacyStoredTheme = localStorage.getItem(legacyPianoThemeStorageKey) || "";
+
+      if (legacyStoredTheme) {
+        storedTheme = isAvailableTheme(legacyStoredTheme) ? legacyStoredTheme : "dark";
+        localStorage.setItem(pianoThemeStorageKey, storedTheme);
+        localStorage.removeItem(legacyPianoThemeStorageKey);
+      }
+    }
   } catch (error) {
     storedTheme = "";
   }
@@ -5294,7 +5305,7 @@ function initializePianoValleyTheme() {
     updateInstrumentThemeVisuals();
 
     try {
-      localStorage.setItem(pianoValleyThemeStorageKey, nextTheme);
+      localStorage.setItem(pianoThemeStorageKey, nextTheme);
     } catch (error) {
       // Theme selection still works for this session if storage is unavailable.
     }
@@ -7033,7 +7044,7 @@ initializeHeaderMenus();
 initializeInstrumentSwitchers();
 initializeInstrumentFamilyMenu();
 initializeSoundSelector();
-initializePianoValleyTheme();
+initializePianoTheme();
 initializeHeaderDropdownMenus();
 initializeNotationToggle();
 initializeMajorChordPage();
