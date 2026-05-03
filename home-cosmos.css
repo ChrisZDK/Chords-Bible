@@ -2,7 +2,7 @@
 body.home-dashboard-page {
   isolation: isolate;}
 
-body.home-dashboard-page[data-theme="dark"] {
+body.piano-app-page[data-page="piano"][data-theme="dark"] {
   background: #000;}body.home-dashboard-page .home-cosmos {
   position: fixed;
   inset: 0;
@@ -11,7 +11,7 @@ body.home-dashboard-page[data-theme="dark"] {
   isolation: isolate;
   pointer-events: none;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos {
   background:
     radial-gradient(circle at 3% 8%, rgba(255, 255, 255, 0.46) 0 0.75px, transparent 1.6px),
     radial-gradient(circle at 7% 39%, rgba(173, 207, 255, 0.42) 0 0.7px, transparent 1.5px),
@@ -37,10 +37,9 @@ body.home-dashboard-page[data-theme="dark"] .home-cosmos {
     radial-gradient(circle at 18% 18%, rgba(63, 78, 169, 0.22), transparent 26rem),
     radial-gradient(circle at 82% 10%, rgba(84, 54, 150, 0.16), transparent 24rem),
     radial-gradient(circle at 52% 108%, rgba(8, 21, 55, 0.84), transparent 32rem),
-    linear-gradient(180deg, #000 0%, #020411 38%, #030919 64%, #000 100%);}body.home-dashboard-page .home-cosmos {
-  background-color: transparent;}
+    linear-gradient(180deg, #000 0%, #020411 38%, #030919 64%, #000 100%);}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos {
   background-image:
     url("assets/themes/dark/dark-banner-bg.webp"),
     linear-gradient(179deg, #020320 0%, #030216 50%, #000003 100%);
@@ -57,8 +56,8 @@ body.home-dashboard-page .home-cosmos::after {
   will-change: filter, opacity, transform;
   pointer-events: none;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos::before,
-body.home-dashboard-page[data-theme="dark"] .home-cosmos::after {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos::before,
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos::after {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   mix-blend-mode: screen;}body.home-dashboard-page .home-cosmos::after {
@@ -71,14 +70,14 @@ body.home-dashboard-page .home-cosmos-stars::after {
   pointer-events: none;
   will-change: filter, opacity, transform;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars,
-body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::before,
-body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::after {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos-stars,
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos-stars::before,
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos-stars::after {
   background-repeat: repeat;
   mix-blend-mode: screen;}body.home-dashboard-page .home-cosmos-stars {
   animation: home-cosmos-stardust-a 18s ease-in-out infinite;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos-stars {
   opacity: 0.58;
   background-image:
     radial-gradient(circle at 12px 18px, rgba(255, 255, 255, 0.7) 0 0.75px, transparent 1.8px),
@@ -92,7 +91,7 @@ body.home-dashboard-page .home-cosmos-stars::after {
   content: "";}body.home-dashboard-page .home-cosmos-stars::before {
   animation: home-cosmos-stardust-b 23s ease-in-out infinite;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::before {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos-stars::before {
   opacity: 0.54;
   background-image:
     radial-gradient(circle at 24px 32px, rgba(255, 255, 255, 0.74) 0 0.65px, transparent 1.55px),
@@ -104,7 +103,7 @@ body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::before {
   background-size: 132px 104px, 174px 136px, 226px 178px, 286px 220px, 342px 260px, 410px 310px;}body.home-dashboard-page .home-cosmos-stars::after {
   animation: home-cosmos-stardust-c 29s ease-in-out infinite;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::after {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos-stars::after {
   opacity: 0.4;
   background-image:
     radial-gradient(circle at 36px 20px, rgba(255, 255, 255, 0.88) 0 0.9px, rgba(123, 202, 255, 0.26) 1px 1.9px, transparent 3px),
@@ -114,7 +113,7 @@ body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::after {
   background-size: 210px 168px, 292px 226px, 372px 284px, 486px 358px;}body.home-dashboard-page .home-cosmos::before {
   animation: home-cosmos-orbit-soft 34s ease-in-out infinite;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos::before {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos::before {
   opacity: 0.68;
   background-image:
     radial-gradient(circle at 4% 21%, rgba(255, 255, 255, 0.7) 0 0.9px, transparent 1.9px),
@@ -183,7 +182,7 @@ body.home-dashboard-page[data-theme="dark"] .home-cosmos::before {
     radial-gradient(circle at 35% 94%, rgba(190, 220, 255, 0.52) 0 0.85px, transparent 1.9px);}body.home-dashboard-page .home-cosmos::after {
   animation: home-cosmos-orbit-bright 26s ease-in-out infinite;}
 
-body.home-dashboard-page[data-theme="dark"] .home-cosmos::after {
+body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos::after {
   opacity: 0.5;
   background-image:
     radial-gradient(circle at 6% 54%, rgba(255, 255, 255, 0.96) 0 1.4px, transparent 2.7px),
@@ -298,7 +297,7 @@ body.home-dashboard-page .home-cosmos-stars::before,
 body.home-dashboard-page .home-cosmos-stars::after {
     animation: none;
     transform: none;}
-}@media (max-width: 700px) {body.home-dashboard-page[data-theme="dark"] .home-cosmos {
+}@media (max-width: 700px) {body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos {
     background-position: center top, center;
     background-size: min(100vw, 1440px) auto, cover;}
 }
