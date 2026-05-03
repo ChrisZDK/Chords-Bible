@@ -550,6 +550,7 @@ const legacyNotationStorageKey = "preferredNotation";
 const noteNameModeStorageKey = "chordysseyNoteNameMode";
 const selectedModeStorageKey = "chordyssey:selectedMode";
 const pianoThemeStorageKey = "chordyssey:pianoTheme";
+// Compatibility migration for the pre-current Piano theme storage key.
 const legacyPianoThemeStorageKey = "pianoValleyTheme";
 const instrumentFamilyStorageKey = "chordyssey:instrumentFamily";
 const smartphoneViewportQuery = "(max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
@@ -584,6 +585,22 @@ const instrumentThemeVisuals = {
       },
       "sound-robot": {
         src: "assets/themes/dark/dark-robot-keyboard.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/dark/dark-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/dark/dark-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/dark/dark-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/dark/dark-robot-floating.webp",
         alt: "",
       },
     },
@@ -5122,14 +5139,16 @@ function updateInstrumentWelcomeText() {
 function updateInstrumentThemeVisuals() {
   const theme = document.body.dataset.theme || "dark";
   const family = getSelectedInstrumentFamily();
-  const visuals = instrumentThemeVisuals[theme]?.[family];
-
-  if (!visuals) {
-    return;
-  }
+  const visuals = instrumentThemeVisuals[theme]?.[family] || {};
+  const familyFallbackVisuals = instrumentThemeVisuals.dark?.[family] || {};
+  const keyboardFallbackVisuals = instrumentThemeVisuals.dark?.keyboards || {};
 
   document.querySelectorAll("[data-instrument-theme-visual]").forEach((image) => {
-    const visual = visuals[image.dataset.instrumentThemeVisual];
+    const visualKey = image.dataset.instrumentThemeVisual;
+    const visual = visuals[visualKey]
+      || instrumentThemeVisuals[theme]?.keyboards?.[visualKey]
+      || familyFallbackVisuals[visualKey]
+      || keyboardFallbackVisuals[visualKey];
 
     if (!visual) {
       return;
@@ -6489,6 +6508,7 @@ function renderHomePianoCard(progression, chords) {
     <div class="piano-card-header">
       <button class="play-button" type="button" aria-label="Play ${formula} progression" data-home-progression-play>
         <img
+          data-instrument-theme-visual="play-button"
           src="assets/themes/dark/dark-play-button.webp"
           alt=""
           width="256"
@@ -6560,6 +6580,7 @@ function renderHomePianoCard(progression, chords) {
     renderHomeProgressionsMode();
   });
   ensureHomeProgressionStage(chordSymbols, labels);
+  updateInstrumentThemeVisuals();
 }
 
 function renderHomeProgressionScaleLine() {
@@ -6575,6 +6596,7 @@ function renderHomeProgressionScaleLine() {
     <div class="future-illustration-slot" aria-hidden="true">
       <img
         class="info-card-robot"
+        data-instrument-theme-visual="info-robot"
         src="assets/themes/dark/dark-robot-floating.webp"
         alt=""
         width="320"
@@ -6588,6 +6610,8 @@ function renderHomeProgressionScaleLine() {
       <p class="progression-songs-list" data-home-progression-songs></p>
     </div>
   `;
+  updateInstrumentThemeVisuals();
+
   if (isStringedInstrumentMode()) {
     const difficultyLevel = getGuitarProgressionDifficulty(homeProgressionChords(), {
       formulaId: homeProgressionState.formulaId,

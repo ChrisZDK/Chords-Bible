@@ -1,15 +1,17 @@
+/* Global/shared base */
 body.home-dashboard-page {
-  isolation: isolate;
-  background: #000;
-}
+  isolation: isolate;}
 
-body.home-dashboard-page .home-cosmos {
+body.home-dashboard-page[data-theme="dark"] {
+  background: #000;}body.home-dashboard-page .home-cosmos {
   position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   isolation: isolate;
-  pointer-events: none;
+  pointer-events: none;}
+
+body.home-dashboard-page[data-theme="dark"] .home-cosmos {
   background:
     radial-gradient(circle at 3% 8%, rgba(255, 255, 255, 0.46) 0 0.75px, transparent 1.6px),
     radial-gradient(circle at 7% 39%, rgba(173, 207, 255, 0.42) 0 0.7px, transparent 1.5px),
@@ -35,20 +37,16 @@ body.home-dashboard-page .home-cosmos {
     radial-gradient(circle at 18% 18%, rgba(63, 78, 169, 0.22), transparent 26rem),
     radial-gradient(circle at 82% 10%, rgba(84, 54, 150, 0.16), transparent 24rem),
     radial-gradient(circle at 52% 108%, rgba(8, 21, 55, 0.84), transparent 32rem),
-    linear-gradient(180deg, #000 0%, #020411 38%, #030919 64%, #000 100%);
-}
+    linear-gradient(180deg, #000 0%, #020411 38%, #030919 64%, #000 100%);}body.home-dashboard-page .home-cosmos {
+  background-color: transparent;}
 
 body.home-dashboard-page[data-theme="dark"] .home-cosmos {
-  background-color: transparent;
   background-image:
     url("assets/themes/dark/dark-banner-bg.webp"),
     linear-gradient(179deg, #020320 0%, #030216 50%, #000003 100%);
   background-position: center top, center;
   background-repeat: no-repeat, no-repeat;
-  background-size: min(100vw, 1440px) auto, cover;
-}
-
-body.home-dashboard-page .home-cosmos::before,
+  background-size: min(100vw, 1440px) auto, cover;}body.home-dashboard-page .home-cosmos::before,
 body.home-dashboard-page .home-cosmos::after {
   content: "";
   position: absolute;
@@ -57,29 +55,30 @@ body.home-dashboard-page .home-cosmos::after {
   transform-origin: 50% 48%;
   z-index: 1;
   will-change: filter, opacity, transform;
-  pointer-events: none;
+  pointer-events: none;}
+
+body.home-dashboard-page[data-theme="dark"] .home-cosmos::before,
+body.home-dashboard-page[data-theme="dark"] .home-cosmos::after {
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  mix-blend-mode: screen;
-}
-
-body.home-dashboard-page .home-cosmos::after {
-  z-index: 3;
-}
-
-body.home-dashboard-page .home-cosmos-stars,
+  mix-blend-mode: screen;}body.home-dashboard-page .home-cosmos::after {
+  z-index: 3;}body.home-dashboard-page .home-cosmos-stars,
 body.home-dashboard-page .home-cosmos-stars::before,
 body.home-dashboard-page .home-cosmos-stars::after {
   position: absolute;
   inset: -8%;
   z-index: 2;
   pointer-events: none;
-  background-repeat: repeat;
-  mix-blend-mode: screen;
-  will-change: filter, opacity, transform;
-}
+  will-change: filter, opacity, transform;}
 
-body.home-dashboard-page .home-cosmos-stars {
+body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars,
+body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::before,
+body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::after {
+  background-repeat: repeat;
+  mix-blend-mode: screen;}body.home-dashboard-page .home-cosmos-stars {
+  animation: home-cosmos-stardust-a 18s ease-in-out infinite;}
+
+body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars {
   opacity: 0.58;
   background-image:
     radial-gradient(circle at 12px 18px, rgba(255, 255, 255, 0.7) 0 0.75px, transparent 1.8px),
@@ -88,16 +87,12 @@ body.home-dashboard-page .home-cosmos-stars {
     radial-gradient(circle at 196px 26px, rgba(255, 228, 178, 0.5) 0 0.7px, transparent 1.7px),
     radial-gradient(circle at 248px 132px, rgba(123, 202, 255, 0.45) 0 0.75px, transparent 1.8px),
     radial-gradient(circle at 310px 66px, rgba(255, 149, 220, 0.42) 0 0.7px, transparent 1.7px);
-  background-size: 150px 118px, 182px 146px, 214px 172px, 266px 206px, 318px 244px, 374px 286px;
-  animation: home-cosmos-stardust-a 18s ease-in-out infinite;
-}
-
-body.home-dashboard-page .home-cosmos-stars::before,
+  background-size: 150px 118px, 182px 146px, 214px 172px, 266px 206px, 318px 244px, 374px 286px;}body.home-dashboard-page .home-cosmos-stars::before,
 body.home-dashboard-page .home-cosmos-stars::after {
-  content: "";
-}
+  content: "";}body.home-dashboard-page .home-cosmos-stars::before {
+  animation: home-cosmos-stardust-b 23s ease-in-out infinite;}
 
-body.home-dashboard-page .home-cosmos-stars::before {
+body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::before {
   opacity: 0.54;
   background-image:
     radial-gradient(circle at 24px 32px, rgba(255, 255, 255, 0.74) 0 0.65px, transparent 1.55px),
@@ -106,22 +101,20 @@ body.home-dashboard-page .home-cosmos-stars::before {
     radial-gradient(circle at 214px 124px, rgba(188, 122, 255, 0.46) 0 0.68px, transparent 1.6px),
     radial-gradient(circle at 298px 52px, rgba(123, 202, 255, 0.48) 0 0.72px, transparent 1.7px),
     radial-gradient(circle at 346px 168px, rgba(255, 255, 255, 0.56) 0 0.75px, transparent 1.8px);
-  background-size: 132px 104px, 174px 136px, 226px 178px, 286px 220px, 342px 260px, 410px 310px;
-  animation: home-cosmos-stardust-b 23s ease-in-out infinite;
-}
+  background-size: 132px 104px, 174px 136px, 226px 178px, 286px 220px, 342px 260px, 410px 310px;}body.home-dashboard-page .home-cosmos-stars::after {
+  animation: home-cosmos-stardust-c 29s ease-in-out infinite;}
 
-body.home-dashboard-page .home-cosmos-stars::after {
+body.home-dashboard-page[data-theme="dark"] .home-cosmos-stars::after {
   opacity: 0.4;
   background-image:
     radial-gradient(circle at 36px 20px, rgba(255, 255, 255, 0.88) 0 0.9px, rgba(123, 202, 255, 0.26) 1px 1.9px, transparent 3px),
     radial-gradient(circle at 116px 112px, rgba(255, 228, 178, 0.7) 0 0.85px, rgba(255, 149, 220, 0.24) 1px 1.8px, transparent 2.9px),
     radial-gradient(circle at 204px 54px, rgba(190, 220, 255, 0.72) 0 0.9px, rgba(188, 122, 255, 0.24) 1px 1.9px, transparent 3px),
     radial-gradient(circle at 318px 148px, rgba(255, 255, 255, 0.82) 0 0.9px, rgba(123, 202, 255, 0.22) 1px 1.8px, transparent 2.9px);
-  background-size: 210px 168px, 292px 226px, 372px 284px, 486px 358px;
-  animation: home-cosmos-stardust-c 29s ease-in-out infinite;
-}
+  background-size: 210px 168px, 292px 226px, 372px 284px, 486px 358px;}body.home-dashboard-page .home-cosmos::before {
+  animation: home-cosmos-orbit-soft 34s ease-in-out infinite;}
 
-body.home-dashboard-page .home-cosmos::before {
+body.home-dashboard-page[data-theme="dark"] .home-cosmos::before {
   opacity: 0.68;
   background-image:
     radial-gradient(circle at 4% 21%, rgba(255, 255, 255, 0.7) 0 0.9px, transparent 1.9px),
@@ -187,11 +180,10 @@ body.home-dashboard-page .home-cosmos::before {
     radial-gradient(circle at 97% 86%, rgba(255, 228, 178, 0.56) 0 0.9px, transparent 2px),
     radial-gradient(circle at 52% 5%, rgba(255, 255, 255, 0.52) 0 0.75px, transparent 1.7px),
     radial-gradient(circle at 67% 67%, rgba(188, 122, 255, 0.5) 0 0.8px, transparent 1.8px),
-    radial-gradient(circle at 35% 94%, rgba(190, 220, 255, 0.52) 0 0.85px, transparent 1.9px);
-  animation: home-cosmos-orbit-soft 34s ease-in-out infinite;
-}
+    radial-gradient(circle at 35% 94%, rgba(190, 220, 255, 0.52) 0 0.85px, transparent 1.9px);}body.home-dashboard-page .home-cosmos::after {
+  animation: home-cosmos-orbit-bright 26s ease-in-out infinite;}
 
-body.home-dashboard-page .home-cosmos::after {
+body.home-dashboard-page[data-theme="dark"] .home-cosmos::after {
   opacity: 0.5;
   background-image:
     radial-gradient(circle at 6% 54%, rgba(255, 255, 255, 0.96) 0 1.4px, transparent 2.7px),
@@ -232,16 +224,9 @@ body.home-dashboard-page .home-cosmos::after {
     radial-gradient(circle at 82% 48%, rgba(255, 255, 255, 0.92) 0 1.25px, rgba(188, 122, 255, 0.42) 1.35px 2.2px, transparent 3.35px),
     radial-gradient(circle at 91% 88%, rgba(255, 241, 196, 0.88) 0 1.2px, rgba(255, 149, 220, 0.36) 1.3px 2.05px, transparent 3.25px),
     radial-gradient(circle at 99% 37%, rgba(255, 255, 255, 0.9) 0 1.15px, rgba(123, 202, 255, 0.38) 1.25px 2.1px, transparent 3.2px),
-    radial-gradient(circle at 67% 92%, rgba(255, 255, 255, 0.88) 0 1.2px, rgba(188, 122, 255, 0.4) 1.3px 2.15px, transparent 3.3px);
-  animation: home-cosmos-orbit-bright 26s ease-in-out infinite;
-}
-
-body.home-dashboard-page .app-shell {
+    radial-gradient(circle at 67% 92%, rgba(255, 255, 255, 0.88) 0 1.2px, rgba(188, 122, 255, 0.4) 1.3px 2.15px, transparent 3.3px);}body.home-dashboard-page .app-shell {
   position: relative;
-  z-index: 1;
-}
-
-@keyframes home-cosmos-orbit-soft {
+  z-index: 1;}@keyframes home-cosmos-orbit-soft {
   0%,
   100% {
     opacity: 0.58;
@@ -254,9 +239,7 @@ body.home-dashboard-page .app-shell {
     filter: brightness(1.2);
     transform: translate3d(0.85rem, -0.62rem, 0) rotate(1.35deg) scale(1.026);
   }
-}
-
-@keyframes home-cosmos-orbit-bright {
+}@keyframes home-cosmos-orbit-bright {
   0%,
   100% {
     opacity: 0.42;
@@ -269,9 +252,7 @@ body.home-dashboard-page .app-shell {
     filter: brightness(1.28);
     transform: translate3d(-0.82rem, 0.64rem, 0) rotate(-1.75deg) scale(1.032);
   }
-}
-
-@keyframes home-cosmos-stardust-a {
+}@keyframes home-cosmos-stardust-a {
   0%,
   100% {
     opacity: 0.44;
@@ -284,9 +265,7 @@ body.home-dashboard-page .app-shell {
     filter: brightness(1.35);
     transform: translate3d(0.35rem, -0.18rem, 0) scale(1.01);
   }
-}
-
-@keyframes home-cosmos-stardust-b {
+}@keyframes home-cosmos-stardust-b {
   0%,
   100% {
     opacity: 0.36;
@@ -299,9 +278,7 @@ body.home-dashboard-page .app-shell {
     filter: brightness(1.3);
     transform: translate3d(-0.32rem, 0.2rem, 0) scale(1.014);
   }
-}
-
-@keyframes home-cosmos-stardust-c {
+}@keyframes home-cosmos-stardust-c {
   0%,
   100% {
     opacity: 0.3;
@@ -314,22 +291,14 @@ body.home-dashboard-page .app-shell {
     filter: brightness(1.42);
     transform: translate3d(0.22rem, 0.16rem, 0) scale(1.018);
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.home-dashboard-page .home-cosmos::before,
-  body.home-dashboard-page .home-cosmos::after,
-  body.home-dashboard-page .home-cosmos-stars,
-  body.home-dashboard-page .home-cosmos-stars::before,
-  body.home-dashboard-page .home-cosmos-stars::after {
+}@media (prefers-reduced-motion: reduce) {body.home-dashboard-page .home-cosmos::before,
+body.home-dashboard-page .home-cosmos::after,
+body.home-dashboard-page .home-cosmos-stars,
+body.home-dashboard-page .home-cosmos-stars::before,
+body.home-dashboard-page .home-cosmos-stars::after {
     animation: none;
-    transform: none;
-  }
-}
-
-@media (max-width: 700px) {
-  body.home-dashboard-page[data-theme="dark"] .home-cosmos {
+    transform: none;}
+}@media (max-width: 700px) {body.home-dashboard-page[data-theme="dark"] .home-cosmos {
     background-position: center top, center;
-    background-size: min(100vw, 1440px) auto, cover;
-  }
+    background-size: min(100vw, 1440px) auto, cover;}
 }
