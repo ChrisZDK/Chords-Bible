@@ -301,6 +301,15 @@ body.piano-app-page[data-page="piano"][data-theme="diabolical"] .header-icon-but
   text-shadow: 0 0 10px rgba(255, 107, 26, 0.48);
 }
 
+@media (max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  body.piano-app-page[data-page="piano"][data-theme="diabolical"] .mobile-github-link,
+  body.piano-app-page[data-page="piano"][data-theme="diabolical"] .mobile-github-link:hover,
+  body.piano-app-page[data-page="piano"][data-theme="diabolical"] .mobile-github-link:focus-visible,
+  body.piano-app-page[data-page="piano"][data-theme="diabolical"] .mobile-github-link:active {
+    border-color: #8d2128;
+  }
+}
+
 body.piano-app-page[data-page="piano"][data-theme="diabolical"] .header-options,
 body.piano-app-page[data-page="piano"][data-theme="diabolical"] .sound-options,
 body.piano-app-page[data-page="piano"][data-theme="diabolical"] .instrument-menu-popover {
