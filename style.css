@@ -4058,30 +4058,14 @@ body.piano-app-page[data-page="piano"] .chord-left-column {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center;}body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-robot {
-  position: absolute;
-  z-index: 2;
-  top: clamp(4.35rem, 9svh, 4.9rem);
-  left: clamp(38rem, 56.8%, 42.6rem);
-  width: clamp(4.9rem, 7.1vw, 6.2rem);
-  height: auto;
-  pointer-events: none;
-  transform-origin: 50% 58%;
-  animation: robot-slow-levitate 5.4s ease-in-out infinite;}body.piano-app-page[data-page="piano"][data-theme="dark"] .hero-image-frame .hero-banner-robot {
-  filter: drop-shadow(0 0.48rem 0.85rem rgba(103, 52, 255, 0.24));}@media (max-width: 980px) {body.piano-app-page[data-page="piano"] .hero-image-frame {
+  object-position: center;}@media (max-width: 980px) {body.piano-app-page[data-page="piano"] .hero-image-frame {
     aspect-ratio: auto;
     height: clamp(8.5rem, 22vw, 11rem);}body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-image {
     object-fit: cover;
-    object-position: 45% center;}body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-robot {
-    top: clamp(3.4rem, 11vw, 4.6rem);
-    left: 58%;
-    width: clamp(3.8rem, 9vw, 4.9rem);}
+    object-position: 45% center;}
 }@media (max-width: 620px) {body.piano-app-page[data-page="piano"] .hero-image-frame {
     height: clamp(8.25rem, 44vw, 10.5rem);}body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-image {
-    object-position: 42% center;}body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-robot {
-    top: clamp(4.65rem, 26vw, 6.25rem);
-    left: clamp(10.75rem, 58%, 14.25rem);
-    width: clamp(3.2rem, 15vw, 3.9rem);}
+    object-position: 42% center;}
 }body.piano-app-page[data-page="piano"] .hero-section {
   border: 0;
   padding: 0;
@@ -4967,7 +4951,6 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-ut
     transform: scaleX(-1) rotate(7deg);
   }
 }@media (prefers-reduced-motion: reduce) {body.piano-app-page[data-page="piano"] .selector-panel:hover::after,
-body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-robot,
 body.piano-app-page[data-page="piano"] .sound-card-robot,
 body.piano-app-page[data-page="piano"] .chord-details-layout .future-illustration-slot .info-card-robot,
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .selector-panel,
@@ -5227,10 +5210,7 @@ body.piano-app-page[data-page="piano"] .key-progressions-page {
     min-height: 0;
     max-height: none;}body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-image {
     object-fit: cover;
-    object-position: 45% center;}body.piano-app-page[data-page="piano"] .hero-image-frame .hero-banner-robot {
-    top: clamp(2.9rem, 9vw, 4rem);
-    left: 58%;
-    width: clamp(3.2rem, 8vw, 4.5rem);}body.piano-app-page[data-page="piano"] .selector-panel,
+    object-position: 45% center;}body.piano-app-page[data-page="piano"] .selector-panel,
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-builder {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
