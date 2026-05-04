@@ -5044,8 +5044,7 @@ function syncChordTypeMenuAccessibility(page = dynamicChordPageForElement()) {
     return;
   }
 
-  const isExpanded = page.dataset.chordTypeMenuExpanded === "true";
-  menu.setAttribute("aria-hidden", String(isChordTypeMenuMobileViewport() && !isExpanded));
+  menu.setAttribute("aria-hidden", "false");
 }
 
 function setChordTypeMenuExpanded(expanded, page = dynamicChordPageForElement()) {
