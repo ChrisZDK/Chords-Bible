@@ -967,3 +967,7 @@ body.piano-app-page[data-page="piano"][data-theme="diabolical"] .orientation-adv
       0 0 12px rgba(179, 18, 38, 0.14);
   }
 }
+
+body.piano-app-page[data-page="piano"][data-theme="diabolical"].is-home-progressions-mode .progression-scale-options {
+  border-color: #b71627;
+}

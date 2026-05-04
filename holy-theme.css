@@ -923,3 +923,7 @@ body.piano-app-page[data-page="piano"][data-theme="holy"] .orientation-advisory_
     color: var(--text-strong);
   }
 }
+
+body.piano-app-page[data-page="piano"][data-theme="holy"].is-home-progressions-mode .progression-scale-options {
+  background: #f0ead3;
+}
