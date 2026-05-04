@@ -587,10 +587,6 @@ const instrumentThemeVisuals = {
         src: "assets/themes/dark/dark-robot-keyboard.webp",
         alt: "",
       },
-      "hero-robot": {
-        src: "assets/themes/dark/dark-robot-banner.webp",
-        alt: "",
-      },
       "related-icon": {
         src: "assets/themes/dark/dark-crystal-icon.webp",
         alt: "",
@@ -633,10 +629,6 @@ const instrumentThemeVisuals = {
       },
       "sound-robot": {
         src: "assets/themes/holy/holy-robot-keyboard.webp",
-        alt: "",
-      },
-      "hero-robot": {
-        src: "assets/themes/holy/holy-robot-banner.webp",
         alt: "",
       },
       "related-icon": {
@@ -683,10 +675,6 @@ const instrumentThemeVisuals = {
         src: "assets/themes/blessed/blessed-robot-keyboard.webp",
         alt: "",
       },
-      "hero-robot": {
-        src: "assets/themes/blessed/blessed-robot-banner.webp",
-        alt: "",
-      },
       "related-icon": {
         src: "assets/themes/blessed/blessed-crystal-icon.webp",
         alt: "",
@@ -707,10 +695,6 @@ const instrumentThemeVisuals = {
       },
       "sound-robot": {
         src: "assets/themes/blessed/blessed-robot-guitar.webp",
-        alt: "",
-      },
-      "hero-robot": {
-        src: "assets/themes/blessed/blessed-robot-banner.webp",
         alt: "",
       },
       "related-icon": {
@@ -735,10 +719,6 @@ const instrumentThemeVisuals = {
         src: "assets/themes/blessed/blessed-robot-ukulele.webp",
         alt: "",
       },
-      "hero-robot": {
-        src: "assets/themes/blessed/blessed-robot-banner.webp",
-        alt: "",
-      },
       "related-icon": {
         src: "assets/themes/blessed/blessed-crystal-icon.webp",
         alt: "",
@@ -753,6 +733,74 @@ const instrumentThemeVisuals = {
       },
     },
   },
+  wisdom: {
+    keyboards: {
+      banner: {
+        src: "assets/themes/wisdom/wisdom-banner.webp",
+        alt: "Retro pixel-art piano scene with sky islands, music notes, and a bright keyboard path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/wisdom/wisdom-robot-keyboard.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/wisdom/wisdom-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/wisdom/wisdom-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/wisdom/wisdom-robot-floating.webp",
+        alt: "",
+      },
+    },
+    guitars: {
+      banner: {
+        src: "assets/themes/wisdom/wisdom-banner.webp",
+        alt: "Retro pixel-art piano scene with sky islands, music notes, and a bright keyboard path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/wisdom/wisdom-robot-guitar.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/wisdom/wisdom-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/wisdom/wisdom-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/wisdom/wisdom-robot-floating.webp",
+        alt: "",
+      },
+    },
+    ukulele: {
+      banner: {
+        src: "assets/themes/wisdom/wisdom-banner.webp",
+        alt: "Retro pixel-art piano scene with sky islands, music notes, and a bright keyboard path.",
+      },
+      "sound-robot": {
+        src: "assets/themes/wisdom/wisdom-robot-ukulele.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/wisdom/wisdom-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/wisdom/wisdom-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/wisdom/wisdom-robot-floating.webp",
+        alt: "",
+      },
+    },
+  },
   diabolical: {
     keyboards: {
       banner: {
@@ -761,10 +809,6 @@ const instrumentThemeVisuals = {
       },
       "sound-robot": {
         src: "assets/themes/diabolical/diabolical-robot-keyboard.webp",
-        alt: "",
-      },
-      "hero-robot": {
-        src: "assets/themes/diabolical/diabolical-robot-banner.webp",
         alt: "",
       },
       "related-icon": {
@@ -789,10 +833,6 @@ const instrumentThemeVisuals = {
         src: "assets/themes/diabolical/diabolical-robot-guitar.webp",
         alt: "",
       },
-      "hero-robot": {
-        src: "assets/themes/diabolical/diabolical-robot-banner.webp",
-        alt: "",
-      },
       "related-icon": {
         src: "assets/themes/diabolical/diabolical-crystal-icon.webp",
         alt: "",
@@ -813,10 +853,6 @@ const instrumentThemeVisuals = {
       },
       "sound-robot": {
         src: "assets/themes/diabolical/diabolical-robot-ukulele.webp",
-        alt: "",
-      },
-      "hero-robot": {
-        src: "assets/themes/diabolical/diabolical-robot-banner.webp",
         alt: "",
       },
       "related-icon": {
