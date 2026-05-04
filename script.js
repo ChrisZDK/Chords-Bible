@@ -365,6 +365,7 @@ const relatedCarouselButtons = new WeakSet();
 const pianoOctaveToggleButtons = new WeakSet();
 const pianoPlayStyleToggleButtons = new WeakSet();
 const guitarNextVoicingButtons = new WeakSet();
+const guitarNoteNameToggleButtons = new WeakSet();
 const notationToggleButtons = new WeakSet();
 const noteNameToggleButtons = new WeakSet();
 const majorChordsByRoot = Object.fromEntries(
@@ -3018,6 +3019,12 @@ function guitarBarreGeometry(voicing, fretWindow, left, top, stringGap, fretWidt
     return null;
   }
 
+  const frets = voicing.strings.map((string) => string.fret);
+
+  if (!guitarHasPlayableBarre(frets, barre)) {
+    return null;
+  }
+
   const visibleFretIndex = barre.fret - fretWindow.startFret;
 
   if (visibleFretIndex < 0 || visibleFretIndex >= fretWindow.fretCount) {
@@ -3051,6 +3058,27 @@ function createSvgText(className, x, y, textContent) {
   return text;
 }
 
+function createGuitarNoteNameMarker(svg, markerData, noteLabel) {
+  const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  const xOffset = markerData.isOpen ? 17 : 14;
+  const yOffset = markerData.finger ? -11 : 0;
+  const markerX = markerData.x + (markerData.finger ? xOffset : 0);
+  const markerY = markerData.y + yOffset;
+
+  marker.setAttribute("class", "guitar-note-name-marker");
+  marker.setAttribute("cx", markerX);
+  marker.setAttribute("cy", markerY);
+  marker.setAttribute("r", markerData.finger ? 7.4 : markerData.isOpen ? 9 : 10.5);
+  svg.appendChild(marker);
+
+  svg.appendChild(createSvgText(
+    `guitar-note-label guitar-note-name-label${markerData.finger ? " is-secondary-note-name" : ""}`,
+    markerX,
+    markerY + (markerData.finger ? 3 : 5),
+    noteLabel
+  ));
+}
+
 function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = false, currentNotes = null, options = {}) {
   const voicing = guitarRenderContext(notes, options);
   const stringCount = getStringedInstrumentTunings().length;
@@ -3072,6 +3100,7 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
   const fretWidth = (right - left) / fretWindow.fretCount;
   const bottom = top + stringGap * (stringCount - 1);
   const showFingering = Boolean(options.showFingering);
+  const showNoteNames = Boolean(options.showNoteNames);
   const activeFretRange = showFingering ? guitarActiveFretRange(voicing.strings) : null;
   const noteMarkers = [];
 
@@ -3179,6 +3208,7 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
       isCurrentNote,
       value: string.value,
       finger,
+      noteLabel: activeLabels.get(string.value) || noteLabelForValue(string.value),
     });
   });
 
@@ -3210,15 +3240,23 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
 
   noteMarkers.forEach((markerData) => {
     const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    const showFingerMarker = Boolean(markerData.finger);
+    const showPrimaryNoteName = showNoteNames && !showFingerMarker;
+    const showPlaybackMarker = Boolean(currentValues && markerData.isCurrentNote);
+
+    if (!showFingerMarker && !showPrimaryNoteName && !showPlaybackMarker) {
+      return;
+    }
+
     const markerClasses = [
       "guitar-note",
       markerData.isOpen ? "guitar-open-note" : "",
-      markerData.finger ? "has-finger-number" : "",
+      showFingerMarker ? "has-finger-number" : "has-note-name",
       currentValues ? (markerData.isCurrentNote ? "is-current-note" : "is-held-note") : "",
     ].filter(Boolean);
     const labelClasses = [
       "guitar-note-label",
-      markerData.finger ? "guitar-finger-label" : "",
+      showFingerMarker ? "guitar-finger-label" : "guitar-note-name-label",
       currentValues ? (markerData.isCurrentNote ? "is-current-note-label" : "is-held-note-label") : "",
     ].filter(Boolean);
 
@@ -3228,12 +3266,18 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
     marker.setAttribute("r", markerData.isOpen ? 9 : fretWindow.fretCount === fretRanges.extended ? 10.5 : 13);
     svg.appendChild(marker);
 
-    svg.appendChild(createSvgText(
-      labelClasses.join(" "),
-      markerData.x,
-      markerData.y + 5,
-      markerData.finger ? String(markerData.finger) : activeLabels.get(markerData.value) || noteLabelForValue(markerData.value)
-    ));
+    if (showFingerMarker || showPrimaryNoteName) {
+      svg.appendChild(createSvgText(
+        labelClasses.join(" "),
+        markerData.x,
+        markerData.y + 5,
+        showFingerMarker ? String(markerData.finger) : markerData.noteLabel
+      ));
+    }
+
+    if (showNoteNames && showFingerMarker) {
+      createGuitarNoteNameMarker(svg, markerData, markerData.noteLabel);
+    }
   });
 
   if (!voicing.supported) {
@@ -3282,6 +3326,7 @@ function guitarChordRenderOptions(card) {
     quality: card.dataset.quality,
     voicingIndex,
     showFingering: true,
+    showNoteNames: card.dataset.guitarNoteNames === "true",
   };
 }
 
@@ -3425,6 +3470,7 @@ function setGuitarFretRangeMode(card, button, fretRange) {
 
 function removeGuitarChordControls(card) {
   card.querySelectorAll("[data-guitar-voicing-control]").forEach((control) => control.remove());
+  card.querySelectorAll("[data-guitar-note-name-toggle]").forEach((control) => control.remove());
 }
 
 function isHomeProgressionsCard(card) {
@@ -3508,6 +3554,63 @@ function syncGuitarChordControls(card) {
   }
 }
 
+function toggleGuitarNoteNamesForCard(card) {
+  if (!card) {
+    return;
+  }
+
+  card.dataset.guitarNoteNames = card.dataset.guitarNoteNames === "true" ? "false" : "true";
+  renderChordCardKeyboard(card);
+}
+
+function syncGuitarNoteNameToggle(card) {
+  if (isHomeProgressionsCard(card)) {
+    removeGuitarChordControls(card);
+    return;
+  }
+
+  const instrumentCard = card.querySelector(".guitar-card");
+  const keyboard = instrumentCard?.querySelector(".keyboard");
+
+  if (!instrumentCard || !keyboard) {
+    removeGuitarChordControls(card);
+    return;
+  }
+
+  let button = instrumentCard.querySelector("[data-guitar-note-name-toggle]");
+  const noteNamesVisible = card.dataset.guitarNoteNames === "true";
+
+  if (!button) {
+    button = document.createElement("button");
+    button.className = "guitar-note-name-toggle";
+    button.type = "button";
+    button.dataset.guitarNoteNameToggle = "";
+    keyboard.insertAdjacentElement("afterend", button);
+  }
+
+  button.textContent = noteNamesVisible ? "Hide note names" : "Show note names";
+  button.setAttribute("aria-pressed", String(noteNamesVisible));
+
+  if (!guitarNoteNameToggleButtons.has(button)) {
+    button.addEventListener("click", (event) => {
+      const currentCard = event.currentTarget.closest("[data-dynamic-chord-card], [data-major-chord-card]");
+
+      toggleGuitarNoteNamesForCard(currentCard);
+    });
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      event.preventDefault();
+      const currentCard = event.currentTarget.closest("[data-dynamic-chord-card], [data-major-chord-card]");
+
+      toggleGuitarNoteNamesForCard(currentCard);
+    });
+    guitarNoteNameToggleButtons.add(button);
+  }
+}
+
 function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying = false, currentNotes = null) {
   const keyboard = card.querySelector(".keyboard");
 
@@ -3531,6 +3634,7 @@ function renderChordCardKeyboard(card, notes = chordCardNotes(card), isPlaying =
       currentNotes,
       guitarChordRenderOptions(card)
     ));
+    syncGuitarNoteNameToggle(card);
     return;
   }
 
@@ -5690,6 +5794,9 @@ function applyInstrumentFamilyMode(family, { stopPlayback = true, persist = true
   }
   if (familyChanged) {
     selectedSoundModesByInstrument[normalizedFamily] = getDefaultSoundMode(normalizedFamily);
+    document.querySelectorAll("[data-guitar-note-names]").forEach((card) => {
+      delete card.dataset.guitarNoteNames;
+    });
   }
   selectedSoundMode = selectedSoundModesByInstrument[normalizedFamily] || getDefaultSoundMode(normalizedFamily);
   document.body.classList.toggle("is-guitar-mode", Boolean(getStringedInstrumentConfig(normalizedFamily)));
