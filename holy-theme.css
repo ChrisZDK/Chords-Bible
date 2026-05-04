@@ -105,7 +105,9 @@ body.piano-app-page[data-page="piano"][data-theme="holy"]::before {
 }
 
 body.piano-app-page[data-page="piano"][data-theme="holy"] .home-cosmos {
-  background: linear-gradient(180deg, #2cadff 0%, #9ccfef 52%, #f5f3ed 100%);
+  background:
+    url("assets/themes/holy/holy-banner-bg.webp") center top / min(100vw, 1440px) auto no-repeat,
+    linear-gradient(180deg, #2cadff 0%, #9ccfef 52%, #f5f3ed 100%);
 }
 
 body.piano-app-page[data-page="piano"][data-theme="holy"] .home-cosmos-stars {

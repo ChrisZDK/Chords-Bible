@@ -606,8 +606,8 @@ const instrumentThemeVisuals = {
     },
     guitars: {
       banner: {
-        src: "assets/themes/dark/dark-banner-guitar.webp",
-        alt: "Pixel-art guitar scene with floating islands, robots, and a guitar path.",
+        src: "assets/themes/dark/dark-banner.webp",
+        alt: "Pixel-art Piano scene with floating islands, robots, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/dark/dark-robot-guitar.webp",
@@ -616,8 +616,8 @@ const instrumentThemeVisuals = {
     },
     ukulele: {
       banner: {
-        src: "assets/themes/dark/dark-banner-ukulele.webp",
-        alt: "Pixel-art ukulele scene with floating islands, robots, and a ukulele path.",
+        src: "assets/themes/dark/dark-banner.webp",
+        alt: "Pixel-art Piano scene with floating islands, robots, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/dark/dark-robot-ukulele.webp",
@@ -654,8 +654,8 @@ const instrumentThemeVisuals = {
     },
     guitars: {
       banner: {
-        src: "assets/themes/holy/holy-banner-guitar.webp",
-        alt: "Pixel-art guitar scene with heavenly sky, golden light, robots, and a guitar path.",
+        src: "assets/themes/holy/holy-banner.webp",
+        alt: "Pixel-art Piano scene with heavenly sky, golden light, robots, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/holy/holy-robot-guitar.webp",
@@ -664,8 +664,8 @@ const instrumentThemeVisuals = {
     },
     ukulele: {
       banner: {
-        src: "assets/themes/holy/holy-banner-ukulele.webp",
-        alt: "Pixel-art ukulele scene with heavenly sky, golden light, robots, and a ukulele path.",
+        src: "assets/themes/holy/holy-banner.webp",
+        alt: "Pixel-art Piano scene with heavenly sky, golden light, robots, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/holy/holy-robot-ukulele.webp",
@@ -702,8 +702,8 @@ const instrumentThemeVisuals = {
     },
     guitars: {
       banner: {
-        src: "assets/themes/blessed/blessed-banner-guitar.webp",
-        alt: "Pixel-art Blessed guitar scene with pink clouds, angels, crystals, and a guitar path.",
+        src: "assets/themes/blessed/blessed-banner.webp",
+        alt: "Pixel-art Blessed Piano Valley scene with pink clouds, angels, crystals, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/blessed/blessed-robot-guitar.webp",
@@ -728,8 +728,8 @@ const instrumentThemeVisuals = {
     },
     ukulele: {
       banner: {
-        src: "assets/themes/blessed/blessed-banner-ukulele.webp",
-        alt: "Pixel-art Blessed ukulele scene with pink clouds, angels, crystals, and a ukulele path.",
+        src: "assets/themes/blessed/blessed-banner.webp",
+        alt: "Pixel-art Blessed Piano Valley scene with pink clouds, angels, crystals, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/blessed/blessed-robot-ukulele.webp",
