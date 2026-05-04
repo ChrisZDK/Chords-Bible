@@ -5454,7 +5454,9 @@ body.piano-app-page[data-page="piano"]:not(.is-home-progressions-mode) .selector
     padding: 0;}body.piano-app-page[data-page="piano"] .site-actions {
     grid-template-columns: minmax(0, 1fr) repeat(4, 2.35rem);
     align-items: center;
-    gap: 0.28rem;}body.piano-app-page[data-page="piano"] .header-menu[data-header-menu-for="instrument-family-menu"] {
+    gap: 0.28rem;}body.piano-app-page[data-page="piano"] [data-header-menu-button] {
+    font-size: 1rem;
+    font-weight: 700;}body.piano-app-page[data-page="piano"] .header-menu[data-header-menu-for="instrument-family-menu"] {
     min-width: 0;}body.piano-app-page[data-page="piano"] .header-menu[data-header-menu-for="piano-area-menu"],
 body.piano-app-page[data-page="piano"] .header-menu[data-header-menu-for="theme-menu"] {
     width: 2.35rem;
@@ -6897,6 +6899,18 @@ body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-m
   body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-select-wrap .progression-chord-mode-options {
     top: auto;
     bottom: calc(100% + 0.18rem);
+  }
+
+  body.piano-app-page[data-page="piano"] [data-progression-formula],
+  body.piano-app-page[data-page="piano"] [data-progression-chords],
+  body.piano-app-page[data-page="piano"] .scale-line {
+    font-size: 0.85rem;
+  }
+
+  body.piano-app-page[data-page="piano"].is-home-progressions-mode [data-progression-formula],
+  body.piano-app-page[data-page="piano"].is-home-progressions-mode [data-progression-chords],
+  body.piano-app-page[data-page="piano"].is-home-progressions-mode [data-home-progression-scale] {
+    font-size: 0.85rem;
   }
 }
 
