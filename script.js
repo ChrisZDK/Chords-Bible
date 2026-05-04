@@ -1246,6 +1246,7 @@ const progressionChordSpacing = 1.35;
 const progressionChordDuration = 1.45;
 const progressionArpeggioNoteSpacing = 0.24;
 const progressionArpeggioNoteDuration = 0.26;
+const progressionTwoHandArpeggioLeftDuration = Math.min(progressionChordDuration, progressionChordSpacing - 0.12);
 const pianoSampleUrls = {
   A0: "A0.mp3",
   C1: "C1.mp3",
@@ -1959,6 +1960,22 @@ function chordFrequencies(notes) {
   });
 }
 
+function parseNoteNameOctave(noteName) {
+  const match = String(noteName || "").trim().match(/^([A-G](?:#|b)?)(\d)$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, note, octave] = match;
+
+  if (!Number.isInteger(noteValues[note])) {
+    return null;
+  }
+
+  return { note: normalizeNote(note), octave: Number(octave) };
+}
+
 function frequencyFromNoteValueOctave(value, octave) {
   if (!Number.isFinite(value) || !Number.isFinite(octave)) {
     return null;
@@ -1967,6 +1984,16 @@ function frequencyFromNoteValueOctave(value, octave) {
   const midiNumber = 12 * (octave + 1) + value;
 
   return 440 * 2 ** ((midiNumber - 69) / 12);
+}
+
+function frequencyFromNoteName(noteName) {
+  const parsed = parseNoteNameOctave(noteName);
+
+  if (!parsed) {
+    return null;
+  }
+
+  return frequencyFromNoteValueOctave(noteValues[parsed.note], parsed.octave);
 }
 
 function chordNoteNames(notes) {
@@ -1980,13 +2007,31 @@ function chordNoteNames(notes) {
   });
 }
 
+function pianoKeyNoteName(note) {
+  return parseNoteNameOctave(note)?.note || normalizeNote(note);
+}
+
 function createKeyboard(notes, preserveLabels = false, isPlaying = false, octaveCount = 1) {
   const visibleOctaves = octaveCount === 2 ? 2 : 1;
   const octaveWidth = 294;
-  const activeNotes = new Set(notes.map(normalizeNote));
+  const activePitches = notes.map(pianoKeyNoteName);
+  const octaveQualifiedNotes = notes
+    .map(parseNoteNameOctave)
+    .filter(Boolean);
+  const octaveBase = octaveQualifiedNotes.length
+    ? Math.min(...octaveQualifiedNotes.map(({ octave }) => octave))
+    : null;
+  const activeNotes = new Set(activePitches);
+  const activeOctaveNotes = new Set(
+    octaveBase === null
+      ? []
+      : octaveQualifiedNotes
+          .map(({ note, octave }) => `${note}:${octave - octaveBase}`)
+          .filter((key) => Number(key.split(":")[1]) >= 0 && Number(key.split(":")[1]) < visibleOctaves)
+  );
   const activeLabels = new Map(
     preserveLabels
-      ? notes.map((note) => [normalizeValue(noteValues[note]), note])
+      ? notes.map((note) => [normalizeValue(noteValues[pianoKeyNoteName(note)]), note])
       : []
   );
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -2001,7 +2046,10 @@ function createKeyboard(notes, preserveLabels = false, isPlaying = false, octave
     whiteKeys.forEach((note, index) => {
       const x = offset + index * 42;
       const key = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      key.setAttribute("class", `white-key${activeNotes.has(note) ? " key-active" : ""}`);
+      const isActive = octaveBase === null
+        ? activeNotes.has(note)
+        : activeOctaveNotes.has(`${note}:${octaveIndex}`);
+      key.setAttribute("class", `white-key${isActive ? " key-active" : ""}`);
       key.setAttribute("x", x);
       key.setAttribute("y", 0);
       key.setAttribute("width", 42);
@@ -2018,7 +2066,10 @@ function createKeyboard(notes, preserveLabels = false, isPlaying = false, octave
 
     blackKeys.forEach(({ note, x }) => {
       const key = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      key.setAttribute("class", `black-key${activeNotes.has(note) ? " key-active" : ""}`);
+      const isActive = octaveBase === null
+        ? activeNotes.has(note)
+        : activeOctaveNotes.has(`${note}:${octaveIndex}`);
+      key.setAttribute("class", `black-key${isActive ? " key-active" : ""}`);
       key.setAttribute("x", offset + x);
       key.setAttribute("y", 0);
       key.setAttribute("width", 28);
@@ -3942,6 +3993,44 @@ function chordNoteNamesFromSymbol(symbol) {
   });
 }
 
+function transposeNoteName(noteName, semitones) {
+  const parsed = parseNoteNameOctave(noteName);
+
+  if (!parsed || !Number.isFinite(semitones)) {
+    return noteName;
+  }
+
+  const midiNumber = 12 * (parsed.octave + 1) + noteValues[parsed.note] + semitones;
+  const note = sharpNames[normalizeValue(midiNumber)];
+  const octave = Math.floor(midiNumber / 12) - 1;
+
+  return `${note}${octave}`;
+}
+
+function pianoProgressionHandNotes(symbol, twoHands = false) {
+  const rightHandNotes = chordNoteNamesFromSymbol(symbol);
+  const leftHandNotes = twoHands ? rightHandNotes.map((noteName) => transposeNoteName(noteName, -12)) : [];
+
+  return {
+    leftHandNotes,
+    rightHandNotes,
+    allNotes: [...leftHandNotes, ...rightHandNotes],
+  };
+}
+
+function pianoProgressionKeyboardNotes({ leftHandNotes = [], rightHandNotes = [] } = {}) {
+  return [
+    ...leftHandNotes.map((noteName) => `${parseNoteNameOctave(noteName)?.note || noteName}0`),
+    ...rightHandNotes.map((noteName) => `${parseNoteNameOctave(noteName)?.note || noteName}1`),
+  ];
+}
+
+function pianoProgressionUsesTwoHands() {
+  return !isStringedInstrumentMode()
+    && homeProgressionState.mode === "progressions"
+    && homeProgressionState.octaveCount === 2;
+}
+
 function chordNotesFromSymbol(symbol) {
   const parsed = parseChordSymbol(symbol);
 
@@ -3953,12 +4042,9 @@ function chordNotesFromSymbol(symbol) {
 }
 
 function frequenciesFromChordSymbol(symbol) {
-  return chordNoteNamesFromSymbol(symbol).map((noteName) => {
-    const [, note, octave] = noteName.match(/^([A-G](?:#|b)?)(\d)$/);
-    const midiNumber = 12 * (Number(octave) + 1) + noteValues[note];
-
-    return 440 * 2 ** ((midiNumber - 69) / 12);
-  });
+  return chordNoteNamesFromSymbol(symbol)
+    .map(frequencyFromNoteName)
+    .filter((frequency) => Number.isFinite(frequency));
 }
 
 function upDownArpeggioSequence(values) {
@@ -4540,11 +4626,25 @@ function initializeChordCard(card) {
 }
 
 function pianoOctaveToggleLabel(octaveCount) {
-  return octaveCount === 2 ? "-OCT" : "+OCT";
+  return octaveCount === 2 ? "Two Hands" : "One Hand";
 }
 
 function pianoOctaveToggleAriaLabel(octaveCount) {
-  return octaveCount === 2 ? "Show one octave piano" : "Show two octave piano";
+  return `Current hand mode: ${pianoOctaveToggleLabel(octaveCount)}`;
+}
+
+function shouldShowPianoHandToggle(button) {
+  if (isStringedInstrumentMode()) {
+    return false;
+  }
+
+  if (button?.hasAttribute("data-home-progression-piano-octave-toggle")) {
+    return homeProgressionState.mode === "progressions";
+  }
+
+  const card = button?.closest("[data-dynamic-chord-card], [data-major-chord-card]");
+
+  return Boolean(card && isHomeProgressionsCard(card));
 }
 
 function syncPianoOctaveToggleButton(button, octaveCount) {
@@ -4552,7 +4652,7 @@ function syncPianoOctaveToggleButton(button, octaveCount) {
     return;
   }
 
-  button.hidden = isStringedInstrumentMode();
+  button.hidden = !shouldShowPianoHandToggle(button);
   button.textContent = pianoOctaveToggleLabel(octaveCount);
   button.setAttribute("aria-pressed", String(octaveCount === 2));
   button.setAttribute("aria-label", pianoOctaveToggleAriaLabel(octaveCount));
@@ -6965,6 +7065,7 @@ function renderHomeProgressionsMode() {
 
 function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = false } = {}) {
   const animation = ensureHomeProgressionStage(chordSymbols, labels);
+  const twoHands = pianoProgressionUsesTwoHands();
 
   if (!animation) {
     return;
@@ -6974,6 +7075,34 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
     const chordStart = startDelay + index * progressionChordSpacing;
 
     if (arpeggio) {
+      if (twoHands) {
+        const handNotes = pianoProgressionHandNotes(chordSymbols[index], true);
+        const leftHandKeyboardNotes = pianoProgressionKeyboardNotes({
+          leftHandNotes: handNotes.leftHandNotes,
+          rightHandNotes: [],
+        });
+        const rightHandNotes = upDownArpeggioSequence(handNotes.rightHandNotes);
+
+        rightHandNotes.forEach((noteName, noteIndex) => {
+          schedulePlayback(() => {
+            setProgressionAnimationChord(animation, index, {
+              isPlaying: true,
+              activeNotes: [
+                ...leftHandKeyboardNotes,
+                ...pianoProgressionKeyboardNotes({ rightHandNotes: [noteName] }),
+              ],
+            });
+          }, chordStart + noteIndex * progressionArpeggioNoteSpacing);
+        });
+
+        schedulePlayback(() => {
+          if (Number(animation.dataset.activeIndex) === index) {
+            setProgressionAnimationChord(animation, index);
+          }
+        }, chordStart + Math.max(rightHandNotes.length - 1, 0) * progressionArpeggioNoteSpacing + progressionArpeggioNoteDuration);
+        return;
+      }
+
       const guitarVoicingPlayback = isStringedInstrumentMode()
         ? guitarVoicingPlaybackFromSymbol(
             chordSymbols[index],
@@ -6998,7 +7127,10 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
     }
 
     schedulePlayback(() => {
-      setProgressionAnimationChord(animation, index, { isPlaying: true });
+      setProgressionAnimationChord(animation, index, {
+        isPlaying: true,
+        activeNotes: twoHands ? pianoProgressionKeyboardNotes(pianoProgressionHandNotes(chordSymbols[index], true)) : null,
+      });
     }, chordStart);
 
     schedulePlayback(() => {
@@ -7059,14 +7191,28 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
   const soundMode = getSelectedSoundMode();
   const arpeggio = isStringedInstrumentMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
+  const twoHands = pianoProgressionUsesTwoHands();
 
   scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio });
 
   if (shouldUsePianoSampler()) {
     Tone.start();
     chordSymbols.forEach((symbol, index) => {
+      const handNotes = pianoProgressionHandNotes(symbol, twoHands);
+
       if (arpeggio) {
-        upDownArpeggioSequence(chordNoteNamesFromSymbol(symbol)).forEach((noteName, noteIndex) => {
+        if (twoHands) {
+          schedulePlayback(() => {
+            pianoSampler.triggerAttackRelease(
+              handNotes.leftHandNotes,
+              progressionTwoHandArpeggioLeftDuration,
+              undefined,
+              0.7
+            );
+          }, startDelay + index * progressionChordSpacing);
+        }
+
+        upDownArpeggioSequence(handNotes.rightHandNotes).forEach((noteName, noteIndex) => {
           schedulePlayback(() => {
             pianoSampler.triggerAttackRelease(noteName, progressionArpeggioNoteDuration, undefined, 0.82);
           }, startDelay + index * progressionChordSpacing + noteIndex * progressionArpeggioNoteSpacing);
@@ -7075,7 +7221,7 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
       }
 
       schedulePlayback(() => {
-        pianoSampler.triggerAttackRelease(chordNoteNamesFromSymbol(symbol), progressionChordDuration, undefined, 0.82);
+        pianoSampler.triggerAttackRelease(handNotes.allNotes, progressionChordDuration, undefined, 0.82);
       }, startDelay + index * progressionChordSpacing);
     });
     return;
@@ -7091,10 +7237,30 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
     const guitarVoicingPlayback = guitarVoicing
       ? guitarVoicingPlaybackFromSymbol(symbol, guitarVoicing.voicingIndex)
       : null;
-    const frequencies = guitarVoicingPlayback?.frequencies || frequenciesFromChordSymbol(symbol);
+    const handNotes = pianoProgressionHandNotes(symbol, twoHands);
+    const pianoFrequencies = handNotes.allNotes
+      .map(frequencyFromNoteName)
+      .filter((frequency) => Number.isFinite(frequency));
+    const leftHandFrequencies = handNotes.leftHandNotes
+      .map(frequencyFromNoteName)
+      .filter((frequency) => Number.isFinite(frequency));
+    const rightHandFrequencies = handNotes.rightHandNotes
+      .map(frequencyFromNoteName)
+      .filter((frequency) => Number.isFinite(frequency));
+    const frequencies = guitarVoicingPlayback?.frequencies || pianoFrequencies;
 
     if (arpeggio) {
-      const noteFrequencies = guitarVoicingPlayback ? frequencies : upDownArpeggioSequence(frequencies);
+      if (twoHands && leftHandFrequencies.length) {
+        playNativeChordSound(
+          leftHandFrequencies,
+          startTime,
+          progressionTwoHandArpeggioLeftDuration,
+          playbackOutput,
+          soundMode
+        );
+      }
+
+      const noteFrequencies = guitarVoicingPlayback ? frequencies : upDownArpeggioSequence(rightHandFrequencies);
 
       noteFrequencies.forEach((frequency, noteIndex) => {
         playNativeSingleNote(
