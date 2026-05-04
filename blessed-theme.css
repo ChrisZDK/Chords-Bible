@@ -889,3 +889,7 @@ body.piano-app-page[data-page="piano"][data-theme="blessed"] .orientation-adviso
     transparent 7px
   );
 }
+
+body.piano-app-page[data-page="piano"][data-theme="blessed"].is-home-progressions-mode .progression-scale-options {
+  background: #f7c5de;
+}

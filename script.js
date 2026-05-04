@@ -419,8 +419,50 @@ const blackKeys = [
   { note: "G#", x: 196 },
   { note: "A#", x: 238 },
 ];
-const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
-const minorScaleIntervals = [0, 2, 3, 5, 7, 8, 10];
+const PROGRESSION_SCALES = {
+  major: {
+    label: "Major",
+    intervals: [0, 2, 4, 5, 7, 9, 11],
+  },
+  minor: {
+    label: "Minor",
+    intervals: [0, 2, 3, 5, 7, 8, 10],
+  },
+  "harmonic-minor": {
+    label: "Harmonic",
+    intervals: [0, 2, 3, 5, 7, 8, 11],
+  },
+  "melodic-minor": {
+    label: "Melodic",
+    intervals: [0, 2, 3, 5, 7, 9, 11],
+  },
+  dorian: {
+    label: "Dorian",
+    intervals: [0, 2, 3, 5, 7, 9, 10],
+  },
+  phrygian: {
+    label: "Phrygian",
+    intervals: [0, 1, 3, 5, 7, 8, 10],
+  },
+  lydian: {
+    label: "Lydian",
+    intervals: [0, 2, 4, 6, 7, 9, 11],
+  },
+  mixolydian: {
+    label: "Mixolydian",
+    intervals: [0, 2, 4, 5, 7, 9, 10],
+  },
+  aeolian: {
+    label: "Aeolian",
+    intervals: [0, 2, 3, 5, 7, 8, 10],
+  },
+  locrian: {
+    label: "Locrian",
+    intervals: [0, 1, 3, 5, 6, 8, 10],
+  },
+};
+const majorScaleIntervals = PROGRESSION_SCALES.major.intervals;
+const minorScaleIntervals = PROGRESSION_SCALES.minor.intervals;
 const keyChordPattern = [
   { roman: "I", quality: "Major", intervals: [0, 4, 7] },
   { roman: "ii", quality: "Minor", intervals: [0, 3, 7] },
@@ -448,11 +490,11 @@ const homeProgressionChordOptions = {
   seventh: {
     label: "Seventh",
     labelForDegree: (degree, pattern) => {
-      const seventhLabels = homeProgressionState.scaleMode === "minor"
-        ? ["i7", "ii\u00f87", "IIImaj7", "iv7", "v7", "VImaj7", "VII7"]
-        : ["Imaj7", "ii7", "iii7", "IVmaj7", "V7", "vi7", "vii\u00f87"];
-
-      return seventhLabels[degree] || `${pattern.roman || "I"}7`;
+      return homeProgressionRomanWithQuality(
+        pattern.roman || "I",
+        pattern.quality,
+        homeProgressionSeventhQuality(degree)
+      );
     },
     qualityForDegree: ({ degree }) => homeProgressionSeventhQuality(degree),
   },
@@ -4035,7 +4077,11 @@ function chordNoteNamesFromSymbol(symbol) {
   }
 
   const rootValue = noteValues[parsed.root];
-  const midiNumbers = chordIntervalsForQuality(parsed.quality).map((interval) => 60 + rootValue + interval);
+  return chordNoteNamesFromRoot(rootValue, chordIntervalsForQuality(parsed.quality));
+}
+
+function chordNoteNamesFromRoot(rootValue, intervals) {
+  const midiNumbers = intervals.map((interval) => 60 + rootValue + interval);
 
   return midiNumbers.map((midiNumber) => {
     const noteName = sharpNames[midiNumber % 12];
@@ -4173,6 +4219,7 @@ function updateProgressionAnimation(animation) {
 
 function setProgressionAnimationChord(animation, index, { isPlaying = false, activeNotes = null } = {}) {
   const symbols = animation.dataset.symbols?.split(",").filter(Boolean) || [];
+  const noteGroups = progressionNoteGroupsFromDataset(animation);
   const symbol = symbols[index] || symbols[0];
   const step = animation.querySelector(".progression-step");
   const isHomeGuitarProgression = isStringedInstrumentMode() && animation.hasAttribute("data-home-progression-animation");
@@ -4183,7 +4230,7 @@ function setProgressionAnimationChord(animation, index, { isPlaying = false, act
 
   const label = step.querySelector("span");
   const keyboard = step.querySelector("div");
-  const notes = chordNotesFromSymbol(symbol);
+  const notes = noteGroups[index] || noteGroups[0] || chordNotesFromSymbol(symbol);
   const displaySymbols = animation.dataset.displaySymbols?.split(",").filter(Boolean) || [];
   const labelText = isHomeGuitarProgression
     ? guitarProgressionStepLabel(index, symbol)
@@ -5989,8 +6036,8 @@ function applyHomepageProgressionUrlParams() {
     homeProgressionState.key = homeProgressionState.root;
   }
 
-  if (requestedScale === "major" || requestedScale === "minor") {
-    homeProgressionState.scaleMode = requestedScale;
+  if (requestedScale) {
+    homeProgressionState.scaleMode = normalizeHomeProgressionScaleMode(requestedScale);
   }
 }
 
@@ -6085,8 +6132,106 @@ function restoreHomeChordMode() {
   applyInstrumentFamilyMode(getSelectedInstrumentFamily(), { stopPlayback: false });
 }
 
+function normalizeHomeProgressionScaleMode(mode) {
+  const key = String(mode || "")
+    .trim()
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .toLowerCase();
+
+  return PROGRESSION_SCALES[key] ? key : "major";
+}
+
+function homeProgressionScaleConfig(mode = homeProgressionState.scaleMode) {
+  return PROGRESSION_SCALES[normalizeHomeProgressionScaleMode(mode)] || PROGRESSION_SCALES.major;
+}
+
+function progressionScaleIntervalAt(intervals, degree) {
+  const scaleLength = intervals.length;
+  const wrappedDegree = ((degree % scaleLength) + scaleLength) % scaleLength;
+  const octaveOffset = Math.floor(degree / scaleLength) * 12;
+
+  return intervals[wrappedDegree] + octaveOffset;
+}
+
+function progressionChordIntervalsFromScale(intervals, degree, scaleDegreeOffsets) {
+  const rootInterval = progressionScaleIntervalAt(intervals, degree);
+
+  return scaleDegreeOffsets.map((offset) => {
+    return progressionScaleIntervalAt(intervals, degree + offset) - rootInterval;
+  });
+}
+
+function normalizeProgressionIntervalSignature(intervals) {
+  return intervals.map((interval) => normalizeValue(interval)).join(",");
+}
+
+const progressionQualityByIntervalSignature = {
+  "0,4,7": "Major",
+  "0,3,7": "Minor",
+  "0,3,6": "Diminished",
+  "0,4,8": "Augmented",
+  "0,4,7,11": "maj7",
+  "0,4,7,10": "7",
+  "0,3,7,10": "m7",
+  "0,3,6,10": "m7b5",
+  "0,3,6,9": "dim7",
+  "0,3,7,11": "mMaj7",
+  "0,4,8,10": "aug7",
+  "0,4,6,10": "7b5",
+  "0,4,7,9": "6",
+  "0,3,7,9": "m6",
+  "0,4,7,10,2": "9",
+  "0,4,7,11,2": "maj9",
+  "0,3,7,10,2": "m9",
+};
+
+function progressionQualityFromIntervals(intervals, fallback = "Major") {
+  return progressionQualityByIntervalSignature[normalizeProgressionIntervalSignature(intervals)] || fallback;
+}
+
+function progressionRomanForQuality(degree, quality) {
+  const roman = ["I", "II", "III", "IV", "V", "VI", "VII"][degree] || "I";
+
+  if (quality === "Minor") {
+    return roman.toLowerCase();
+  }
+
+  if (quality === "Diminished") {
+    return `${roman.toLowerCase()}\u00b0`;
+  }
+
+  if (quality === "Augmented") {
+    return `${roman}+`;
+  }
+
+  return roman;
+}
+
+function progressionChordPatternForScale(intervals) {
+  return intervals.map((_, degree) => {
+    const chordIntervals = progressionChordIntervalsFromScale(intervals, degree, [0, 2, 4]);
+    const quality = progressionQualityFromIntervals(chordIntervals, "Major");
+
+    return {
+      roman: progressionRomanForQuality(degree, quality),
+      quality,
+      intervals: chordIntervals,
+    };
+  });
+}
+
 function homeProgressionConfig() {
-  return homeProgressionState.scaleMode === "minor" ? keyModeConfigs.minor : keyModeConfigs.major;
+  const scale = homeProgressionScaleConfig();
+
+  return {
+    titleQuality: scale.label,
+    subtitle: `${scale.label} scale and diatonic chords`,
+    fallbackRoot: "C",
+    page: `index.html?mode=progressions&scale=${normalizeHomeProgressionScaleMode(homeProgressionState.scaleMode)}`,
+    scaleIntervals: scale.intervals,
+    chordPattern: progressionChordPatternForScale(scale.intervals),
+    progressions: progressionSets,
+  };
 }
 
 function homeProgressionDegreePattern() {
@@ -6141,9 +6286,28 @@ function homeProgressionStepLabel(degree, mode = homeProgressionDefaultChordOpti
 
   const baseLabel = degreePattern.roman || "I";
   const quality = homeProgressionQualityForDegree(degree, mode, pattern);
-  const suffix = qualitySuffix(quality);
 
-  return !suffix || quality === degreePattern.quality ? baseLabel : `${baseLabel}${suffix}`;
+  return homeProgressionRomanWithQuality(baseLabel, degreePattern.quality, quality);
+}
+
+function homeProgressionRomanWithQuality(roman, triadQuality, quality) {
+  if (!quality || quality === triadQuality) {
+    return roman;
+  }
+
+  if (triadQuality === "Minor" && (quality === "m7" || quality === "m6" || quality === "m9")) {
+    return `${roman}${quality.slice(1)}`;
+  }
+
+  if (triadQuality === "Diminished" && quality === "m7b5") {
+    return `${roman.replace("\u00b0", "\u00f8")}7`;
+  }
+
+  if (triadQuality === "Diminished" && quality === "dim7") {
+    return `${roman}7`;
+  }
+
+  return `${roman}${qualitySuffix(quality)}`;
 }
 
 function homeProgressionFormulaLabel(
@@ -6170,7 +6334,7 @@ function normalizeHomeProgressionState() {
   }
 
   homeProgressionState.key = homeProgressionState.root;
-  homeProgressionState.scaleMode = homeProgressionState.scaleMode === "minor" ? "minor" : "major";
+  homeProgressionState.scaleMode = normalizeHomeProgressionScaleMode(homeProgressionState.scaleMode);
   homeProgressionState.chordMode = normalizeHomeProgressionChordMode(homeProgressionState.chordMode);
 
   if (!Array.isArray(homeProgressionState.steps) || homeProgressionState.steps.length < 2) {
@@ -6203,17 +6367,29 @@ function normalizeHomeProgressionState() {
 }
 
 function homeProgressionSeventhQuality(degree) {
-  const pattern = homeProgressionDegreePattern();
-  const triadQuality = pattern[degree]?.quality || "Major";
-  let seventhQuality = triadQuality;
-
-  if (homeProgressionState.scaleMode === "minor") {
-    seventhQuality = ["m7", "m7b5", "maj7", "m7", "m7", "maj7", "7"][degree] || triadQuality;
-  } else {
-    seventhQuality = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"][degree] || triadQuality;
-  }
+  const intervals = homeProgressionChordIntervalsForDegree(degree, "seventh");
+  const triadQuality = homeProgressionDegreePattern()[degree]?.quality || "Major";
+  const seventhQuality = progressionQualityFromIntervals(intervals, triadQuality);
 
   return chordQualityCatalog[seventhQuality] ? seventhQuality : triadQuality;
+}
+
+function homeProgressionChordScaleOffsets(mode) {
+  return ({
+    seventh: [0, 2, 4, 6],
+    sixth: [0, 2, 4, 5],
+    ninth: [0, 2, 4, 6, 8],
+    sus2: [0, 1, 4],
+    sus4: [0, 3, 4],
+  })[normalizeHomeProgressionChordMode(mode)] || [0, 2, 4];
+}
+
+function homeProgressionChordIntervalsForDegree(degree, mode = homeProgressionDefaultChordOption, config = homeProgressionConfig()) {
+  return progressionChordIntervalsFromScale(
+    config.scaleIntervals,
+    degree,
+    homeProgressionChordScaleOffsets(mode)
+  );
 }
 
 function homeProgressionChordForDegree(degree, mode = homeProgressionDefaultChordOption) {
@@ -6222,12 +6398,14 @@ function homeProgressionChordForDegree(degree, mode = homeProgressionDefaultChor
   const chordRootValue = scaleValues(homeProgressionRootValue(), config)[degree] ?? homeProgressionRootValue();
   const root = sharpNames[chordRootValue];
   const quality = homeProgressionQualityForDegree(degree, mode, config.chordPattern);
+  const intervals = homeProgressionChordIntervalsForDegree(degree, mode, config);
 
   return {
     roman: pattern.roman,
     root,
     quality,
-    notes: chordNotesFromRoot(chordRootValue, chordIntervalsForQuality(quality)),
+    notes: chordNotesFromRoot(chordRootValue, intervals),
+    noteNames: chordNoteNamesFromRoot(chordRootValue, intervals),
     symbol: chordSymbol(root, quality),
   };
 }
@@ -6250,6 +6428,53 @@ function homeProgressionLabels(chords) {
 
 function homeProgressionSymbols(chords) {
   return chords.map((chord) => chord.symbol);
+}
+
+function homeProgressionNoteGroups(chords) {
+  return chords.map((chord) => chord.notes || chordNotesFromSymbol(chord.symbol));
+}
+
+function homeProgressionNoteNameGroups(chords) {
+  return chords.map((chord) => chord.noteNames || chordNoteNamesFromSymbol(chord.symbol));
+}
+
+function progressionNoteGroupsFromDataset(animation) {
+  return animation.dataset.noteGroups
+    ?.split(";")
+    .map((group) => group.split(" ").filter(Boolean))
+    .filter((group) => group.length) || [];
+}
+
+function progressionChordNoteNames(chord) {
+  return chord?.noteNames || chordNoteNamesFromSymbol(chord?.symbol || "");
+}
+
+function progressionChordNotes(chord) {
+  return chord?.notes || chordNotesFromSymbol(chord?.symbol || "");
+}
+
+function pianoProgressionHandNotesForChord(chord, twoHands = false) {
+  const rightHandNotes = progressionChordNoteNames(chord);
+  const leftHandNotes = twoHands ? rightHandNotes.map((noteName) => transposeNoteName(noteName, -12)) : [];
+
+  return {
+    leftHandNotes,
+    rightHandNotes,
+    allNotes: [...leftHandNotes, ...rightHandNotes],
+  };
+}
+
+function guitarVoicingPlaybackFromProgressionChord(chord, voicingIndex = 0) {
+  const notes = progressionChordNotes(chord);
+
+  if (!notes.length) {
+    return null;
+  }
+
+  return guitarVoicingPlaybackFromContext(guitarRenderContext(notes, {
+    symbol: chord?.symbol || "",
+    voicingIndex,
+  }));
 }
 
 function resetHomeProgressionGuitarVoicings() {
@@ -6613,8 +6838,13 @@ function renderHomeKeySelector() {
       </aside>
       <div class="progression-builder-side">
         <section class="progression-builder-section" aria-labelledby="progression-scale-title">
-          <h2 id="progression-scale-title" class="selector-label">Choose Scale</h2>
-          <div class="progression-scale-toggle" role="group" aria-label="Choose progression scale" data-home-progression-scale-menu></div>
+          <h2 id="progression-scale-title" class="selector-label">Scale / Mode</h2>
+          <div class="progression-scale-toggle progression-scale-select-wrap" data-home-progression-scale-menu>
+            <button class="progression-option-select progression-scale-select" type="button" aria-labelledby="progression-scale-title progression-scale-selected-label" aria-haspopup="listbox" aria-expanded="false" aria-controls="progression-scale-options" data-home-progression-scale-select>
+              <span id="progression-scale-selected-label"></span>
+            </button>
+            <div id="progression-scale-options" class="progression-scale-options" role="listbox" aria-labelledby="progression-scale-title" data-home-progression-scale-options hidden></div>
+          </div>
         </section>
       </div>
       <section class="progression-builder-section progression-mobile-formula-select${homeProgressionMobileFormulaMenuOpen ? " is-open" : ""}" aria-labelledby="progression-mobile-formula-title" data-home-progression-mobile-formula>
@@ -6648,28 +6878,91 @@ function renderHomeKeySelector() {
     rootMenu.appendChild(button);
   });
 
-  const scaleMenu = selectorPanel.querySelector("[data-home-progression-scale-menu]");
-  [
-    ["major", "Major"],
-    ["minor", "Minor"],
-  ].forEach(([mode, label]) => {
-    const button = document.createElement("button");
-    const isActive = mode === homeProgressionState.scaleMode;
+  const scaleSelect = selectorPanel.querySelector("[data-home-progression-scale-select]");
+  const scaleOptions = selectorPanel.querySelector("[data-home-progression-scale-options]");
+  const selectedScaleMode = normalizeHomeProgressionScaleMode(homeProgressionState.scaleMode);
+  const selectedScaleLabel = homeProgressionScaleConfig(selectedScaleMode).label;
+  const closeScaleOptions = () => {
+    scaleOptions.hidden = true;
+    scaleSelect.setAttribute("aria-expanded", "false");
+  };
+  const openScaleOptions = () => {
+    scaleOptions.hidden = false;
+    scaleSelect.setAttribute("aria-expanded", "true");
+  };
+  const focusScaleOption = (mode) => {
+    scaleOptions.querySelector(`[data-home-progression-scale-mode="${mode}"]`)?.focus();
+  };
+  const selectScaleMode = (mode) => {
+    stopActiveLoop();
+    homeProgressionMobileFormulaMenuOpen = false;
+    homeProgressionState.scaleMode = normalizeHomeProgressionScaleMode(mode);
+    resetHomeProgressionGuitarVoicings();
+    renderHomeProgressionsMode();
+  };
 
-    button.type = "button";
-    button.dataset.homeProgressionScaleMode = mode;
-    button.textContent = label;
-    button.setAttribute("aria-label", `Choose ${label.toLowerCase()} scale`);
-    button.setAttribute("aria-pressed", String(isActive));
-    button.classList.toggle("is-active", isActive);
-    button.addEventListener("click", () => {
-      stopActiveLoop();
-      homeProgressionMobileFormulaMenuOpen = false;
-      homeProgressionState.scaleMode = mode;
-      resetHomeProgressionGuitarVoicings();
-      renderHomeProgressionsMode();
+  scaleSelect.querySelector("span").textContent = selectedScaleLabel;
+  scaleSelect.addEventListener("click", () => {
+    if (scaleOptions.hidden) {
+      openScaleOptions();
+      return;
+    }
+
+    closeScaleOptions();
+  });
+  scaleSelect.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+      return;
+    }
+
+    event.preventDefault();
+    openScaleOptions();
+    focusScaleOption(selectedScaleMode);
+  });
+  Object.entries(PROGRESSION_SCALES).forEach(([mode, scale]) => {
+    const option = document.createElement("button");
+    const isActive = mode === selectedScaleMode;
+
+    option.type = "button";
+    option.dataset.homeProgressionScaleMode = mode;
+    option.value = mode;
+    option.textContent = scale.label;
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", String(isActive));
+    option.classList.toggle("is-active", isActive);
+    option.addEventListener("click", () => selectScaleMode(mode));
+    option.addEventListener("keydown", (event) => {
+      const options = Array.from(scaleOptions.querySelectorAll("[data-home-progression-scale-mode]"));
+      const currentIndex = options.indexOf(option);
+      const columnCount = 2;
+      const moveByKey = {
+        ArrowRight: 1,
+        ArrowLeft: -1,
+        ArrowDown: columnCount,
+        ArrowUp: -columnCount,
+      }[event.key];
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeScaleOptions();
+        scaleSelect.focus();
+        return;
+      }
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectScaleMode(mode);
+        return;
+      }
+
+      if (!Number.isInteger(moveByKey)) {
+        return;
+      }
+
+      event.preventDefault();
+      options[Math.min(Math.max(currentIndex + moveByKey, 0), options.length - 1)]?.focus();
     });
-    scaleMenu.appendChild(button);
+    scaleOptions.appendChild(option);
   });
 
   const formulaMenu = selectorPanel.querySelector("[data-home-progression-formula-menu]");
@@ -6786,7 +7079,10 @@ function renderHomeProgressionList() {
     <div class="progression-customizer-section progression-options-row">
       <p class="selector-label">Options</p>
       <div class="progression-option-buttons progression-option-select-wrap">
-        <select class="progression-option-select" aria-label="Choose chord quality for selected step" data-home-progression-chord-mode></select>
+        <button class="progression-option-select progression-chord-mode-select" type="button" aria-label="Choose chord option for selected step" aria-haspopup="listbox" aria-expanded="false" aria-controls="progression-chord-mode-options" data-home-progression-chord-mode>
+          <span></span>
+        </button>
+        <div id="progression-chord-mode-options" class="progression-scale-options progression-chord-mode-options" role="listbox" aria-label="Choose chord option for selected step" data-home-progression-chord-mode-options hidden></div>
       </div>
     </div>
     <div class="progression-customizer-section">
@@ -6838,23 +7134,91 @@ function renderHomeProgressionList() {
   });
 
   const modeSelect = listCard.querySelector("[data-home-progression-chord-mode]");
-  Object.entries(homeProgressionChordOptions).forEach(([mode, option]) => {
-    const optionElement = document.createElement("option");
-
-    optionElement.value = mode;
-    optionElement.textContent = option.label;
-    modeSelect.appendChild(optionElement);
-  });
-  modeSelect.value = selectedStepMode;
-  modeSelect.addEventListener("change", () => {
-    const mode = normalizeHomeProgressionChordMode(modeSelect.value);
+  const modeOptions = listCard.querySelector("[data-home-progression-chord-mode-options]");
+  const closeModeOptions = () => {
+    modeOptions.hidden = true;
+    modeSelect.setAttribute("aria-expanded", "false");
+  };
+  const openModeOptions = () => {
+    modeOptions.hidden = false;
+    modeSelect.setAttribute("aria-expanded", "true");
+  };
+  const focusModeOption = (mode) => {
+    modeOptions.querySelector(`[data-home-progression-chord-option="${mode}"]`)?.focus();
+  };
+  const selectChordMode = (mode) => {
+    const normalizedMode = normalizeHomeProgressionChordMode(mode);
 
     stopActiveLoop();
-    homeProgressionState.stepModes[homeProgressionState.selectedStepIndex] = mode;
+    homeProgressionState.stepModes[homeProgressionState.selectedStepIndex] = normalizedMode;
     setHomeProgressionGuitarVoicingIndex(homeProgressionState.selectedStepIndex, 0);
-    homeProgressionState.chordMode = mode;
+    homeProgressionState.chordMode = normalizedMode;
     homeProgressionState.formulaId = "custom";
     renderHomeProgressionsMode();
+  };
+
+  modeSelect.querySelector("span").textContent = homeProgressionChordOptionInfo(selectedStepMode).label;
+  modeSelect.addEventListener("click", () => {
+    if (modeOptions.hidden) {
+      openModeOptions();
+      return;
+    }
+
+    closeModeOptions();
+  });
+  modeSelect.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+      return;
+    }
+
+    event.preventDefault();
+    openModeOptions();
+    focusModeOption(selectedStepMode);
+  });
+  Object.entries(homeProgressionChordOptions).forEach(([mode, option]) => {
+    const optionElement = document.createElement("button");
+    const isActive = mode === selectedStepMode;
+
+    optionElement.type = "button";
+    optionElement.dataset.homeProgressionChordOption = mode;
+    optionElement.value = mode;
+    optionElement.textContent = option.label;
+    optionElement.setAttribute("role", "option");
+    optionElement.setAttribute("aria-selected", String(isActive));
+    optionElement.classList.toggle("is-active", isActive);
+    optionElement.addEventListener("click", () => selectChordMode(mode));
+    optionElement.addEventListener("keydown", (event) => {
+      const options = Array.from(modeOptions.querySelectorAll("[data-home-progression-chord-option]"));
+      const currentIndex = options.indexOf(optionElement);
+      const columnCount = 2;
+      const moveByKey = {
+        ArrowRight: 1,
+        ArrowLeft: -1,
+        ArrowDown: columnCount,
+        ArrowUp: -columnCount,
+      }[event.key];
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeModeOptions();
+        modeSelect.focus();
+        return;
+      }
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectChordMode(mode);
+        return;
+      }
+
+      if (!Number.isInteger(moveByKey)) {
+        return;
+      }
+
+      event.preventDefault();
+      options[Math.min(Math.max(currentIndex + moveByKey, 0), options.length - 1)]?.focus();
+    });
+    modeOptions.appendChild(optionElement);
   });
 
   const utilities = listCard.querySelector("[data-home-progression-utilities]");
@@ -6894,7 +7258,7 @@ function renderHomeProgressionList() {
 
 }
 
-function ensureHomeProgressionStage(chordSymbols, labels) {
+function ensureHomeProgressionStage(chordSymbols, labels, noteGroups = []) {
   const { pianoCard } = homeProgressionElements();
   const keyboard = pianoCard?.querySelector(".keyboard");
   const title = homeProgressionTitle();
@@ -6917,6 +7281,7 @@ function ensureHomeProgressionStage(chordSymbols, labels) {
 
   animation.dataset.symbols = chordSymbols.join(",");
   animation.dataset.displaySymbols = labels.join(",");
+  animation.dataset.noteGroups = noteGroups.map((notes) => notes.join(" ")).join(";");
   animation.dataset.octaves = String(homeProgressionState.octaveCount);
   animation.dataset.activeIndex = String(homeProgressionState.selectedStepIndex);
   keyboard.setAttribute("aria-label", `${title} ${labels.join(" - ")} progression`);
@@ -6936,6 +7301,7 @@ function renderHomePianoCard(progression, chords) {
   const { pianoCard } = homeProgressionElements();
   const labels = homeProgressionLabels(chords);
   const chordSymbols = homeProgressionSymbols(chords);
+  const noteGroups = homeProgressionNoteGroups(chords);
   const formula = homeProgressionFormulaLabel();
   const guitarMode = isStringedInstrumentMode();
   const playStyleButtonLabel = guitarMode
@@ -7038,7 +7404,7 @@ function renderHomePianoCard(progression, chords) {
     );
     renderHomeProgressionsMode();
   });
-  ensureHomeProgressionStage(chordSymbols, labels);
+  ensureHomeProgressionStage(chordSymbols, labels, noteGroups);
   updateInstrumentThemeVisuals();
 }
 
@@ -7163,8 +7529,11 @@ function renderHomeProgressionsMode() {
   renderHomeProgressionScaleLine();
 }
 
-function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = false } = {}) {
-  const animation = ensureHomeProgressionStage(chordSymbols, labels);
+function scheduleHomeProgressionAnimation(chords, { arpeggio = false } = {}) {
+  const chordSymbols = homeProgressionSymbols(chords);
+  const labels = homeProgressionLabels(chords);
+  const noteGroups = homeProgressionNoteGroups(chords);
+  const animation = ensureHomeProgressionStage(chordSymbols, labels, noteGroups);
   const twoHands = pianoProgressionUsesTwoHands();
 
   if (!animation) {
@@ -7176,7 +7545,7 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
 
     if (arpeggio) {
       if (twoHands) {
-        const handNotes = pianoProgressionHandNotes(chordSymbols[index], true);
+        const handNotes = pianoProgressionHandNotesForChord(chords[index], true);
         const leftHandKeyboardNotes = pianoProgressionKeyboardNotes({
           leftHandNotes: handNotes.leftHandNotes,
           rightHandNotes: [],
@@ -7204,12 +7573,12 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
       }
 
       const guitarVoicingPlayback = isStringedInstrumentMode()
-        ? guitarVoicingPlaybackFromSymbol(
-            chordSymbols[index],
+        ? guitarVoicingPlaybackFromProgressionChord(
+            chords[index],
             homeProgressionGuitarVoicingIndex(index, chordSymbols[index])
           )
         : null;
-      const sourceNotes = guitarVoicingPlayback?.notes || chordNotesFromSymbol(chordSymbols[index]);
+      const sourceNotes = guitarVoicingPlayback?.notes || progressionChordNotes(chords[index]);
       const notes = guitarVoicingPlayback ? sourceNotes : upDownArpeggioSequence(sourceNotes);
 
       notes.forEach((note, noteIndex) => {
@@ -7229,7 +7598,7 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
     schedulePlayback(() => {
       setProgressionAnimationChord(animation, index, {
         isPlaying: true,
-        activeNotes: twoHands ? pianoProgressionKeyboardNotes(pianoProgressionHandNotes(chordSymbols[index], true)) : null,
+        activeNotes: twoHands ? pianoProgressionKeyboardNotes(pianoProgressionHandNotesForChord(chords[index], true)) : null,
       });
     }, chordStart);
 
@@ -7243,19 +7612,16 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
   schedulePlayback(() => {
     animation.classList.remove("is-active");
     setProgressionAnimationChord(animation, homeProgressionState.selectedStepIndex);
-  }, progressionPlaybackDuration(chordSymbols, {
+  }, homeProgressionPlaybackDuration(chords, {
     arpeggio,
     twoHands,
-    guitarVoicingIndexProvider: (index, symbol) => homeProgressionGuitarVoicingIndex(index, symbol),
   }));
 }
 
 function playHomeSelectedProgression() {
   const chords = homeProgressionChords();
-  const chordSymbols = homeProgressionSymbols(chords);
-  const labels = homeProgressionLabels(chords);
 
-  playHomeProgression(chordSymbols, labels);
+  playHomeProgression(chords);
 }
 
 function startHomeProgressionLoop(event) {
@@ -7272,8 +7638,6 @@ function startHomeProgressionLoop(event) {
   }
 
   const chords = homeProgressionChords();
-  const chordSymbols = homeProgressionSymbols(chords);
-  const labels = homeProgressionLabels(chords);
 
   stopActiveLoop();
   activeLoop = { button, timerId: null };
@@ -7284,30 +7648,55 @@ function startHomeProgressionLoop(event) {
       return;
     }
 
-    const duration = playHomeProgression(chordSymbols, labels, { keepLoop: true });
+    const duration = playHomeProgression(chords, { keepLoop: true });
     activeLoop.timerId = window.setTimeout(runLoop, duration * 1000);
   };
 
   runLoop();
 }
 
-function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
+function homeProgressionArpeggioSequenceLength(chord, index = 0, { twoHands = false } = {}) {
+  if (isStringedInstrumentMode()) {
+    const guitarVoicingPlayback = guitarVoicingPlaybackFromProgressionChord(
+      chord,
+      homeProgressionGuitarVoicingIndex(index, chord?.symbol || "")
+    );
+
+    return (guitarVoicingPlayback?.notes || progressionChordNotes(chord)).length;
+  }
+
+  return upDownArpeggioSequence(pianoProgressionHandNotesForChord(chord, twoHands).rightHandNotes).length;
+}
+
+function homeProgressionPlaybackDuration(chords, { arpeggio = false, twoHands = false } = {}) {
+  const chordEnd = chords.reduce((latestEnd, chord, index) => {
+    const chordStart = index * progressionChordSpacing;
+    const chordSpan = arpeggio
+      ? progressionArpeggioSpan(homeProgressionArpeggioSequenceLength(chord, index, { twoHands }))
+      : progressionChordDuration;
+
+    return Math.max(latestEnd, chordStart + chordSpan);
+  }, 0);
+
+  return startDelay + chordEnd + 0.35;
+}
+
+function playHomeProgression(chords, { keepLoop = false } = {}) {
   const playbackOutput = startNewPlayback({ keepLoop });
   const soundMode = getSelectedSoundMode();
   const arpeggio = isStringedInstrumentMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
   const twoHands = pianoProgressionUsesTwoHands();
-  const playbackDuration = progressionPlaybackDuration(chordSymbols, {
+  const playbackDuration = homeProgressionPlaybackDuration(chords, {
     arpeggio,
     twoHands,
-    guitarVoicingIndexProvider: (index, symbol) => homeProgressionGuitarVoicingIndex(index, symbol),
   });
 
-  scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio });
+  scheduleHomeProgressionAnimation(chords, { arpeggio });
 
   if (shouldUsePianoSampler()) {
     Tone.start();
-    chordSymbols.forEach((symbol, index) => {
-      const handNotes = pianoProgressionHandNotes(symbol, twoHands);
+    chords.forEach((chord, index) => {
+      const handNotes = pianoProgressionHandNotesForChord(chord, twoHands);
 
       if (arpeggio) {
         if (twoHands) {
@@ -7338,15 +7727,16 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
 
   const now = audioContext.currentTime + startDelay;
 
-  chordSymbols.forEach((symbol, index) => {
+  chords.forEach((chord, index) => {
+    const symbol = chord.symbol;
     const startTime = now + index * progressionChordSpacing;
     const guitarVoicing = isStringedInstrumentMode()
       ? homeProgressionGuitarVoicingContext(index, symbol)
       : null;
     const guitarVoicingPlayback = guitarVoicing
-      ? guitarVoicingPlaybackFromSymbol(symbol, guitarVoicing.voicingIndex)
+      ? guitarVoicingPlaybackFromProgressionChord(chord, guitarVoicing.voicingIndex)
       : null;
-    const handNotes = pianoProgressionHandNotes(symbol, twoHands);
+    const handNotes = pianoProgressionHandNotesForChord(chord, twoHands);
     const pianoFrequencies = handNotes.allNotes
       .map(frequencyFromNoteName)
       .filter((frequency) => Number.isFinite(frequency));

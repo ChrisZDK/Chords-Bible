@@ -4579,7 +4579,8 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-ut
   margin: 0;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-grid {
   grid-template-columns: repeat(6, minmax(0, 1fr));}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-toggle,
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-buttons {
-  grid-template-columns: repeat(2, minmax(0, 1fr));}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-select-wrap {
+  grid-template-columns: repeat(2, minmax(0, 1fr));}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-select-wrap,
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-select-wrap {
   grid-template-columns: minmax(0, 1fr);}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-degree-grid {
   grid-template-columns: repeat(7, minmax(0, 1fr));}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-utility-row {
   grid-template-columns: repeat(4, minmax(0, 1fr));}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-builder button,
@@ -4598,7 +4599,9 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-op
   border: 1px solid rgba(91, 71, 128, 0.38);
   background: var(--pv-panel);
   color: var(--pv-text);
-  cursor: pointer;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-builder button,
+  cursor: pointer;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-select {
+  max-width: 100%;
+  text-align-last: center;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-builder button,
 body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-customizer button,
 body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-option-select {
   border: 1px solid rgba(167, 61, 255, 0.7);
@@ -6768,6 +6771,78 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-bu
     min-width: clamp(3.45rem, 6vw, 4.3rem);
     min-height: clamp(1.55rem, 2.9vw, 1.82rem);
     font-size: clamp(0.68rem, 0.95vw, 0.82rem);}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-builder.selector-panel-with-rail .progression-scale-select-wrap {
+    grid-template-columns: minmax(0, min(100%, 13rem));
+    justify-content: start;}
+}
+
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-toggle.progression-scale-select-wrap {
+  grid-template-columns: minmax(0, min(100%, 13rem));
+  justify-content: start;
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-select-wrap {
+  position: relative;
+  z-index: 30;
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-select-wrap {
+  position: relative;
+  z-index: 25;
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-options-row {
+  position: relative;
+  z-index: 25;
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-select {
+  min-height: 1.22rem;
+  padding: 0.08rem 0.42rem;
+  line-height: 1;
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-options {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.18rem);
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.18rem;
+  width: 100%;
+  min-width: 100%;
+  padding: 0.24rem;
+  border: 1px solid rgba(167, 61, 255, 0.7);
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(12, 13, 29, 0.98), rgba(5, 7, 16, 0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+    0 0 16px rgba(255, 104, 200, 0.18);
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-options[hidden] {
+  display: none;
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-options button {
+  min-height: 1.32rem;
+  padding: 0.12rem 0.22rem;
+  font-size: 0.68rem;
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-chord-mode-options {
+  width: min(100%, 18rem);
+}
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-builder.selector-panel-with-rail,
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .selector-panel-with-rail .progression-builder-content,
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-builder-side,
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-builder-section,
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-customizer,
+body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-options-row {
+  overflow: visible !important;
+}
+body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-scale-options {
+  border-color: #a73dff;
+}
+
+@media (max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-select-wrap .progression-chord-mode-options {
+    top: auto;
+    bottom: calc(100% + 0.18rem);
+  }
 }
 
 /* Piano shared header alignment. */

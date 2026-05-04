@@ -970,3 +970,12 @@ body.piano-app-page[data-page="piano"][data-theme="wisdom"] .orientation-advisor
     max-width: calc(100vw - 1.5rem);
   }
 }
+
+body.piano-app-page[data-page="piano"][data-theme="wisdom"].is-home-progressions-mode .progression-scale-select {
+  background: #bfbfbf;
+}
+
+body.piano-app-page[data-page="piano"][data-theme="wisdom"].is-home-progressions-mode .progression-scale-options {
+  background: #bfbfbf;
+  border-color: #585858;
+}
