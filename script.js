@@ -2987,6 +2987,14 @@ function shouldShowGuitarFretLabel(fret, fretCount) {
   return fretCount <= getStringedInstrumentFretRanges().compact || [3, 5, 7, 9, 12].includes(fret);
 }
 
+function guitarVisualRowIndexForString(stringIndex, stringCount = getStringedInstrumentTunings().length) {
+  return stringCount - 1 - stringIndex;
+}
+
+function guitarVisualStringY(stringIndex, top, stringGap, stringCount = getStringedInstrumentTunings().length) {
+  return top + guitarVisualRowIndexForString(stringIndex, stringCount) * stringGap;
+}
+
 function guitarActiveFretRange(strings) {
   const fretted = strings
     .map((string) => string.fret)
@@ -3022,10 +3030,12 @@ function guitarBarreGeometry(voicing, fretWindow, left, top, stringGap, fretWidt
     return null;
   }
 
+  const stringYPositions = strings.map((stringIndex) => guitarVisualStringY(stringIndex, top, stringGap, stringCount));
+
   return {
     x: left + (visibleFretIndex + 0.5) * fretWidth,
-    y1: top + Math.min(...strings) * stringGap,
-    y2: top + Math.max(...strings) * stringGap,
+    y1: Math.min(...stringYPositions),
+    y2: Math.max(...stringYPositions),
     label: `BARRE ${barre.fret}F`,
   };
 }
@@ -3128,7 +3138,7 @@ function createGuitarChordDiagram(notes, preserveLabels = false, isPlaying = fal
   });
 
   voicing.strings.forEach((string, index) => {
-    const y = top + index * stringGap;
+    const y = guitarVisualStringY(index, top, stringGap, stringCount);
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
     line.setAttribute("class", "guitar-string");
