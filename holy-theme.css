@@ -403,6 +403,25 @@ body.piano-app-page[data-page="piano"][data-theme="holy"] .progression-customize
     0 0 18px rgba(77, 179, 255, 0.32);
 }
 
+body.piano-app-page[data-page="piano"][data-theme="holy"] .progression-option-select {
+  border-color: var(--active-border);
+  background: linear-gradient(180deg, var(--highlight-soft), var(--active-bg));
+  color: #fff;
+  text-shadow: 0 1px 0 var(--active-shadow);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 18px rgba(77, 179, 255, 0.32);
+}
+
+body.piano-app-page[data-page="piano"][data-theme="holy"] .progression-option-select option:not(:checked) {
+  background: #efdaa1;
+  color: #1a1300;
+}
+
+body.piano-app-page[data-page="piano"][data-theme="holy"] .progression-option-select option:checked {
+  color: #1a1300;
+}
+
 body.piano-app-page[data-page="piano"][data-theme="holy"] .type-menu button:not(.is-active),
 body.piano-app-page[data-page="piano"][data-theme="holy"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button:not(.is-active):not([aria-pressed="true"]) {
   background: var(--button-bg);
@@ -691,7 +710,10 @@ body.piano-app-page[data-page="piano"][data-theme="holy"] .repeat-button[aria-pr
 
 body.piano-app-page[data-page="piano"][data-theme="holy"] .piano-card .repeat-button,
 body.piano-app-page[data-page="piano"][data-theme="holy"] .key-chord-grid .repeat-button,
-body.piano-app-page[data-page="piano"][data-theme="holy"] .progressions-panel .repeat-button,
+body.piano-app-page[data-page="piano"][data-theme="holy"] .progressions-panel .repeat-button {
+  background: transparent;
+}
+
 body.piano-app-page[data-page="piano"][data-theme="holy"] .octave-toggle,
 body.piano-app-page[data-page="piano"][data-theme="holy"] .sound-select-button {
   border-color: var(--play-border);

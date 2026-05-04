@@ -126,10 +126,10 @@ body.piano-app-page[data-page="piano"][data-theme="wisdom"] .home-cosmos-stars::
 }
 
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .site-brand {
-  color: var(--text-strong);
+  color: #ffffff;
   text-shadow:
-    1px 1px 0 #f8fbff,
-    0 0 12px rgba(77, 220, 255, 0.42);
+    1px 1px 0 #001127,
+    0 0 12px #001c4d;
 }
 
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .site-logo {
@@ -426,6 +426,7 @@ body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-builder
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-builder button[aria-pressed="true"],
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-customizer button.is-active,
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-customizer button[aria-pressed="true"],
+body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-option-select,
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-scale-toggle button[aria-pressed="true"],
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-mobile-formula-button.is-active {
   border-color: var(--active-border);
@@ -436,6 +437,21 @@ body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-mobile-
     inset 2px 2px 0 rgba(255, 255, 255, 0.45),
     inset -2px -2px 0 rgba(0, 52, 184, 0.78),
     0 0 0 1px rgba(255, 211, 61, 0.45);
+}
+
+body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-option-select option:not(:checked) {
+  background: #74767b;
+  color: #fff;
+  text-shadow: none;
+}
+
+body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-option-select,
+body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-option-select option:checked {
+  color: #555a6b;
+}
+
+body.piano-app-page[data-page="piano"][data-theme="wisdom"] .progression-option-select {
+  color: #fff;
 }
 
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .type-menu button:not(.is-active),
@@ -834,9 +850,7 @@ body.piano-app-page[data-page="piano"][data-theme="wisdom"] [data-related-chord-
 
 body.piano-app-page[data-page="piano"][data-theme="wisdom"] .github-icon-card {
   border-color: var(--button-border);
-  background:
-    radial-gradient(circle at 45% 38%, rgba(255, 211, 61, 0.42), transparent 3rem),
-    linear-gradient(180deg, #4ddcff, #075cf0);
+  background: #b5b5b5;
   box-shadow:
     inset 2px 2px 0 rgba(255, 255, 255, 0.6),
     inset -2px -2px 0 rgba(0, 52, 184, 0.78),

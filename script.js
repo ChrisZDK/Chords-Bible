@@ -439,6 +439,58 @@ const minorKeyChordPattern = [
   { roman: "VI", quality: "Major", intervals: [0, 4, 7] },
   { roman: "VII", quality: "Major", intervals: [0, 4, 7] },
 ];
+const homeProgressionDefaultChordOption = "triad";
+const homeProgressionChordOptions = {
+  triad: {
+    label: "Triad",
+    qualityForDegree: ({ pattern }) => pattern.quality,
+  },
+  seventh: {
+    label: "Seventh",
+    labelForDegree: (degree, pattern) => {
+      const seventhLabels = homeProgressionState.scaleMode === "minor"
+        ? ["i7", "ii\u00f87", "IIImaj7", "iv7", "v7", "VImaj7", "VII7"]
+        : ["Imaj7", "ii7", "iii7", "IVmaj7", "V7", "vi7", "vii\u00f87"];
+
+      return seventhLabels[degree] || `${pattern.roman || "I"}7`;
+    },
+    qualityForDegree: ({ degree }) => homeProgressionSeventhQuality(degree),
+  },
+  sixth: {
+    label: "Sixth",
+    qualityForDegree: ({ pattern }) => ({
+      Major: "6",
+      Minor: "m6",
+      Diminished: "m6",
+    })[pattern.quality] || pattern.quality,
+  },
+  ninth: {
+    label: "Ninth",
+    qualityForDegree: ({ degree }) => {
+      const seventhQuality = homeProgressionSeventhQuality(degree);
+
+      return ({
+        maj7: "maj9",
+        m7: "m9",
+        7: "9",
+        m7b5: "m9",
+      })[seventhQuality] || seventhQuality;
+    },
+  },
+  sus2: {
+    label: "Suspended 2",
+    qualityForDegree: () => "Sus2",
+  },
+  sus4: {
+    label: "Suspended 4",
+    qualityForDegree: () => "Sus4",
+  },
+};
+const homeProgressionChordOptionAliases = {
+  triads: "triad",
+  seventh: "seventh",
+  sevenths: "seventh",
+};
 const progressionSets = {
   common: [
     {
@@ -1115,9 +1167,9 @@ const homeProgressionState = {
   scaleMode: "major",
   formulaId: "pop-axis",
   steps: [0, 4, 5, 3],
-  stepModes: ["triads", "triads", "triads", "triads"],
+  stepModes: ["triad", "triad", "triad", "triad"],
   selectedStepIndex: 0,
-  chordMode: "triads",
+  chordMode: "triad",
   selectedIndex: 0,
   page: 0,
   octaveCount: 1,
@@ -4047,12 +4099,14 @@ function frequenciesFromChordSymbol(symbol) {
     .filter((frequency) => Number.isFinite(frequency));
 }
 
-function upDownArpeggioSequence(values) {
-  if (values.length <= 1) {
-    return values;
+function upDownArpeggioSequence(values = []) {
+  const playableValues = values.filter((value) => value !== undefined && value !== null && value !== "");
+
+  if (playableValues.length <= 1) {
+    return playableValues;
   }
 
-  return [...values, ...values.slice(0, -1).reverse()];
+  return [...playableValues, ...playableValues.slice(0, -1).reverse()];
 }
 
 function playSynthNote(frequency, startTime, duration = 1.35, destination = audioContext.destination) {
@@ -4211,11 +4265,41 @@ function scheduleProgressionAnimation(item, chordSymbols, { arpeggio = false } =
     animation.classList.remove("is-active");
     setProgressionAnimationChord(animation, 0);
     item.classList.remove("is-playing");
-  }, startDelay + chordSymbols.length * progressionChordSpacing + 0.2);
+  }, progressionPlaybackDuration(chordSymbols, { arpeggio }));
 }
 
-function progressionPlaybackDuration(chordSymbols) {
-  return startDelay + Math.max(chordSymbols.length - 1, 0) * progressionChordSpacing + progressionChordDuration + 0.35;
+function progressionArpeggioSpan(sequenceLength) {
+  if (!sequenceLength) {
+    return 0;
+  }
+
+  return Math.max(sequenceLength - 1, 0) * progressionArpeggioNoteSpacing + progressionArpeggioNoteDuration;
+}
+
+function progressionArpeggioSequenceLength(symbol, index = 0, { twoHands = false, guitarVoicingIndexProvider = null } = {}) {
+  if (isStringedInstrumentMode()) {
+    const voicingIndex = typeof guitarVoicingIndexProvider === "function"
+      ? guitarVoicingIndexProvider(index, symbol)
+      : 0;
+    const guitarVoicingPlayback = guitarVoicingPlaybackFromSymbol(symbol, voicingIndex);
+
+    return (guitarVoicingPlayback?.notes || chordNotesFromSymbol(symbol)).length;
+  }
+
+  return upDownArpeggioSequence(pianoProgressionHandNotes(symbol, twoHands).rightHandNotes).length;
+}
+
+function progressionPlaybackDuration(chordSymbols, { arpeggio = false, twoHands = false, guitarVoicingIndexProvider = null } = {}) {
+  const chordEnd = chordSymbols.reduce((latestEnd, symbol, index) => {
+    const chordStart = index * progressionChordSpacing;
+    const chordSpan = arpeggio
+      ? progressionArpeggioSpan(progressionArpeggioSequenceLength(symbol, index, { twoHands, guitarVoicingIndexProvider }))
+      : progressionChordDuration;
+
+    return Math.max(latestEnd, chordStart + chordSpan);
+  }, 0);
+
+  return startDelay + chordEnd + 0.35;
 }
 
 function playProgression(chordSymbols, item, { keepLoop = false, arpeggio = false } = {}) {
@@ -4241,7 +4325,7 @@ function playProgression(chordSymbols, item, { keepLoop = false, arpeggio = fals
       }, startDelay + index * progressionChordSpacing);
     });
 
-    return progressionPlaybackDuration(chordSymbols);
+    return progressionPlaybackDuration(chordSymbols, { arpeggio });
   }
 
   const now = audioContext.currentTime + startDelay;
@@ -4270,7 +4354,7 @@ function playProgression(chordSymbols, item, { keepLoop = false, arpeggio = fals
       preserveOrder: Boolean(guitarVoicingPlayback),
     });
   });
-  return progressionPlaybackDuration(chordSymbols);
+  return progressionPlaybackDuration(chordSymbols, { arpeggio });
 }
 
 function startProgressionLoop(chordSymbols, item, button) {
@@ -6022,23 +6106,44 @@ function homeProgressionFormulaById(id = homeProgressionState.formulaId) {
 }
 
 function normalizeHomeProgressionChordMode(mode) {
-  return mode === "sevenths" ? "sevenths" : "triads";
+  const key = String(mode || "").trim().toLowerCase();
+  const normalizedKey = homeProgressionChordOptionAliases[key] || key;
+
+  return homeProgressionChordOptions[normalizedKey] ? normalizedKey : homeProgressionDefaultChordOption;
 }
 
 function homeProgressionSelectedStepMode(index = homeProgressionState.selectedStepIndex) {
   return normalizeHomeProgressionChordMode(homeProgressionState.stepModes?.[index]);
 }
 
-function homeProgressionStepLabel(degree, mode = "triads", pattern = homeProgressionDegreePattern()) {
-  if (normalizeHomeProgressionChordMode(mode) !== "sevenths") {
-    return pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I";
+function homeProgressionChordOptionInfo(mode) {
+  return homeProgressionChordOptions[normalizeHomeProgressionChordMode(mode)];
+}
+
+function homeProgressionQualityForDegree(degree, mode = homeProgressionDefaultChordOption, pattern = homeProgressionDegreePattern()) {
+  const degreePattern = pattern[degree] || pattern[0] || keyChordPattern[0];
+  const option = homeProgressionChordOptionInfo(mode);
+  const quality = option.qualityForDegree({
+    degree,
+    pattern: degreePattern,
+  });
+
+  return chordQualityCatalog[quality] ? quality : degreePattern.quality;
+}
+
+function homeProgressionStepLabel(degree, mode = homeProgressionDefaultChordOption, pattern = homeProgressionDegreePattern()) {
+  const degreePattern = pattern[degree] || keyChordPattern[degree] || keyChordPattern[0];
+  const option = homeProgressionChordOptionInfo(mode);
+
+  if (option.labelForDegree) {
+    return option.labelForDegree(degree, degreePattern);
   }
 
-  const seventhLabels = homeProgressionState.scaleMode === "minor"
-    ? ["i7", "ii\u00f87", "IIImaj7", "iv7", "v7", "VImaj7", "VII7"]
-    : ["Imaj7", "ii7", "iii7", "IVmaj7", "V7", "vi7", "vii\u00f87"];
+  const baseLabel = degreePattern.roman || "I";
+  const quality = homeProgressionQualityForDegree(degree, mode, pattern);
+  const suffix = qualitySuffix(quality);
 
-  return seventhLabels[degree] || `${pattern[degree]?.roman || keyChordPattern[degree]?.roman || "I"}7`;
+  return !suffix || quality === degreePattern.quality ? baseLabel : `${baseLabel}${suffix}`;
 }
 
 function homeProgressionFormulaLabel(
@@ -6066,7 +6171,7 @@ function normalizeHomeProgressionState() {
 
   homeProgressionState.key = homeProgressionState.root;
   homeProgressionState.scaleMode = homeProgressionState.scaleMode === "minor" ? "minor" : "major";
-  homeProgressionState.chordMode = homeProgressionState.chordMode === "sevenths" ? "sevenths" : "triads";
+  homeProgressionState.chordMode = normalizeHomeProgressionChordMode(homeProgressionState.chordMode);
 
   if (!Array.isArray(homeProgressionState.steps) || homeProgressionState.steps.length < 2) {
     homeProgressionState.steps = [...homeProgressionFormulaById("pop-axis").degrees];
@@ -6111,12 +6216,12 @@ function homeProgressionSeventhQuality(degree) {
   return chordQualityCatalog[seventhQuality] ? seventhQuality : triadQuality;
 }
 
-function homeProgressionChordForDegree(degree, mode = "triads") {
+function homeProgressionChordForDegree(degree, mode = homeProgressionDefaultChordOption) {
   const config = homeProgressionConfig();
   const pattern = config.chordPattern[degree] || config.chordPattern[0];
   const chordRootValue = scaleValues(homeProgressionRootValue(), config)[degree] ?? homeProgressionRootValue();
   const root = sharpNames[chordRootValue];
-  const quality = normalizeHomeProgressionChordMode(mode) === "sevenths" ? homeProgressionSeventhQuality(degree) : pattern.quality;
+  const quality = homeProgressionQualityForDegree(degree, mode, config.chordPattern);
 
   return {
     roman: pattern.roman,
@@ -6414,9 +6519,9 @@ function resetHomeProgressionDefaults() {
   homeProgressionState.scaleMode = "major";
   homeProgressionState.formulaId = defaultFormula.id;
   homeProgressionState.steps = [...defaultFormula.degrees];
-  homeProgressionState.stepModes = homeProgressionState.steps.map(() => "triads");
+  homeProgressionState.stepModes = homeProgressionState.steps.map(() => homeProgressionDefaultChordOption);
   homeProgressionState.selectedStepIndex = 0;
-  homeProgressionState.chordMode = "triads";
+  homeProgressionState.chordMode = homeProgressionDefaultChordOption;
   homeProgressionState.octaveCount = 1;
   homeProgressionState.selectedIndex = 0;
   homeProgressionState.page = 0;
@@ -6680,7 +6785,9 @@ function renderHomeProgressionList() {
     </div>
     <div class="progression-customizer-section progression-options-row">
       <p class="selector-label">Options</p>
-      <div class="progression-option-buttons" role="group" aria-label="Choose chord detail" data-home-progression-chord-mode></div>
+      <div class="progression-option-buttons progression-option-select-wrap">
+        <select class="progression-option-select" aria-label="Choose chord quality for selected step" data-home-progression-chord-mode></select>
+      </div>
     </div>
     <div class="progression-customizer-section">
       <p class="selector-label">Utilities</p>
@@ -6730,29 +6837,24 @@ function renderHomeProgressionList() {
     degreePicker.appendChild(button);
   });
 
-  const modeMenu = listCard.querySelector("[data-home-progression-chord-mode]");
-  [
-    ["triads", "Triads"],
-    ["sevenths", "7th"],
-  ].forEach(([mode, label]) => {
-    const button = document.createElement("button");
-    const isActive = mode === selectedStepMode;
+  const modeSelect = listCard.querySelector("[data-home-progression-chord-mode]");
+  Object.entries(homeProgressionChordOptions).forEach(([mode, option]) => {
+    const optionElement = document.createElement("option");
 
-    button.type = "button";
-    button.dataset.homeProgressionChordMode = mode;
-    button.textContent = label;
-    button.setAttribute("aria-label", `Use ${label.toLowerCase()} for selected step`);
-    button.setAttribute("aria-pressed", String(isActive));
-    button.classList.toggle("is-active", isActive);
-    button.addEventListener("click", () => {
-      stopActiveLoop();
-      homeProgressionState.stepModes[homeProgressionState.selectedStepIndex] = mode;
-      setHomeProgressionGuitarVoicingIndex(homeProgressionState.selectedStepIndex, 0);
-      homeProgressionState.chordMode = mode;
-      homeProgressionState.formulaId = "custom";
-      renderHomeProgressionsMode();
-    });
-    modeMenu.appendChild(button);
+    optionElement.value = mode;
+    optionElement.textContent = option.label;
+    modeSelect.appendChild(optionElement);
+  });
+  modeSelect.value = selectedStepMode;
+  modeSelect.addEventListener("change", () => {
+    const mode = normalizeHomeProgressionChordMode(modeSelect.value);
+
+    stopActiveLoop();
+    homeProgressionState.stepModes[homeProgressionState.selectedStepIndex] = mode;
+    setHomeProgressionGuitarVoicingIndex(homeProgressionState.selectedStepIndex, 0);
+    homeProgressionState.chordMode = mode;
+    homeProgressionState.formulaId = "custom";
+    renderHomeProgressionsMode();
   });
 
   const utilities = listCard.querySelector("[data-home-progression-utilities]");
@@ -6816,9 +6918,7 @@ function ensureHomeProgressionStage(chordSymbols, labels) {
   animation.dataset.symbols = chordSymbols.join(",");
   animation.dataset.displaySymbols = labels.join(",");
   animation.dataset.octaves = String(homeProgressionState.octaveCount);
-  if (isStringedInstrumentMode()) {
-    animation.dataset.activeIndex = String(homeProgressionState.selectedStepIndex);
-  }
+  animation.dataset.activeIndex = String(homeProgressionState.selectedStepIndex);
   keyboard.setAttribute("aria-label", `${title} ${labels.join(" - ")} progression`);
   updateProgressionAnimation(animation);
 
@@ -7142,8 +7242,12 @@ function scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio = fal
 
   schedulePlayback(() => {
     animation.classList.remove("is-active");
-    setProgressionAnimationChord(animation, isStringedInstrumentMode() ? homeProgressionState.selectedStepIndex : 0);
-  }, startDelay + chordSymbols.length * progressionChordSpacing + 0.2);
+    setProgressionAnimationChord(animation, homeProgressionState.selectedStepIndex);
+  }, progressionPlaybackDuration(chordSymbols, {
+    arpeggio,
+    twoHands,
+    guitarVoicingIndexProvider: (index, symbol) => homeProgressionGuitarVoicingIndex(index, symbol),
+  }));
 }
 
 function playHomeSelectedProgression() {
@@ -7180,8 +7284,8 @@ function startHomeProgressionLoop(event) {
       return;
     }
 
-    playHomeProgression(chordSymbols, labels, { keepLoop: true });
-    activeLoop.timerId = window.setTimeout(runLoop, progressionPlaybackDuration(chordSymbols) * 1000);
+    const duration = playHomeProgression(chordSymbols, labels, { keepLoop: true });
+    activeLoop.timerId = window.setTimeout(runLoop, duration * 1000);
   };
 
   runLoop();
@@ -7192,6 +7296,11 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
   const soundMode = getSelectedSoundMode();
   const arpeggio = isStringedInstrumentMode() ? homeProgressionState.arpeggio : pianoPlayStyleArpeggio;
   const twoHands = pianoProgressionUsesTwoHands();
+  const playbackDuration = progressionPlaybackDuration(chordSymbols, {
+    arpeggio,
+    twoHands,
+    guitarVoicingIndexProvider: (index, symbol) => homeProgressionGuitarVoicingIndex(index, symbol),
+  });
 
   scheduleHomeProgressionAnimation(chordSymbols, labels, { arpeggio });
 
@@ -7224,7 +7333,7 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
         pianoSampler.triggerAttackRelease(handNotes.allNotes, progressionChordDuration, undefined, 0.82);
       }, startDelay + index * progressionChordSpacing);
     });
-    return;
+    return playbackDuration;
   }
 
   const now = audioContext.currentTime + startDelay;
@@ -7278,6 +7387,8 @@ function playHomeProgression(chordSymbols, labels, { keepLoop = false } = {}) {
       preserveOrder: Boolean(guitarVoicingPlayback),
     });
   });
+
+  return playbackDuration;
 }
 
 function setHomepagePianoAreaMode(mode) {
