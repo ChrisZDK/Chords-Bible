@@ -677,7 +677,7 @@ const instrumentThemeVisuals = {
     keyboards: {
       banner: {
         src: "assets/themes/blessed/blessed-banner.webp",
-        alt: "Pixel-art Blessed Piano Valley scene with pink clouds, angels, crystals, and a piano path.",
+        alt: "Pixel-art Blessed Piano scene with pink clouds, angels, crystals, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/blessed/blessed-robot-keyboard.webp",
@@ -703,7 +703,7 @@ const instrumentThemeVisuals = {
     guitars: {
       banner: {
         src: "assets/themes/blessed/blessed-banner.webp",
-        alt: "Pixel-art Blessed Piano Valley scene with pink clouds, angels, crystals, and a piano path.",
+        alt: "Pixel-art Blessed Piano scene with pink clouds, angels, crystals, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/blessed/blessed-robot-guitar.webp",
@@ -729,7 +729,7 @@ const instrumentThemeVisuals = {
     ukulele: {
       banner: {
         src: "assets/themes/blessed/blessed-banner.webp",
-        alt: "Pixel-art Blessed Piano Valley scene with pink clouds, angels, crystals, and a piano path.",
+        alt: "Pixel-art Blessed Piano scene with pink clouds, angels, crystals, and a piano path.",
       },
       "sound-robot": {
         src: "assets/themes/blessed/blessed-robot-ukulele.webp",
@@ -749,6 +749,86 @@ const instrumentThemeVisuals = {
       },
       "info-robot": {
         src: "assets/themes/blessed/blessed-robot-floating.webp",
+        alt: "",
+      },
+    },
+  },
+  diabolical: {
+    keyboards: {
+      banner: {
+        src: "assets/themes/diabolical/diabolical-banner.webp",
+        alt: "Pixel-art diabolical piano scene with fiery keys, demons, and arcade robots.",
+      },
+      "sound-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-keyboard.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/diabolical/diabolical-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/diabolical/diabolical-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-floating.webp",
+        alt: "",
+      },
+    },
+    guitars: {
+      banner: {
+        src: "assets/themes/diabolical/diabolical-banner.webp",
+        alt: "Pixel-art diabolical piano scene with fiery keys, demons, and arcade robots.",
+      },
+      "sound-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-guitar.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/diabolical/diabolical-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/diabolical/diabolical-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-floating.webp",
+        alt: "",
+      },
+    },
+    ukulele: {
+      banner: {
+        src: "assets/themes/diabolical/diabolical-banner.webp",
+        alt: "Pixel-art diabolical piano scene with fiery keys, demons, and arcade robots.",
+      },
+      "sound-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-ukulele.webp",
+        alt: "",
+      },
+      "hero-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-banner.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/diabolical/diabolical-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/diabolical/diabolical-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/diabolical/diabolical-robot-floating.webp",
         alt: "",
       },
     },
