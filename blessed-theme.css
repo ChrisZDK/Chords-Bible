@@ -403,6 +403,21 @@ body.piano-app-page[data-page="piano"][data-theme="blessed"] .progression-mobile
     0 0 18px rgba(241, 69, 145, 0.32);
 }
 
+body.piano-app-page[data-page="piano"][data-theme="blessed"] .progression-option-select {
+  border-color: var(--active-border);
+  background: linear-gradient(180deg, var(--highlight-soft), var(--active-bg));
+  color: #fff;
+  text-shadow: 0 1px 0 var(--active-shadow);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 18px rgba(241, 69, 145, 0.32);
+}
+
+body.piano-app-page[data-page="piano"][data-theme="blessed"] .progression-option-select option:not(:checked) {
+  background: #f14591;
+  color: #fff;
+}
+
 body.piano-app-page[data-page="piano"][data-theme="blessed"] .type-menu button:not(.is-active),
 body.piano-app-page[data-page="piano"][data-theme="blessed"]:not(.is-home-progressions-mode) .selector-panel .chord-type-selector .type-menu button:not(.is-active):not([aria-pressed="true"]) {
   background: var(--button-bg);
