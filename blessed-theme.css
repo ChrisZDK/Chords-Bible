@@ -21,7 +21,7 @@ body.piano-app-page[data-page="piano"][data-theme="blessed"] {
   --button-bg: #FFF7FC;
   --button-hover-bg: #FDE2EE;
   --button-border: #F9A4CB;
-  --button-text: #813F4A;
+  --button-text: #710a1b;
   --active-bg: #E83D8C;
   --active-text: #FFFFFF;
   --active-border: #F998C6;
@@ -104,7 +104,7 @@ body.piano-app-page[data-page="piano"][data-theme="blessed"]::before {
 body.piano-app-page[data-page="piano"][data-theme="blessed"] .home-cosmos {
   background:
     url("assets/themes/blessed/blessed-banner-bg.webp") center top / min(100vw, 1440px) auto no-repeat,
-    linear-gradient(180deg, #f99bcb 0%, #f7cae0 58%, #fdf2f6 100%);
+    linear-gradient(180deg, #f893c9 0%, #eb68a7 58%, #f14591 100%);
 }
 
 body.piano-app-page[data-page="piano"][data-theme="blessed"] .home-cosmos-stars {
