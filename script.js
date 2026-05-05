@@ -1033,6 +1033,114 @@ const instrumentThemeVisuals = {
     },
   },
 };
+const preloadedThemeImages = new Map();
+let activeThemeSwitchRequest = 0;
+
+function getInstrumentThemeVisual(theme, family, visualKey) {
+  const normalizedTheme = instrumentThemeVisuals[theme] ? theme : "dark";
+  const visuals = instrumentThemeVisuals[normalizedTheme]?.[family] || {};
+  const familyFallbackVisuals = instrumentThemeVisuals.dark?.[family] || {};
+  const keyboardFallbackVisuals = instrumentThemeVisuals.dark?.keyboards || {};
+
+  return visuals[visualKey]
+    || instrumentThemeVisuals[normalizedTheme]?.keyboards?.[visualKey]
+    || familyFallbackVisuals[visualKey]
+    || keyboardFallbackVisuals[visualKey];
+}
+
+function preloadImage(src) {
+  if (!src) {
+    return Promise.resolve(false);
+  }
+
+  if (preloadedThemeImages.has(src)) {
+    return preloadedThemeImages.get(src);
+  }
+
+  const preload = new Promise((resolve) => {
+    const image = new Image();
+    let settled = false;
+    const finish = (loaded) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      resolve(Boolean(loaded));
+    };
+
+    if (typeof image.decode === "function") {
+      image.src = src;
+      image.decode()
+        .then(() => finish(true))
+        .catch(() => finish(image.complete && image.naturalWidth > 0));
+    } else {
+      image.onload = () => {
+        finish(true);
+      };
+      image.onerror = () => {
+        finish(false);
+      };
+      image.src = src;
+
+      if (image.complete) {
+        finish(image.naturalWidth > 0);
+      }
+    }
+  });
+
+  preloadedThemeImages.set(src, preload);
+  return preload;
+}
+
+function preloadThemeVisuals(theme, instrumentFamily = getSelectedInstrumentFamily()) {
+  const bannerVisual = getInstrumentThemeVisual(theme, instrumentFamily, "banner");
+  const themeBackgroundSrc = instrumentThemeVisuals[theme]
+    ? `assets/themes/${theme}/${theme}-banner-bg.webp`
+    : "";
+  const preloads = [];
+
+  if (bannerVisual?.src) {
+    preloads.push(preloadImage(bannerVisual.src));
+  }
+  if (themeBackgroundSrc) {
+    preloads.push(preloadImage(themeBackgroundSrc));
+  }
+
+  return Promise.all(preloads);
+}
+
+function removeThemeSwitchingClassAfterPaint(page, requestId) {
+  const finish = () => {
+    if (requestId === activeThemeSwitchRequest) {
+      page.classList.remove("is-theme-switching");
+    }
+  };
+
+  if (typeof requestAnimationFrame !== "function") {
+    setTimeout(finish, 0);
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(finish);
+  });
+}
+
+function scheduleThemeVisualPreload(themes) {
+  const preloadRemainingThemes = () => {
+    themes.forEach((theme) => {
+      preloadThemeVisuals(theme);
+    });
+  };
+
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(preloadRemainingThemes, { timeout: 2200 });
+    return;
+  }
+
+  setTimeout(preloadRemainingThemes, 900);
+}
 const guitarStringTunings = [
   { label: "E", value: 4, octave: 2 },
   { label: "A", value: 9, octave: 2 },
@@ -5884,16 +5992,10 @@ function updateInstrumentWelcomeText() {
 function updateInstrumentThemeVisuals() {
   const theme = document.body.dataset.theme || "dark";
   const family = getSelectedInstrumentFamily();
-  const visuals = instrumentThemeVisuals[theme]?.[family] || {};
-  const familyFallbackVisuals = instrumentThemeVisuals.dark?.[family] || {};
-  const keyboardFallbackVisuals = instrumentThemeVisuals.dark?.keyboards || {};
 
   document.querySelectorAll("[data-instrument-theme-visual]").forEach((image) => {
     const visualKey = image.dataset.instrumentThemeVisual;
-    const visual = visuals[visualKey]
-      || instrumentThemeVisuals[theme]?.keyboards?.[visualKey]
-      || familyFallbackVisuals[visualKey]
-      || keyboardFallbackVisuals[visualKey];
+    const visual = getInstrumentThemeVisual(theme, family, visualKey);
 
     if (!visual) {
       return;
@@ -6070,6 +6172,7 @@ function initializePianoTheme() {
   page.dataset.theme = initialTheme;
   themeMenu.value = initialTheme;
   updateInstrumentThemeVisuals();
+  preloadThemeVisuals(initialTheme);
 
   if (storedTheme && storedTheme !== initialTheme) {
     try {
@@ -6078,19 +6181,39 @@ function initializePianoTheme() {
       // Theme migration still works for this session if storage is unavailable.
     }
   }
+  scheduleThemeVisualPreload(availableThemes);
 
   themeMenu.addEventListener("change", () => {
     const nextTheme = isAvailableTheme(themeMenu.value) ? themeMenu.value : "dark";
+    const requestId = activeThemeSwitchRequest + 1;
 
-    page.dataset.theme = nextTheme;
+    activeThemeSwitchRequest = requestId;
     themeMenu.value = nextTheme;
-    updateInstrumentThemeVisuals();
 
-    try {
-      localStorage.setItem(pianoThemeStorageKey, nextTheme);
-    } catch (error) {
-      // Theme selection still works for this session if storage is unavailable.
+    if (nextTheme === page.dataset.theme) {
+      page.classList.remove("is-theme-switching");
+      return;
     }
+
+    page.classList.add("is-theme-switching");
+
+    preloadThemeVisuals(nextTheme)
+      .then(() => {
+        if (requestId !== activeThemeSwitchRequest) {
+          return;
+        }
+
+        page.dataset.theme = nextTheme;
+        updateInstrumentThemeVisuals();
+
+        try {
+          localStorage.setItem(pianoThemeStorageKey, nextTheme);
+        } catch (error) {
+          // Theme selection still works for this session if storage is unavailable.
+        }
+
+        removeThemeSwitchingClassAfterPaint(page, requestId);
+      });
   });
 }
 

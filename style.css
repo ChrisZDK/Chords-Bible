@@ -7001,6 +7001,29 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .future-illustration-s
   display: none;
 }
 
+body.piano-app-page[data-page="piano"] main .hero-section .hero-image-frame {
+  background: transparent;
+}
+
+body.piano-app-page[data-page="piano"] .hero-section .hero-image-frame .hero-banner-image {
+  opacity: 1;
+  transition: opacity 150ms ease;
+}
+
+body.piano-app-page[data-page="piano"].is-theme-switching .hero-section .hero-image-frame {
+  background: transparent;
+}
+
+body.piano-app-page[data-page="piano"].is-theme-switching .hero-section .hero-image-frame .hero-banner-image {
+  opacity: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.piano-app-page[data-page="piano"] .hero-section .hero-image-frame .hero-banner-image {
+    transition-duration: 1ms;
+  }
+}
+
 /* Piano Dark Theme instrument family button. */
 body.piano-app-page[data-page="piano"][data-theme="dark"] .instrument-family-select,
 body.piano-app-page[data-page="piano"][data-theme="dark"] .instrument-family-select:hover,
