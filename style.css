@@ -1,5 +1,9 @@
 * {
   box-sizing: border-box;
+}:root {
+  --font-brand: "Press Start 2P", monospace;
+  --font-ui: "Handjet", Arial, sans-serif;
+  --font-body: "Anaheim", Arial, Helvetica, sans-serif;
 }html:has(body.piano-app-page[data-page="piano"][data-theme="dark"]) {
   background: #03040d;
   scrollbar-color: #a73dff #050111;
@@ -19,7 +23,7 @@
 }body {
   margin: 0;
   padding-top: 80px;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.5;
 }body.piano-app-page[data-page="piano"][data-theme="dark"] {
   color: var(--text);
@@ -48,7 +52,7 @@
   border-width: 1px;
   border-style: solid;
   border-radius: 8px;
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.15rem;
   text-align: center;
   text-decoration: none;
@@ -135,7 +139,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .menu-list a:focus-vis
 body.piano-app-page[data-page="piano"][data-theme="dark"] .site-header {
   border-bottom: 1px solid #fff;
   background: #000;}body.piano-app-page[data-page="piano"] .site-header a {
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.25rem;
   text-decoration: none;}
 
@@ -167,11 +171,11 @@ footer {
   padding: 3rem 0 1.5rem;
 }h2,
 h3 {
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-weight: 400;
 }h1 {
   margin: 0;
-  font-family: "Instrument Serif", Georgia, serif;
+  font-family: var(--font-brand);
   font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 400;
   line-height: 0.95;
@@ -180,7 +184,7 @@ h3 {
 }.formula-line,
 .helper-text {
   margin: 0.5rem 0 0;
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.05rem;
 }body.piano-app-page[data-page="piano"][data-theme="dark"] .formula-line,
 body.piano-app-page[data-page="piano"][data-theme="dark"] .helper-text {
@@ -383,14 +387,14 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .black-key {
   stroke: #000;}body.piano-app-page[data-page="piano"][data-theme="dark"] .piano-svg.is-playing .key-active.white-key,
 body.piano-app-page[data-page="piano"][data-theme="dark"] .piano-svg.is-playing .key-active.black-key {
   fill: var(--play-highlight);}body.piano-app-page[data-page="piano"] .key-label {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: 700;
   text-anchor: middle;}
 
 body.piano-app-page[data-page="piano"][data-theme="dark"] .key-label {
   fill: #000;}body.piano-app-page[data-page="piano"] .black-label {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 10px;
   font-weight: 700;
   text-anchor: middle;}
@@ -565,7 +569,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .site-header {
   background: var(--panel);}body.piano-app-page[data-page="piano"] .site-brand {
   font-weight: 700;}body.piano-app-page[data-page="piano"] .site-section {
   padding-left: 0.85rem;
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;}
+  font-family: var(--font-body);}
 
 body.piano-app-page[data-page="piano"][data-theme="dark"] .site-section {
   border-left: 1px solid #fff;
@@ -629,7 +633,7 @@ body.piano-app-page[data-page="piano"] .selector-label,
 body.piano-app-page[data-page="piano"] .stat-label,
 body.piano-app-page[data-page="piano"] .keyboard-legend {
   margin: 0 0 0.35rem;
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.95rem;}
 
 body.piano-app-page[data-page="piano"][data-theme="dark"] .section-kicker,
@@ -810,7 +814,7 @@ body.piano-app-page[data-page="piano"] .progression-summary-card {
   width: 5.5rem;
   aspect-ratio: 1;
   border-radius: 8px;
-  font-family: "Instrument Serif", Georgia, serif;
+  font-family: var(--font-brand);
   font-size: 3rem;
   line-height: 1;}
 
@@ -881,7 +885,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .related-chords-list l
   border-bottom: 0;}body.piano-app-page[data-page="piano"] .related-chords-list div,
 body.piano-app-page[data-page="piano"] .related-chords-list span {
   display: block;}body.piano-app-page[data-page="piano"] .related-chords-list span + span {
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;}
+  font-family: var(--font-body);}
 
 body.piano-app-page[data-page="piano"][data-theme="dark"] .related-chords-list span + span {
   color: var(--muted);}body.piano-app-page[data-page="piano"] .related-toggle {
@@ -1027,7 +1031,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .card::before {
   height: 1px;}body.piano-app-page[data-page="piano"][data-theme="dark"] .site-header::after {
   background: linear-gradient(90deg, transparent, var(--pv-accent), var(--pv-accent-3), transparent);
   opacity: 0.8;}body.piano-app-page[data-page="piano"] .site-brand {
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-brand);
   font-size: 1.45rem;
   font-weight: 700;
   letter-spacing: 0.05em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .site-brand {
@@ -1050,7 +1054,7 @@ body.piano-app-page[data-page="piano"] .root-menu button,
 body.piano-app-page[data-page="piano"] .notation-toggle button {
   min-height: 2.45rem;
   border-radius: 3px;
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1119,7 +1123,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .stat-label,
 body.piano-app-page[data-page="piano"][data-theme="dark"] .keyboard-legend {
   color: var(--pv-accent);
   text-shadow: 0 0 12px var(--pv-glow);}body.piano-app-page[data-page="piano"] .hero-section h1 {
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 4.7rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -1188,7 +1192,7 @@ body.piano-app-page[data-page="piano"] .selector-panel {
   box-shadow: 0 0 0 3px rgba(114, 236, 255, 0.18), inset 0 0 18px rgba(114, 236, 255, 0.08);}body.piano-app-page[data-page="piano"][data-theme="dark"] .search-field input::placeholder {
   color: #8f839c;}body.piano-app-page[data-page="piano"] .keyboard-shortcut {
   border-radius: 3px;
-  font-family: "Pontano Sans", Arial, Helvetica, sans-serif;}body.piano-app-page[data-page="piano"][data-theme="dark"] .keyboard-shortcut {
+  font-family: var(--font-body);}body.piano-app-page[data-page="piano"][data-theme="dark"] .keyboard-shortcut {
   border-color: rgba(168, 70, 255, 0.46);
   background: rgba(13, 12, 27, 0.95);
   color: var(--pv-muted);}body.piano-app-page[data-page="piano"] .category-tabs,
@@ -1270,7 +1274,7 @@ body.piano-app-page[data-page="piano"] .chord-summary-card .card-actions {
   grid-column: 2;}body.piano-app-page[data-page="piano"] .chord-symbol {
   width: 7rem;
   border-radius: 3px;
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 4.2rem;
   font-weight: 700;}body.piano-app-page[data-page="piano"][data-theme="dark"] .chord-symbol {
   border-color: var(--pv-border-bright);
@@ -1344,7 +1348,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] [data-quality="7"] .ch
   color: var(--pv-text);}body.piano-app-page[data-page="piano"][data-theme="dark"] .repeat-icon {
   color: var(--pv-text);}body.piano-app-page[data-page="piano"] .formula-line,
 body.piano-app-page[data-page="piano"] [data-dynamic-chord-notes-inline] {
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.18rem;
   font-weight: 700;
   letter-spacing: 0.08em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .formula-line,
@@ -1372,7 +1376,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .key-active.black-key 
 body.piano-app-page[data-page="piano"][data-theme="dark"] .piano-svg.is-playing .key-active.black-key {
   fill: var(--pv-accent-2);}body.piano-app-page[data-page="piano"] .key-label,
 body.piano-app-page[data-page="piano"] .black-label {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;}body.piano-app-page[data-page="piano"][data-theme="dark"] .key-label {
   fill: #21162d;}body.piano-app-page[data-page="piano"][data-theme="dark"] .black-label,
 body.piano-app-page[data-page="piano"][data-theme="dark"] .key-active + .key-label,
@@ -1436,7 +1440,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .key-active + .black-l
   color: var(--pv-text);
   text-shadow: 0 0 18px var(--pv-glow);}body.piano-app-page[data-page="piano"] .key-summary-card .scale-line {
   margin: 0;
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.12rem;
   font-weight: 700;
   letter-spacing: 0.08em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .key-summary-card .scale-line {
@@ -1504,7 +1508,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-panel ol
   display: grid;
   gap: 0.3rem;}body.piano-app-page[data-page="piano"] .progressions-panel span {
   margin: 0;
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.05rem;
   letter-spacing: 0.06em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-panel span {
   color: var(--pv-accent);
@@ -1930,7 +1934,7 @@ body.piano-app-page[data-page="piano"] .key-progressions-page {
   color: var(--pv-text);
   text-shadow: 0 0 18px var(--pv-glow);}body.piano-app-page[data-page="piano"] .key-summary-card .scale-line {
   margin: 0.15rem 0 0;
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: 700;
   letter-spacing: 0.08em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .key-summary-card .scale-line {
@@ -2094,7 +2098,7 @@ body.piano-app-page[data-page="piano"] {
   min-height: 100vh;
   padding: 0.85rem;
   overflow-x: hidden;
-  font-family: "Anaheim", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;}/* Piano Dark Theme visual layer. */
+  font-family: var(--font-body);}/* Piano Dark Theme visual layer. */
 body.piano-app-page[data-page="piano"][data-theme="dark"] {
   --pv-bg: #03030a;
   --pv-bg-deep: #060716;
@@ -2236,14 +2240,14 @@ body.piano-app-page[data-page="piano"] .section-heading-row-with-asset > * {
   background:
     linear-gradient(90deg, #f1e8f4 0 16%, #030511 16% 29%, #f1e8f4 29% 47%, #030511 47% 58%, #f1e8f4 58% 77%, #030511 77% 88%, #f1e8f4 88% 100%);
   box-shadow: inset 0 -0.48rem 0 rgba(127, 41, 232, 0.78);}body.piano-app-page[data-page="piano"] .site-brand {
-  font-family: "Press Start 2P", "Handjet", monospace;
+  font-family: var(--font-brand);
   font-size: clamp(0.98rem, 1.55vw, 1.35rem);
   font-weight: 400;
   letter-spacing: 0.04em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .site-brand {
   color: var(--pv-text);
   text-shadow: 0 0 8px rgba(244, 236, 255, 0.32);}body.piano-app-page[data-page="piano"] .site-section {
   padding-left: 1rem;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.05rem, 1.8vw, 1.55rem);
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -2265,7 +2269,7 @@ body.piano-app-page[data-page="piano"] .related-toggle {
   min-height: 2.45rem;
   padding: 0.55rem 0.85rem;
   border-radius: 2px;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -2294,7 +2298,7 @@ body.piano-app-page[data-page="piano"] .selector-label,
 body.piano-app-page[data-page="piano"] .section-kicker,
 body.piano-app-page[data-page="piano"] .keyboard-legend,
 body.piano-app-page[data-page="piano"] .keyboard-shortcut {
-  font-family: "Press Start 2P", "Handjet", monospace;
+  font-family: var(--font-brand);
   font-size: 0.62rem;
   font-weight: 400;
   letter-spacing: 0.06em;}body.piano-app-page[data-page="piano"] .header-select {
@@ -2366,7 +2370,7 @@ body.piano-app-page[data-page="piano"] .selector-panel {
     0 0 0 2px rgba(56, 217, 255, 0.2),
     0 0 18px rgba(56, 217, 255, 0.14),
     inset 0 0 18px rgba(56, 217, 255, 0.08);}body.piano-app-page[data-page="piano"] .search-field input {
-  font-family: "Anaheim", system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;}body.piano-app-page[data-page="piano"][data-theme="dark"] .search-field input {
   color: var(--pv-text);}body.piano-app-page[data-page="piano"][data-theme="dark"] .search-field input::placeholder {
   color: var(--pv-dim);}body.piano-app-page[data-page="piano"] .keyboard-shortcut {
@@ -2451,7 +2455,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .notation-toggle butto
 body.piano-app-page[data-page="piano"] .card h2,
 body.piano-app-page[data-page="piano"] .card h3,
 body.piano-app-page[data-page="piano"] .section-heading-row h2 {
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-weight: 700;
   letter-spacing: 0.01em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel h2,
 body.piano-app-page[data-page="piano"][data-theme="dark"] .card h2,
@@ -2504,7 +2508,7 @@ body.piano-app-page[data-page="piano"] .chord-summary-card .card-actions {
   place-items: center;
   border: 0;
   background: transparent;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(3.6rem, 5.2vw, 4.8rem);
   font-weight: 700;
   line-height: 1;
@@ -2573,7 +2577,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .repeat-button:focus-v
 body.piano-app-page[data-page="piano"] [data-dynamic-chord-notes-inline],
 body.piano-app-page[data-page="piano"] .scale-line,
 body.piano-app-page[data-page="piano"] .progression-chords {
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.15rem;
   font-weight: 500;
   letter-spacing: 0.08em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .formula-line,
@@ -2607,7 +2611,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .key-active.black-key 
 body.piano-app-page[data-page="piano"][data-theme="dark"] .piano-svg.is-playing .key-active.black-key {
   fill: var(--pv-accent-2);}body.piano-app-page[data-page="piano"] .key-label,
 body.piano-app-page[data-page="piano"] .black-label {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;}body.piano-app-page[data-page="piano"] .key-label {
   font-size: 12px;}body.piano-app-page[data-page="piano"][data-theme="dark"] .key-label {
   fill: #23182f;}body.piano-app-page[data-page="piano"] .black-label {
@@ -2664,11 +2668,11 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .chord-info-card h2 {
   transform: none;}body.piano-app-page[data-page="piano"][data-theme="dark"] .related-chords-list li:hover {
   background: linear-gradient(90deg, rgba(167, 61, 255, 0.12), transparent);
   box-shadow: inset 3px 0 0 var(--pv-accent);}body.piano-app-page[data-page="piano"] .related-chords-list span:first-child {
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.15rem;
   font-weight: 600;}body.piano-app-page[data-page="piano"][data-theme="dark"] .related-chords-list span:first-child {
   color: var(--pv-accent);}body.piano-app-page[data-page="piano"] .related-chords-list span + span {
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-weight: 500;
   letter-spacing: 0.12em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .related-chords-list span + span {
   color: var(--pv-text);}body.piano-app-page[data-page="piano"] .related-chords-list li button {
@@ -2751,7 +2755,7 @@ body.piano-app-page[data-page="piano"] .progression-keyboard {
   padding: 0.28rem;}body.piano-app-page[data-page="piano"] .key-chord-grid .piano-svg,
 body.piano-app-page[data-page="piano"] .progression-keyboard .piano-svg {
   min-width: 0;}body.piano-app-page[data-page="piano"] .key-chord-grid .card > p {
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   letter-spacing: 0.06em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .key-chord-grid .card > p {
   color: var(--pv-text);}body.piano-app-page[data-page="piano"] .progressions-panel {
   display: grid;
@@ -2788,7 +2792,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-panel ol
   box-shadow:
     0 0 16px rgba(255, 79, 202, 0.16),
     inset 0 0 18px rgba(167, 61, 255, 0.1);}body.piano-app-page[data-page="piano"] .progressions-panel span {
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: 0.06em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-panel span {
@@ -2954,7 +2958,7 @@ body.piano-app-page[data-page="piano"] .header-select {
   display: none;}body.piano-app-page[data-page="piano"] .instrument-switcher-button {
   min-width: 12.5rem;
   min-height: 2.5rem;
-  font-family: "Press Start 2P", "Anaheim", Arial, sans-serif;
+  font-family: var(--font-brand);
   font-size: clamp(0.62rem, 1.2vw, 0.78rem);
   line-height: 1.35;
   text-transform: uppercase;}body.piano-app-page[data-page="piano"][data-theme="dark"] .instrument-switcher-button {
@@ -2980,7 +2984,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .instrument-switcher-b
     0 1.1rem 2.2rem rgb(0 0 0 / 0.54),
     0 0 1.25rem rgb(255 72 186 / 0.25);}body.piano-app-page[data-page="piano"] .instrument-menu-popover a,
 body.piano-app-page[data-page="piano"] .instrument-menu-popover button {
-  font-family: "Anaheim", Arial, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.62rem;
   line-height: 1.5;
   text-transform: uppercase;}body.piano-app-page[data-page="piano"] .category-tabs,
@@ -3001,7 +3005,7 @@ body.piano-app-page[data-page="piano"] .related-chords-card button {
   min-height: 2.25rem;
   padding-top: 0.38rem;
   padding-bottom: 0.38rem;}body.piano-app-page[data-page="piano"] .category-tabs button {
-  font-family: "Handjet", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1rem;
   min-width: 6.25rem;}body.piano-app-page[data-page="piano"] .selector-panel {
   position: relative;
@@ -3042,7 +3046,7 @@ body.piano-app-page[data-page="piano"] .key-selector-panel .root-menu {
   place-items: center;
   padding: 0;
   border-radius: 2px;
-  font-family: "Anaheim", Arial, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.25rem;
   line-height: 1;}body.piano-app-page[data-page="piano"][data-theme="dark"] .notation-toggle button {
   border: 1px solid #ff68c8;
@@ -3436,7 +3440,7 @@ body.piano-app-page[data-page="piano"] [data-dynamic-chord-notes-inline] {
   box-shadow: none;}body.piano-app-page[data-page="piano"][data-theme="dark"] .related-carousel-button:disabled {
   opacity: 0.38;}body.piano-app-page[data-page="piano"] .related-page-counter {
   min-width: 2rem;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.88rem;
   text-align: center;}body.piano-app-page[data-page="piano"][data-theme="dark"] .related-page-counter {
   color: var(--pv-muted);}body.piano-app-page[data-page="piano"] .chord-left-column .related-chords-list li {
@@ -3452,7 +3456,7 @@ body.piano-app-page[data-page="piano"] [data-dynamic-chord-notes-inline] {
   min-height: 1.72rem;}body.piano-app-page[data-page="piano"] .related-chords-card button {
   padding: 0.55rem 0.85rem;
   border-radius: 2px;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -3732,7 +3736,7 @@ body.piano-app-page[data-page="piano"] .type-menu,
 body.piano-app-page[data-page="piano"] .root-menu button,
 body.piano-app-page[data-page="piano"] .category-tabs button,
 body.piano-app-page[data-page="piano"] .type-menu button {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.9rem;
   font-weight: 400;}body.piano-app-page[data-page="piano"] .category-tabs button,
 body.piano-app-page[data-page="piano"] .type-menu button {
@@ -3743,10 +3747,10 @@ body.piano-app-page[data-page="piano"] .type-menu button {
   background: linear-gradient(180deg, #320369 0%, #1b0333 100%);}body.piano-app-page[data-page="piano"] .chord-left-column .related-chords-list {
   grid-template-columns: minmax(0, 1fr);}body.piano-app-page[data-page="piano"] .chord-left-column .related-chords-list span:first-child {
   font-size: 1.1rem;}body.piano-app-page[data-page="piano"] .chord-left-column .related-chords-list span + span {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;}body.piano-app-page[data-page="piano"] .keyboard-legend {
   font-size: 0.8rem;}body.piano-app-page[data-page="piano"] .formula-line {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;}body.piano-app-page[data-page="piano"][data-theme="dark"] .chord-summary-card .card-actions button {
   border-color: #a73dff;
   color: #a73dff;}body.piano-app-page[data-page="piano"][data-theme="dark"] .chord-summary-card .card-actions button:hover,
@@ -3816,7 +3820,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .instrument-family-sel
   min-height: clamp(2rem, 4.4svh, 2.32rem);
   padding: 0.32rem 0.75rem;
   border-radius: 2px;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -3861,7 +3865,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .sound-select-button:f
   border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
-  font-family: "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.96rem;
   text-transform: uppercase;
   text-align: left;
@@ -3890,7 +3894,7 @@ body.piano-app-page[data-page="piano"] .header-menu-button:active {
   align-items: center;
   justify-content: space-between;
   gap: 0.55rem;
-  font-family: "Handjet", "Anaheim", Arial, Helvetica, sans-serif;}body.piano-app-page[data-page="piano"] .header-menu-button,
+  font-family: var(--font-ui);}body.piano-app-page[data-page="piano"] .header-menu-button,
 body.piano-app-page[data-page="piano"] .header-menu-button:hover,
 body.piano-app-page[data-page="piano"] .header-menu-button:focus,
 body.piano-app-page[data-page="piano"] .header-menu-button:focus-visible,
@@ -3943,7 +3947,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .header-menu-button:ac
   border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
-  font-family: "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.96rem;
   text-transform: uppercase;
   text-align: left;
@@ -3962,7 +3966,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .header-option:focus-v
   min-height: 2rem;
   padding: 0.38rem 0.5rem;
   border: 1px solid transparent;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.96rem;
   font-weight: 400;
   letter-spacing: 0;
@@ -4130,7 +4134,7 @@ body.piano-app-page[data-page="piano"] #theme-menu:hover,
 body.piano-app-page[data-page="piano"] #theme-menu:focus,
 body.piano-app-page[data-page="piano"] #theme-menu:focus-visible,
 body.piano-app-page[data-page="piano"] #theme-menu:active {
-  font-family: "Handjet", "Anaheim", Arial, Helvetica, sans-serif;}body.piano-app-page[data-page="piano"] #instrument-family-menu,
+  font-family: var(--font-ui);}body.piano-app-page[data-page="piano"] #instrument-family-menu,
 body.piano-app-page[data-page="piano"] #instrument-family-menu:hover,
 body.piano-app-page[data-page="piano"] #instrument-family-menu:focus,
 body.piano-app-page[data-page="piano"] #instrument-family-menu:focus-visible,
@@ -4181,7 +4185,7 @@ body.piano-app-page[data-page="piano"] #theme-menu option {
   border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
-  font-family: "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.96rem;
   font-weight: 400;
   letter-spacing: 0;
@@ -4202,7 +4206,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] #theme-menu option:dis
   min-height: 2rem;
   padding: 0.38rem 0.5rem;
   border: 1px solid transparent;
-  font-family: "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.96rem;
   font-weight: 400;
   letter-spacing: 0;
@@ -4247,7 +4251,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel {
   background:
     linear-gradient(180deg, rgba(15, 20, 39, 0.96), rgba(4, 7, 16, 0.98)) padding-box;}body.piano-app-page[data-page="piano"] .selector-panel-kicker {
   margin: 0 0 0.2rem;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -4291,7 +4295,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel {
   border-bottom: 1px solid var(--pv-border-bright);}body.piano-app-page[data-page="piano"] .selector-welcome h2,
 body.piano-app-page[data-page="piano"] .selector-welcome-heading p {
   margin: 0;
-  font-family: "Press Start 2P", "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-brand);
   font-size: clamp(0.78rem, 1.05vw, 1rem);
   line-height: 1.55;
   letter-spacing: 0;
@@ -4367,7 +4371,7 @@ body.piano-app-page[data-page="piano"] .key-selector-panel .root-menu.root-menu-
   text-shadow: 0 0 12px var(--pv-glow);}body.piano-app-page[data-page="piano"] .progressions-list-card .related-carousel-button {
   padding: 0.55rem 0.85rem;
   border-radius: 2px;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -4399,7 +4403,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-list-car
   box-shadow: none;}body.piano-app-page[data-page="piano"] .homepage-progression-animation .progression-step > span {
   display: block;
   margin: 0 0 0.35rem;
-  font-family: "Press Start 2P", system-ui, sans-serif;
+  font-family: var(--font-brand);
   font-size: 0.82rem;}body.piano-app-page[data-page="piano"][data-theme="dark"] .homepage-progression-animation .progression-step > span {
   color: var(--pv-accent);
   text-shadow: 0 0 10px var(--pv-glow);}body.piano-app-page[data-page="piano"] .homepage-progression-animation .progression-keyboard {
@@ -4413,7 +4417,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-list-car
     gap: 0.5rem;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .key-selector-panel h2 {
     grid-column: 1;
     margin-bottom: 0;
-    font-family: "Press Start 2P", system-ui, sans-serif;
+    font-family: var(--font-brand);
     font-size: 0.62rem;
     font-weight: 400;
     letter-spacing: 0.06em;
@@ -4438,14 +4442,14 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-list-car
   width: 100%;
   margin: 0.5rem 0 0;
   padding-top: 0.55rem;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: clamp(1.15rem, 1.8vw, 1.55rem);
   line-height: 1;
   text-align: center;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .key-selector-panel .scale-line {
   border-top: 1px solid #392052;
   color: var(--pv-muted);}body.piano-app-page[data-page="piano"].is-home-progressions-mode .keyboard-legend {
   justify-self: start;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .keyboard-legend [data-home-progression-step-label] {
-  font-family: "Anaheim", "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;
   text-transform: none;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .keyboard-legend [data-home-progression-step-label] {
   color: #ff68c8;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-songs-fields {
@@ -4460,7 +4464,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-so
   overflow: hidden;
   border: 0;
   border-radius: 3px;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: clamp(0.78rem, 1.05vw, 0.95rem);
   line-height: 1;
   text-overflow: ellipsis;
@@ -4546,7 +4550,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-cu
   display: none;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-builder .selector-label,
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-customizer .selector-label {
   margin: 0;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -4578,7 +4582,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-op
   min-height: 1.68rem;
   padding: 0.24rem 0.42rem;
   border-radius: 3px;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.78rem;
   font-weight: 700;
   line-height: 1;
@@ -4686,7 +4690,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-m
   margin: 0;
   padding: 0;
   border: 0;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.82rem;
   line-height: 1.05;
   text-align: left;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-scale-card .scale-line {
@@ -4725,7 +4729,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-m
   margin: 0.25rem 0 0;
   padding: 0;
   border: 0;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.86rem;
   line-height: 1.05;
   text-align: left;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-summary-card .scale-line {
@@ -4757,7 +4761,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .chord-left-col
   padding-block: 0.42rem;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-customizer h2 {
   margin: 0;
   padding-right: 9.4rem;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 0.82rem;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -4783,7 +4787,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-op
   text-transform: uppercase;
   white-space: nowrap;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-step-button span {
   color: var(--pv-muted);}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-step-button strong {
-  font-family: "Pontano Sans", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.08rem;
   line-height: 1;
   white-space: nowrap;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-step-button strong {
@@ -4998,7 +5002,7 @@ body.piano-app-page[data-page="piano"] .key-progressions-page {
     inset 0 0 0 1px rgba(255, 255, 255, 0.035);}body.piano-app-page[data-page="piano"] .key-selector-panel h2,
 body.piano-app-page[data-page="piano"] .key-progressions-page .section-heading-row h2 {
   margin: 0;
-  font-family: "Press Start 2P", "Handjet", monospace;
+  font-family: var(--font-brand);
   font-size: clamp(0.9rem, 1.45vw, 1.35rem);
   font-weight: 400;
   letter-spacing: 0.02em;
@@ -5030,7 +5034,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .key-progressions-page
     0 0 8px rgba(244, 236, 255, 0.42),
     0 0 20px rgba(167, 61, 255, 0.32);}body.piano-app-page[data-page="piano"] .key-summary-card .scale-line {
   max-width: 100%;
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(1rem, 1.5vw, 1.18rem);
   letter-spacing: 0.05em;
   overflow-wrap: anywhere;}body.piano-app-page[data-page="piano"][data-theme="dark"] .key-summary-card .scale-line {
@@ -5047,7 +5051,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .key-progressions-page
   gap: 0.48rem;
   padding: 0.62rem;}body.piano-app-page[data-page="piano"] .key-chord-grid .card-title {
   gap: 0.44rem;}body.piano-app-page[data-page="piano"] .key-chord-grid .card-title h3 {
-  font-family: "Handjet", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.05rem, 1.55vw, 1.25rem);
   letter-spacing: 0.04em;}body.piano-app-page[data-page="piano"][data-theme="dark"] .key-chord-grid .card-title h3 {
   color: #f8f1ff;}body.piano-app-page[data-page="piano"] .key-chord-grid .card > p {
@@ -5126,7 +5130,7 @@ body.piano-app-page[data-page="piano"] .key-chord-grid .repeat-button {
     max-width: min(19rem, calc(100vw - 1.5rem));
     padding: 0.45rem 0.62rem;
     border-radius: 4px;
-    font-family: "Anaheim", Arial, Helvetica, sans-serif;
+    font-family: var(--font-body);
     font-size: clamp(0.78rem, 1.8vw, 0.9rem);
     line-height: 1.15;
     pointer-events: none;
@@ -5354,7 +5358,7 @@ body.piano-app-page[data-page="piano"]:not(.is-home-progressions-mode) .selector
   min-height: 1.68rem;
   padding-block: 0.24rem;
   border-radius: 3px;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;
   line-height: 1;
   text-align: center;
@@ -5912,7 +5916,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .homepage-progr
     padding-bottom: clamp(0.16rem, 0.3vw, 0.24rem);}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .progression-info-message-heading {
     border-bottom: 1px solid var(--pv-border-bright);}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-info-message h2 {
     margin: 0;
-    font-family: "Press Start 2P", "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+    font-family: var(--font-brand);
     font-size: clamp(0.5rem, 0.7vw, 0.66rem);
     line-height: 1.28;
     letter-spacing: 0;
@@ -6016,7 +6020,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .homepage-progr
   position: relative;
   z-index: 1;
   margin: 0;
-  font-family: "Press Start 2P", "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-brand);
   font-size: clamp(0.72rem, 2.2vw, 0.98rem);
   line-height: 1.75;
   letter-spacing: 0;}body.piano-app-page[data-page="piano"][data-theme="dark"] .orientation-advisory p {
@@ -6103,7 +6107,7 @@ body.piano-app-page[data-page="piano"] .guitar-card .repeat-button {
   background: linear-gradient(180deg, rgba(18, 5, 35, 0.86), rgba(8, 2, 20, 0.92));
   box-shadow: inset 0 0 12px rgba(167, 61, 255, 0.12);}body.piano-app-page[data-page="piano"] .guitar-voicing-kicker,
 body.piano-app-page[data-page="piano"] .guitar-voicing-control strong {
-  font-family: "Handjet", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   letter-spacing: 0;
   line-height: 1;
   text-transform: uppercase;}body.piano-app-page[data-page="piano"] .guitar-voicing-kicker {
@@ -6120,7 +6124,7 @@ body.piano-app-page[data-page="piano"].is-guitar-mode .guitar-play-mode-toggle {
   min-height: 2rem;
   padding: 0.18rem 0.52rem;
   border-radius: 4px;
-  font-family: "Handjet", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(0.98rem, 1.18vw, 1.12rem);
   font-weight: 700;
   letter-spacing: 0;
@@ -6239,13 +6243,13 @@ body.piano-app-page[data-page="piano"] .guitar-string-indicator,
 body.piano-app-page[data-page="piano"] .guitar-fallback-title,
 body.piano-app-page[data-page="piano"] .guitar-fallback-notes,
 body.piano-app-page[data-page="piano"] .guitar-muted {
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;
   letter-spacing: 0;
   text-anchor: middle;}body.piano-app-page[data-page="piano"] .guitar-note-label {
   font-size: 14px;}body.piano-app-page[data-page="piano"][data-theme="dark"] .guitar-note-label {
   fill: #130225;}body.piano-app-page[data-page="piano"] .guitar-finger-label {
-  font-family: "Handjet", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 17px;}body.piano-app-page[data-page="piano"][data-theme="dark"] .guitar-finger-label {
   fill: #fff7ff;
   text-shadow: none;}body.piano-app-page[data-page="piano"] .guitar-svg.is-extended .guitar-note-label {
@@ -6265,7 +6269,7 @@ body.piano-app-page[data-page="piano"] .guitar-base-fret-label {
 body.piano-app-page[data-page="piano"][data-theme="dark"] .guitar-fret-label,
 body.piano-app-page[data-page="piano"][data-theme="dark"] .guitar-base-fret-label {
   fill: rgba(232, 223, 255, 0.84);}body.piano-app-page[data-page="piano"] .guitar-barre-label {
-  font-family: "Handjet", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 13px;
   text-transform: uppercase;}body.piano-app-page[data-page="piano"][data-theme="dark"] .guitar-barre-label {
   fill: #fff7ff;}body.piano-app-page[data-page="piano"] .guitar-string-indicator {
@@ -6347,7 +6351,7 @@ body.piano-app-page[data-page="piano"] .guitar-fret-label {
   margin: -0.18rem 0 0;
   padding: 0.12rem 0.42rem;
   border-radius: 3px;
-  font-family: "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: clamp(0.78rem, 1vw, 0.9rem);
   font-weight: 700;
   letter-spacing: 0;
@@ -6423,7 +6427,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .guitar-note-name-togg
   min-height: 2.05rem;
   padding: 0;
   border-radius: 3px;
-  font-family: "Handjet", "Anaheim", Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.28rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -6913,7 +6917,7 @@ body.piano-app-page[data-page="piano"] .site-actions {
 }
 
 body.piano-app-page[data-page="piano"] .site-header .site-brand {
-  font-family: "Press Start 2P", "Handjet", "Anaheim", monospace;
+  font-family: var(--font-brand);
   font-weight: 400;
   letter-spacing: 0.03em;
   line-height: 1.12;
