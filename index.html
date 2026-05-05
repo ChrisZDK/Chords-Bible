@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="blessed-theme.css?v=1" />
   <link rel="stylesheet" href="diabolical-theme.css?v=1" />
   <link rel="stylesheet" href="wisdom-theme.css?v=1" />
+  <link rel="stylesheet" href="codified-theme.css?v=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.1.22/Tone.min.js"></script>
 </head>
 <body class="piano-app-page home-dashboard-page" data-page="piano" data-theme="dark">
@@ -60,11 +61,12 @@
         </select>
         <label class="visually-hidden" for="theme-menu">Theme</label>
         <select id="theme-menu" class="header-control header-select" aria-label="Choose theme">
-          <option value="dark" selected>Dark Theme</option>
-          <option value="holy">Holy Theme</option>
+          <option value="dark" selected>Mystic</option>
+          <option value="codified">Codified</option>
           <option value="diabolical">Diabolical</option>
-          <option value="blessed">Blessed</option>
           <option value="wisdom">Wisdom</option>
+          <option value="holy">Holystic</option>
+          <option value="blessed">Blessed</option>
         </select>
         <button class="header-icon-button header-favorite-button" type="button" aria-label="Add current chord to favorites">&#9829;</button>
         <a
@@ -104,7 +106,7 @@
           <div class="selector-mode-rail notation-toggle" role="group" aria-label="Note display controls">
             <button class="selector-rail-button" type="button" data-notation="sharp" aria-label="Use sharp note names" title="Use sharp note names" aria-pressed="true">&#9839;</button>
             <button class="selector-rail-button" type="button" data-notation="flat" aria-label="Use flat note names" title="Use flat note names" aria-pressed="false">&#9837;</button>
-            <button class="selector-rail-button selector-rail-button-wide" type="button" data-note-name-toggle aria-label="Toggle Solfège note names" title="Toggle Solfège note names" aria-pressed="false">ABC</button>
+            <button class="selector-rail-button selector-rail-button-wide" type="button" data-note-name-toggle aria-label="Toggle syllable note names" title="Toggle syllable note names" aria-pressed="false">ABC</button>
           </div>
           <div class="selector-panel-content">
             <div class="selector-group root-selector">
