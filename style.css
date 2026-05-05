@@ -4459,6 +4459,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .progressions-list-car
   color: var(--pv-muted);}body.piano-app-page[data-page="piano"].is-home-progressions-mode .keyboard-legend {
   justify-self: start;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .keyboard-legend [data-home-progression-step-label] {
   font-family: "Anaheim", "Pontano Sans", Arial, Helvetica, sans-serif;
+  font-weight: 700;
   text-transform: none;}body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-mode .keyboard-legend [data-home-progression-step-label] {
   color: #ff68c8;}body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-songs-fields {
   display: grid;
@@ -6892,7 +6893,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-sc
   display: none;
 }
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-scale-options button {
-  min-height: 1.32rem;
+  min-height: 1.6rem;
   padding: 0.12rem 0.22rem;
   font-size: 0.68rem;
 }
@@ -6911,6 +6912,13 @@ body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-m
   border-color: #a73dff;
 }
 
+@media (min-width: 768px) {
+  body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-select-wrap .progression-chord-mode-options {
+    top: auto;
+    bottom: calc(100% + 0.18rem);
+  }
+}
+
 @media (max-width: 767px), (max-width: 932px) and (max-height: 430px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
   body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-option-select-wrap .progression-chord-mode-options {
     top: auto;
@@ -6926,6 +6934,10 @@ body.piano-app-page[data-page="piano"][data-theme="dark"].is-home-progressions-m
   body.piano-app-page[data-page="piano"].is-home-progressions-mode [data-progression-formula],
   body.piano-app-page[data-page="piano"].is-home-progressions-mode [data-progression-chords],
   body.piano-app-page[data-page="piano"].is-home-progressions-mode [data-home-progression-scale] {
+    font-size: 0.85rem;
+  }
+
+  body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-summary-card .scale-line {
     font-size: 0.85rem;
   }
 }
@@ -7082,4 +7094,10 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel {
   body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel {
     animation: none;
   }
+}
+
+body.piano-app-page[data-page="piano"] .scale-line,
+body.piano-app-page[data-page="piano"] .formula-line,
+body.piano-app-page[data-page="piano"] [data-progression-chords] {
+  font-weight: 700;
 }

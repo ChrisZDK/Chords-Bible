@@ -42,7 +42,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos {
 body.piano-app-page[data-page="piano"][data-theme="dark"] .home-cosmos {
   background-image:
     url("assets/themes/dark/dark-banner-bg.webp"),
-    linear-gradient(179deg, #020320 0%, #030216 50%, #000003 100%);
+    linear-gradient(179deg, #0f0125 0%, #040231 50%, #0b0218 100%);
   background-position: center top, center;
   background-repeat: no-repeat, no-repeat;
   background-size: min(100vw, 1440px) auto, cover;}body.home-dashboard-page .home-cosmos::before,

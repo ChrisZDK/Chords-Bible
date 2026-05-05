@@ -5,9 +5,9 @@ html:has(body.piano-app-page[data-page="piano"][data-theme="holy"]) {
 
 body.piano-app-page[data-page="piano"][data-theme="holy"] {
   --bg: #52bcfe;
-  --panel: #c9a84c;
-  --panel-warm: #fde7b0;
-  --panel-strong: #ebd7a1;
+  --panel: #fdba00;
+  --panel-warm: #ffca45;
+  --panel-strong: #ffd86f;
   --text: #17364F;
   --text-strong: #0F2E48;
   --muted: #75675A;
@@ -18,10 +18,11 @@ body.piano-app-page[data-page="piano"][data-theme="holy"] {
   --accent-strong: #E49A16;
   --accent-deep: #B96F00;
   --accent-glow: #FFE89A;
-  --button-bg: #FFFDF7;
+  --border-color: #e2a91f;
+  --button-bg: #f7e5b1;
   --button-hover-bg: #FFF1C4;
-  --button-border: #F3C65B;
-  --button-text: #4E3A2A;
+  --button-border: #dd9c00;
+  --button-text: #714d33;
   --active-bg: #238DFF;
   --active-text: #FFFFFF;
   --active-border: #FFD35A;
