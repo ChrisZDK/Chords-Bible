@@ -896,6 +896,74 @@ const instrumentThemeVisuals = {
       },
     },
   },
+  codified: {
+    keyboards: {
+      banner: {
+        src: "assets/themes/codified/codified-banner.webp",
+        alt: "Pixel-art Codified arcade music scene with neon code portals, robots, and instrument lanes.",
+      },
+      "sound-robot": {
+        src: "assets/themes/codified/codified-robot-keyboard.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/codified/codified-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/codified/codified-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/codified/codified-robot-floating.webp",
+        alt: "",
+      },
+    },
+    guitars: {
+      banner: {
+        src: "assets/themes/codified/codified-banner.webp",
+        alt: "Pixel-art Codified arcade music scene with neon code portals, robots, and instrument lanes.",
+      },
+      "sound-robot": {
+        src: "assets/themes/codified/codified-robot-guitar.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/codified/codified-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/codified/codified-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/codified/codified-robot-floating.webp",
+        alt: "",
+      },
+    },
+    ukulele: {
+      banner: {
+        src: "assets/themes/codified/codified-banner.webp",
+        alt: "Pixel-art Codified arcade music scene with neon code portals, robots, and instrument lanes.",
+      },
+      "sound-robot": {
+        src: "assets/themes/codified/codified-robot-ukulele.webp",
+        alt: "",
+      },
+      "related-icon": {
+        src: "assets/themes/codified/codified-crystal-icon.webp",
+        alt: "",
+      },
+      "play-button": {
+        src: "assets/themes/codified/codified-play-button.webp",
+        alt: "",
+      },
+      "info-robot": {
+        src: "assets/themes/codified/codified-robot-floating.webp",
+        alt: "",
+      },
+    },
+  },
   diabolical: {
     keyboards: {
       banner: {
@@ -1878,7 +1946,7 @@ function selectorModeRailMarkup() {
     <div class="selector-mode-rail notation-toggle" role="group" aria-label="Note display controls">
       <button class="selector-rail-button" type="button" data-notation="sharp" aria-label="Use sharp note names" title="Use sharp note names" aria-pressed="${preferredNotation === "sharp" ? "true" : "false"}">&#9839;</button>
       <button class="selector-rail-button" type="button" data-notation="flat" aria-label="Use flat note names" title="Use flat note names" aria-pressed="${preferredNotation === "flat" ? "true" : "false"}">&#9837;</button>
-      <button class="selector-rail-button selector-rail-button-wide" type="button" data-note-name-toggle aria-label="Toggle Solfège note names" title="Toggle Solfège note names" aria-pressed="${preferredNoteNameMode === "solfege" ? "true" : "false"}">${preferredNoteNameMode === "solfege" ? "♪" : "ABC"}</button>
+      <button class="selector-rail-button selector-rail-button-wide" type="button" data-note-name-toggle aria-label="Toggle syllable note names" title="Toggle syllable note names" aria-pressed="${preferredNoteNameMode === "solfege" ? "true" : "false"}">${preferredNoteNameMode === "solfege" ? "♪" : "ABC"}</button>
     </div>
   `;
 }
