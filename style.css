@@ -3979,7 +3979,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .header-option:focus-v
   height: auto;
   max-width: 100%;
   transform-origin: 50% 70%;
-  animation: robot-keyboard-dance 5.4s ease-in-out infinite -1.35s;
+  transform: scaleX(-1) rotate(-5deg);
   pointer-events: none;}body.piano-app-page[data-page="piano"][data-theme="dark"] .sound-card-robot {
   filter: drop-shadow(0 0.48rem 0.85rem rgba(103, 52, 255, 0.24));}body.piano-app-page[data-page="piano"] .chord-details-layout .future-illustration-slot {
   display: grid;
@@ -3987,7 +3987,7 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .header-option:focus-v
   min-height: clamp(3.1rem, 6vw, 4.25rem);}body.piano-app-page[data-page="piano"] .chord-details-layout .future-illustration-slot img {
   width: clamp(3.1rem, 6vw, 4.25rem);}body.piano-app-page[data-page="piano"] .chord-details-layout .future-illustration-slot .info-card-robot {
   transform-origin: 50% 58%;
-  animation: robot-flipped-slow-levitate 5.4s ease-in-out infinite;}body.piano-app-page[data-page="piano"][data-theme="dark"] .chord-details-layout .future-illustration-slot .info-card-robot {
+  transform: scaleX(-1) rotate(-0.5deg);}body.piano-app-page[data-page="piano"][data-theme="dark"] .chord-details-layout .future-illustration-slot .info-card-robot {
   filter: drop-shadow(0 0.48rem 0.85rem rgba(103, 52, 255, 0.24));}@media (min-width: 981px) {body.piano-app-page[data-page="piano"] .chord-details-layout {
     grid-template-columns: minmax(11rem, 0.38fr) minmax(0, 1fr);
     align-items: stretch;}body.piano-app-page[data-page="piano"] .chord-details-layout .sound-card,
@@ -4329,27 +4329,14 @@ body.piano-app-page[data-page="piano"] .key-selector-panel .root-menu.root-menu-
   pointer-events: none;
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: selector-panel-border-flow 10.8s linear infinite paused;
   transition: opacity 0.3s ease;}body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel::after {
-  background: conic-gradient(
-    from var(--selector-panel-border-angle, 0deg),
-    #ff68c8 0deg,
-    #ff2bd6 52deg,
-    #a73dff 104deg,
-    #15104f 156deg,
-    #2b0a58 208deg,
-    #7c2eff 300deg,
-    #ff68c8 360deg
-  );
   opacity: 0;
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   mask:
     linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);}body.piano-app-page[data-page="piano"] .selector-panel:hover::after {
-  animation-play-state: running;}body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel:hover::after {
-  opacity: 1;}body.piano-app-page[data-page="piano"] .progression-summary-card {
+    linear-gradient(#000 0 0);}body.piano-app-page[data-page="piano"] .progression-summary-card {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -4947,45 +4934,7 @@ body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-ut
     grid-template-columns: auto auto minmax(0, 1fr);}body.piano-app-page[data-page="piano"].is-home-progressions-mode .piano-card-header .octave-toggle {
     grid-column: 1 / -1;
     justify-self: end;}
-}@property --selector-panel-border-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}@keyframes selector-panel-border-flow {
-  to {
-    --selector-panel-border-angle: 360deg;
-  }
-}@keyframes robot-slow-levitate {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-0.5deg);
-  }
-
-  50% {
-    transform: translateY(-0.32rem) rotate(-2.1deg);
-  }
-}@keyframes robot-flipped-slow-levitate {
-  0%,
-  100% {
-    transform: translateY(0) scaleX(-1) rotate(-0.5deg);
-  }
-
-  50% {
-    transform: translateY(-0.32rem) scaleX(-1) rotate(-2.1deg);
-  }
-}@keyframes robot-keyboard-dance {
-  0%,
-  100% {
-    transform: scaleX(-1) rotate(-5deg);
-  }
-
-  50% {
-    transform: scaleX(-1) rotate(7deg);
-  }
-}@media (prefers-reduced-motion: reduce) {body.piano-app-page[data-page="piano"] .selector-panel:hover::after,
-body.piano-app-page[data-page="piano"] .sound-card-robot,
-body.piano-app-page[data-page="piano"] .chord-details-layout .future-illustration-slot .info-card-robot,
-body.piano-app-page[data-page="piano"].is-home-progressions-mode .selector-panel,
+}@media (prefers-reduced-motion: reduce) {body.piano-app-page[data-page="piano"].is-home-progressions-mode .selector-panel,
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-summary-card,
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .progressions-list-card,
 body.piano-app-page[data-page="piano"].is-home-progressions-mode .progression-customizer,
@@ -7068,32 +7017,15 @@ body.piano-app-page[data-page="piano"][data-theme="dark"] .header-menu-button.in
   color: #120011;
 }
 
-/* Piano selector panel border animation. */
+/* Keep the dark selector panel border static. */
 body.piano-app-page[data-page="piano"] .selector-panel::after {
   display: none;
 }
 
 body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel {
-  border-color: transparent;
-  background:
-    linear-gradient(180deg, rgba(15, 20, 39, 0.96), rgba(4, 7, 16, 0.98)) padding-box,
-    conic-gradient(
-      from var(--selector-panel-border-angle, 0deg),
-      #ff68c8 0deg,
-      #ff2bd6 52deg,
-      #a73dff 104deg,
-      #15104f 156deg,
-      #2b0a58 208deg,
-      #7c2eff 300deg,
-      #ff68c8 360deg
-    ) border-box;
-  animation: selector-panel-border-flow 10.8s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.piano-app-page[data-page="piano"][data-theme="dark"] .selector-panel {
-    animation: none;
-  }
+  border-color: var(--pv-border);
+  background: linear-gradient(180deg, rgba(15, 20, 39, 0.96), rgba(4, 7, 16, 0.98)) padding-box;
+  animation: none;
 }
 
 body.piano-app-page[data-page="piano"] .scale-line,
