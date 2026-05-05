@@ -7753,18 +7753,19 @@ function scheduleHomeProgressionAnimation(chords, { arpeggio = false } = {}) {
     if (arpeggio) {
       if (twoHands) {
         const handNotes = pianoProgressionHandNotesForChord(chords[index], true);
-        const leftHandNotes = buildCyclicArpeggioSequence(handNotes.leftHandNotes);
+        const leftHandKeyboardNotes = pianoProgressionKeyboardNotes({
+          leftHandNotes: handNotes.leftHandNotes,
+          rightHandNotes: [],
+        });
         const rightHandNotes = buildCyclicArpeggioSequence(handNotes.rightHandNotes);
         const stepDuration = progressionChordArpeggioStepDuration();
 
         rightHandNotes.forEach((noteName, noteIndex) => {
-          const leftNoteName = leftHandNotes[noteIndex];
-
           schedulePlayback(() => {
             setProgressionAnimationChord(animation, index, {
               isPlaying: true,
               activeNotes: [
-                ...pianoProgressionKeyboardNotes({ leftHandNotes: leftNoteName ? [leftNoteName] : [] }),
+                ...leftHandKeyboardNotes,
                 ...pianoProgressionKeyboardNotes({ rightHandNotes: [noteName] }),
               ],
             });
@@ -7914,16 +7915,21 @@ function playHomeProgression(chords, { keepLoop = false } = {}) {
       if (arpeggio) {
         const stepDuration = progressionChordArpeggioStepDuration();
         const rightHandNotes = buildCyclicArpeggioSequence(handNotes.rightHandNotes);
-        const leftHandNotes = twoHands ? buildCyclicArpeggioSequence(handNotes.leftHandNotes) : [];
+
+        if (twoHands && handNotes.leftHandNotes.length) {
+          schedulePlayback(() => {
+            pianoSampler.triggerAttackRelease(
+              handNotes.leftHandNotes,
+              pianoArpeggioChordDuration,
+              undefined,
+              0.7
+            );
+          }, startDelay + index * chordSpacing);
+        }
 
         rightHandNotes.forEach((noteName, noteIndex) => {
-          const notesToPlay = [
-            ...(leftHandNotes[noteIndex] ? [leftHandNotes[noteIndex]] : []),
-            noteName,
-          ];
-
           schedulePlayback(() => {
-            pianoSampler.triggerAttackRelease(notesToPlay, stepDuration, undefined, 0.82);
+            pianoSampler.triggerAttackRelease(noteName, stepDuration, undefined, 0.82);
           }, startDelay + index * chordSpacing + noteIndex * stepDuration);
         });
         return;
@@ -7968,16 +7974,19 @@ function playHomeProgression(chords, { keepLoop = false } = {}) {
       const rightHandSequence = guitarVoicingPlayback
         ? frequencies
         : buildCyclicArpeggioSequence(rightHandFrequencies);
-      const leftHandSequence = !guitarVoicingPlayback && twoHands
-        ? buildCyclicArpeggioSequence(leftHandFrequencies)
-        : [];
+
+      if (twoHands && leftHandFrequencies.length && !guitarVoicingPlayback) {
+        playNativeChordSound(
+          leftHandFrequencies,
+          startTime,
+          pianoArpeggioChordDuration,
+          playbackOutput,
+          soundMode
+        );
+      }
 
       rightHandSequence.forEach((frequency, noteIndex) => {
         const noteStart = startTime + noteIndex * stepDuration;
-
-        if (leftHandSequence[noteIndex]) {
-          playNativeSingleNote(leftHandSequence[noteIndex], noteStart, noteDuration, playbackOutput, soundMode);
-        }
 
         playNativeSingleNote(frequency, noteStart, noteDuration, playbackOutput, soundMode);
       });
