@@ -4,7 +4,7 @@
 
 Users can build chords, select root notes, explore chord types, view formulas, see chord notes, and interact with a visual piano interface.
 
-🌐 Live site: https://chriszdk.github.io/Chordyssey/
+🌐 Live site: http://chordyssey.com/ 
 
 ---
 
